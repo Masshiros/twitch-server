@@ -1,4 +1,4 @@
-import { UserAggregate } from '../../aggregate';
+import { UserAggregate } from '../../aggregate/user';
 
 export abstract class IUserRepository {
   isEmailExisted: (email: string) => Promise<boolean>;

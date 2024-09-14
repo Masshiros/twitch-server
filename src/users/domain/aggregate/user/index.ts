@@ -56,7 +56,7 @@ export class UserAggregate extends BaseAggregate {
   @IsString()
   @IsOptional()
   private _thumbnail?: string;
-
+  // TODO: Update later
   // Getters and Setters
 
   get categoryId(): string {

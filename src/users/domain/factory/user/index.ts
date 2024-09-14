@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { UserAggregate } from '../../aggregate';
+import { UserAggregate } from '../../aggregate/user';
 
 export type CreateUserAggregateParams = {
   id?: string;
