@@ -12,3 +12,42 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+// MODELS
+
+model User {
+  id             String    @id @default(uuid())
+  categoryId     String
+  name           String
+  slug           String
+  email          String    @unique
+  phoneNumber    String
+  dob            DateTime
+  emailVerified  Boolean   @default(false)
+  phoneVerified  Boolean   @default(false)
+  isLive         Boolean   @default(false)
+  view           Int       @default(0)
+  bio            String?
+  avatar         String?
+  thumbnail      String?
+  category       Category  @relation(fields: [categoryId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+}
+
+enum ECategory {
+   USER
+  LIVESTREAM
+}
+model Category {
+  id              String    @id @default(uuid())
+  currentTotalView Int      @default(0)
+  name            String
+  slug            String
+  image           String?
+  tagId           String?
+  applicableTo    ECategory
+  applicableId    String
+  users           User[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+}
