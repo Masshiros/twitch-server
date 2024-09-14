@@ -20,6 +20,7 @@ model User {
   name           String
   slug           String
   email          String    @unique
+  password       String
   phoneNumber    String
   dob            DateTime
   emailVerified  Boolean   @default(false)
@@ -30,12 +31,13 @@ model User {
   avatar         String?
   thumbnail      String?
   category       Category  @relation(fields: [categoryId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+  deletedAt      DateTime?
 }
 
 enum ECategory {
-   USER
+  USER
   LIVESTREAM
 }
 model Category {
@@ -48,6 +50,7 @@ model Category {
   applicableTo    ECategory
   applicableId    String
   users           User[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+  deletedAt       DateTime?
 }
