@@ -36,6 +36,7 @@ model User {
   deletedAt      DateTime?
   devices        Device[]
   tokens         Token[]
+  loginHistories LoginHistory[]
 }
 
 enum ECategory {
@@ -63,15 +64,28 @@ enum EDeviceType {
   TABLET
 }
 model Device {
-  id        String       @id @default(uuid())
-  userId    String       // Foreign key for User
-  type      EDeviceType
-  name      String
-  lastUsed  DateTime
+  id              String       @id @default(uuid())
+  userId          String       // Foreign key for User
+  type            EDeviceType
+  name            String
+  lastUsed        DateTime
 
-  tokens  Token[] 
+  tokens          Token[] 
+  loginHistories  LoginHistory[]
   // Relations
-  user    User    @relation(fields: [userId], references: [id])
+  user            User    @relation(fields: [userId], references: [id])
+}
+model LoginHistory {
+  id         String   @id @default(uuid())
+  userId     String   // Foreign key for User
+  deviceId   String   // Foreign key for Device
+  loginAt    DateTime
+  ipAddress  String
+  loginStatus Boolean
+  reason     String?
+
+  user   User   @relation(fields: [userId], references: [id])
+  device Device @relation(fields: [deviceId], references: [id])
 }
 model Token{
   id              String    @id @default(uuid())

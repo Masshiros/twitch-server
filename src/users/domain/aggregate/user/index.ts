@@ -10,6 +10,7 @@ import {
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Device, LoginHistory, Token } from '@prisma/client';
 export class UserAggregate extends BaseAggregate {
   @IsUUID()
   private _categoryId: string;
@@ -57,6 +58,9 @@ export class UserAggregate extends BaseAggregate {
   @IsOptional()
   private _thumbnail?: string;
   // TODO: Update later
+  private _tokens: Token[];
+  private _devices: Device[];
+  private _loginHistories: LoginHistory[];
   // Getters and Setters
 
   get categoryId(): string {
@@ -170,4 +174,11 @@ export class UserAggregate extends BaseAggregate {
   set thumbnail(value: string | undefined) {
     this._thumbnail = value;
   }
+  get devices(): Device[] {
+    return this._devices;
+  }
+  set devices(value: Device[] | undefined) {
+    this._devices = value;
+  }
+  // TODO: Update later
 }
