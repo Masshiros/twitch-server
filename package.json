@@ -18,7 +18,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "clean": "rimraf --glob **/node_modules **/dist yarn.lock"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -32,6 +33,7 @@
     "jwt": "^0.2.0",
     "prisma": "^5.19.1",
     "reflect-metadata": "^0.2.0",
+    "rimraf": "^6.0.1",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
