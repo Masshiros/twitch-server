@@ -10,7 +10,10 @@ import {
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Device, LoginHistory, Token } from '@prisma/client';
+import { Token } from '../entity/tokens.entity';
+import { Device } from '../entity/devices.entity';
+import { LoginHistory } from '../entity/login-histories.entity';
+
 export class UserAggregate extends BaseAggregate {
   @IsUUID()
   private _categoryId: string;
@@ -57,7 +60,6 @@ export class UserAggregate extends BaseAggregate {
   @IsString()
   @IsOptional()
   private _thumbnail?: string;
-  // TODO: Update later
   private _tokens: Token[];
   private _devices: Device[];
   private _loginHistories: LoginHistory[];

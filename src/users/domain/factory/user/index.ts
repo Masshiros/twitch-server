@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { UserAggregate } from '../../aggregate/user';
+import { UserAggregate } from '../../entity/login-histories.entity';
 
 export type CreateUserAggregateParams = {
   id?: string;
