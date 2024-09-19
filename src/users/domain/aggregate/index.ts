@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto"
 import { Type } from "class-transformer"
 import {
   IsBoolean,
@@ -14,6 +15,28 @@ import { type Device } from "../entity/devices.entity"
 import { type LoginHistory } from "../entity/login-histories.entity"
 import { type Token } from "../entity/tokens.entity"
 
+interface UserAggregateProps {
+  categoryId: string
+  name: string
+  slug: string
+  email: string
+  password: string
+  phoneNumber: string
+  dob: Date
+  emailVerified?: boolean
+  phoneVerified?: boolean
+  isLive?: boolean
+  view?: number
+  bio?: string
+  avatar?: string
+  thumbnail?: string
+  devices?: Device[]
+  tokens?: Token[]
+  loginHistories?: LoginHistory[]
+  createdAt?: Date
+  updatedAt?: Date
+  deletedAt?: Date
+}
 export class UserAggregate extends BaseAggregate {
   @IsUUID()
   private _categoryId: string
@@ -63,6 +86,32 @@ export class UserAggregate extends BaseAggregate {
   private _tokens: Token[]
   private _devices: Device[]
   private _loginHistories: LoginHistory[]
+
+  constructor(props: UserAggregateProps, id?: string) {
+    super()
+    this._id = id || randomUUID()
+    this._categoryId = props.categoryId
+    this._name = props.name
+    this._slug = props.slug
+    this._email = props.email
+    this._password = props.password
+    this._phoneNumber = props.phoneNumber
+    this._dob = props.dob
+    this._emailVerified = props.emailVerified ?? false
+    this._phoneVerified = props.phoneVerified ?? false
+    this._isLive = props.isLive ?? false
+    this._view = props.view ?? 0
+    this._bio = props.bio
+    this._avatar = props.avatar
+    this._thumbnail = props.thumbnail
+
+    this._devices = props.devices || []
+    this._tokens = props.tokens || []
+    this._loginHistories = props.loginHistories || []
+    this._createdAt = props.createdAt || new Date()
+    this._updatedAt = props.updatedAt || new Date()
+    this._deletedAt = props.deletedAt
+  }
   // Getters and Setters
 
   get categoryId(): string {
