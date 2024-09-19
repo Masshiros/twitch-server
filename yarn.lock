@@ -45,6 +45,11 @@
     ora "5.4.1"
     rxjs "7.8.1"
 
+"@automapper/classes@^8.8.1":
+  version "8.8.1"
+  resolved "https://registry.yarnpkg.com/@automapper/classes/-/classes-8.8.1.tgz#ce7ecea0004096f6d96f0841074150e6317ce639"
+  integrity sha512-qWP92Vz4z5zGWVXVkoGKmI9PIiAh8uhTBcKpKMmTVwmS1wfOQgj3ceD+A3mlC9ZUTohwvXebS3M30scLaUZmeg==
+
 "@automapper/core@^8.8.1":
   version "8.8.1"
   resolved "https://registry.yarnpkg.com/@automapper/core/-/core-8.8.1.tgz#9a823da7e2b706b5c0f39ae463971ce100a229a4"

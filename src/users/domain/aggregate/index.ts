@@ -8,11 +8,11 @@ import {
   IsString,
   IsUUID,
   Min,
-} from 'class-validator';
-import {  Token } from '../entity/tokens.entity';
-import {  Device } from '../entity/devices.entity';
-import { LoginHistory } from '../entity/login-histories.entity';
-import { BaseAggregate } from "src/common/aggregate";
+} from "class-validator"
+import { BaseAggregate } from "src/common/aggregate"
+import { type Device } from "../entity/devices.entity"
+import { type LoginHistory } from "../entity/login-histories.entity"
+import { type Token } from "../entity/tokens.entity"
 
 export class UserAggregate extends BaseAggregate {
   @IsUUID()
@@ -59,10 +59,10 @@ export class UserAggregate extends BaseAggregate {
 
   @IsString()
   @IsOptional()
-  private _thumbnail?: string;
-  private _tokens: Token[];
-  private _devices: Device[];
-  private _loginHistories: LoginHistory[];
+  private _thumbnail?: string
+  private _tokens: Token[]
+  private _devices: Device[]
+  private _loginHistories: LoginHistory[]
   // Getters and Setters
 
   get categoryId(): string {
@@ -177,10 +177,10 @@ export class UserAggregate extends BaseAggregate {
     this._thumbnail = value
   }
   get devices(): Device[] {
-    return this._devices;
+    return this._devices
   }
   set devices(value: Device[] | undefined) {
-    this._devices = value;
+    this._devices = value
   }
   // TODO: Update later
 }

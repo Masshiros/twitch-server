@@ -1,7 +1,6 @@
 import { plainToInstance } from "class-transformer"
 import { UserAggregate } from "../../aggregate"
 
-
 export type CreateUserAggregateParams = {
   id?: string
   categoryId: string
