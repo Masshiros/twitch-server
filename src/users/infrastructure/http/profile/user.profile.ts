@@ -8,8 +8,6 @@ export class UserProfile extends AutomapperProfile {
     super(mapper);
   }
   override get profile(): MappingProfile {
-    return (mapper) => {
-        
-    }
+    return (mapper) => {};
   }
 }
