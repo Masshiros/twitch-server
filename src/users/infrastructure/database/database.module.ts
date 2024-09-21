@@ -11,6 +11,6 @@ import { PrismaUserRepository } from "./prisma/repositories/user.prisma.reposito
       useClass: PrismaUserRepository,
     },
   ],
-  exports: [PrismaService],
+  exports: [IUserRepository],
 })
 export class DatabaseModule {}

@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto"
-import { Type } from "class-transformer"
+import { Expose, Type } from "class-transformer"
 import {
   IsBoolean,
   IsDate,
@@ -42,49 +42,64 @@ export class UserAggregate extends BaseAggregate {
   private _categoryId: string
 
   @IsString()
+  @Expose()
   private _name: string
 
   @IsString()
+  @Expose()
   private _slug: string
 
   @IsEmail()
+  @Expose()
   private _email: string
   @IsString()
   private _password: string
 
   @IsString()
+  @Expose()
   private _phoneNumber: string
 
   @Type(() => Date)
   @IsDate()
+  @Expose()
   private _dob: Date
 
   @IsBoolean()
+  @Expose()
   private _emailVerified: boolean = false
 
   @IsBoolean()
+  @Expose()
   private _phoneVerified: boolean = false
 
   @IsBoolean()
+  @Expose()
   private _isLive: boolean = false
 
   @IsInt()
   @Min(0)
+  @Expose()
   private _view: number = 0
 
   @IsString()
   @IsOptional()
+  @Expose()
   private _bio?: string
 
   @IsString()
   @IsOptional()
+  @Expose()
   private _avatar?: string
 
   @IsString()
   @IsOptional()
+  @Expose()
   private _thumbnail?: string
+  @Expose()
   private _tokens: Token[]
+  @Expose()
   private _devices: Device[]
+  @Expose()
   private _loginHistories: LoginHistory[]
 
   constructor(props: UserAggregateProps, id?: string) {
