@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
-import { SignupWithEmailCommand } from "./command/user/signup-with-email/signup-with-email.command"
-import { SignupWithPhoneCommand } from "./command/user/signup-with-phone/signup-with-phone.command"
+import { SignupWithEmailCommand } from "./command/auth/signup-with-email/signup-with-email.command"
+import { SignupWithPhoneCommand } from "./command/auth/signup-with-phone/signup-with-phone.command"
 
 @Injectable()
 export class AuthService {

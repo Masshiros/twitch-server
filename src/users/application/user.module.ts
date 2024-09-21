@@ -6,8 +6,10 @@ import { AuthController } from "../presentation/auth.controller"
 import { UserProfile } from "../presentation/http/profile/user.profile"
 import { UserController } from "../presentation/user.controller"
 import { AuthService } from "./auth.service"
-import { SignupWithEmailCommandHandler } from "./command/user/signup-with-email/signup-with-email.handler"
-import { SignupWithPhoneCommandHandler } from "./command/user/signup-with-phone/signup-with-phone.handler"
+import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
+import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
+import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
+import { UserService } from "./user.service"
 
 @Module({
   controllers: [AuthController, UserController],
@@ -16,7 +18,9 @@ import { SignupWithPhoneCommandHandler } from "./command/user/signup-with-phone/
     UserProfile,
     SignupWithEmailCommandHandler,
     SignupWithPhoneCommandHandler,
+    DeleteUserCommandHandler,
     AuthService,
+    UserService,
     CommandBus,
     QueryBus,
   ],

@@ -2,10 +2,10 @@ import { type Mapper } from "@automapper/core"
 import { InjectMapper } from "@automapper/nestjs"
 import { Body, Controller, Post } from "@nestjs/common"
 import { AuthService } from "../application/auth.service"
-import { SignupWithEmailCommand } from "../application/command/user/signup-with-email/signup-with-email.command"
-import { SignupWithPhoneCommand } from "../application/command/user/signup-with-phone/signup-with-phone.command"
-import { SignupWithEmailDto } from "./http/dto/request/signup-with-email.dto"
-import { SignupWithPhoneDto } from "./http/dto/request/signup-with-phone.dto"
+import { SignupWithEmailCommand } from "../application/command/auth/signup-with-email/signup-with-email.command"
+import { SignupWithPhoneCommand } from "../application/command/auth/signup-with-phone/signup-with-phone.command"
+import { SignupWithEmailDto } from "./http/dto/request/auth/signup-with-email.dto"
+import { SignupWithPhoneDto } from "./http/dto/request/auth/signup-with-phone.dto"
 
 @Controller("auth")
 export class AuthController {

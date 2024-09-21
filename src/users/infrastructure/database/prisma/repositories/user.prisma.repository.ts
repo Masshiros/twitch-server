@@ -1,46 +1,59 @@
-import { type UserAggregate } from 'src/users/domain/aggregate';
-import { type IUserRepository } from 'src/users/domain/repository/user';
-import { type PrismaService } from '../prisma.service';
-import { UserMapper } from '../mappers/user.prisma.mapper';
+import bcrypt from "bcrypt"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
-} from 'libs/exception/infrastructure';
-import bcrypt from 'bcrypt';
+} from "libs/exception/infrastructure"
+import { type UserAggregate } from "src/users/domain/aggregate"
+import { type IUserRepository } from "src/users/domain/repository/user"
+import { UserMapper } from "../mappers/user.prisma.mapper"
+import { type PrismaService } from "../prisma.service"
 
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prismaService: PrismaService) {}
-  async createUser(user: UserAggregate): Promise<void> {
+  async delete(id: string): Promise<void> {
     try {
-      const data = UserMapper.toPersistence(user);
-      await this.prismaService.user.create({ data: data });
+      await this.prismaService.user.delete({ where: { id: id } })
     } catch (error) {
       if (error instanceof InfrastructureError) {
-        throw error;
+        throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: 'Internal Server Error',
-      });
+        message: "Internal Server Error",
+      })
+    }
+  }
+  async createUser(user: UserAggregate): Promise<void> {
+    try {
+      const data = UserMapper.toPersistence(user)
+      await this.prismaService.user.create({ data: data })
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
     }
   }
   async isEmailExisted(email: string): Promise<boolean> {
     try {
       const user = await this.prismaService.user.findFirst({
         where: { email: email },
-      });
+      })
       if (!user) {
-        return false;
+        return false
       }
-      return true;
+      return true
     } catch (error) {
       if (error instanceof InfrastructureError) {
-        throw error;
+        throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: 'Internal Server Error',
-      });
+        message: "Internal Server Error",
+      })
     }
   }
   async isPhoneExisted(phone: string): Promise<boolean> {
@@ -50,75 +63,75 @@ export class PrismaUserRepository implements IUserRepository {
           where: { phoneNumber: phone },
         }))
       ) {
-        return false;
+        return false
       }
-      return true;
+      return true
     } catch (error) {
       if (error instanceof InfrastructureError) {
-        throw error;
+        throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: 'Internal Server Error',
-      });
+        message: "Internal Server Error",
+      })
     }
   }
   async findById(id: string): Promise<UserAggregate | null> {
     try {
       const user = await this.prismaService.user.findFirst({
         where: { id: id },
-      });
-      const data = UserMapper.toDomain(user);
-      return data ?? null;
+      })
+      const data = UserMapper.toDomain(user)
+      return data ?? null
     } catch (error) {
       if (error instanceof InfrastructureError) {
-        throw error;
+        throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: 'Internal Server Error',
-      });
+        message: "Internal Server Error",
+      })
     }
   }
   async findByEmail(email: string): Promise<UserAggregate | null> {
     try {
       const user = await this.prismaService.user.findFirst({
         where: { email: email },
-      });
-      const data = UserMapper.toDomain(user);
-      return data ?? null;
+      })
+      const data = UserMapper.toDomain(user)
+      return data ?? null
     } catch (error) {
       if (error instanceof InfrastructureError) {
-        throw error;
+        throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: 'Internal Server Error',
-      });
+        message: "Internal Server Error",
+      })
     }
   }
   async updateUserProfile(user: UserAggregate): Promise<UserAggregate | null> {
     try {
-      const { id, ...updateData } = user;
+      const { id, ...updateData } = user
       const updatedUser = await this.prismaService.user.update({
         where: { id },
         data: updateData,
-      });
+      })
       if (!updatedUser) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.NOT_FOUND,
-          message: 'User not found',
-        });
+          message: "User not found",
+        })
       }
-      return UserMapper.toDomain(updatedUser);
+      return UserMapper.toDomain(updatedUser)
     } catch (error) {
       if (error instanceof InfrastructureError) {
-        throw error;
+        throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: 'Internal Server Error',
-      });
+        message: "Internal Server Error",
+      })
     }
   }
   async updatePassword(
@@ -129,30 +142,30 @@ export class PrismaUserRepository implements IUserRepository {
     try {
       const user = await this.prismaService.user.findUnique({
         where: { id },
-      });
+      })
 
       if (!user) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.NOT_FOUND,
-          message: 'User not found',
-        });
+          message: "User not found",
+        })
       }
 
       // Verify the old password
-      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      const isMatch = await bcrypt.compare(oldPassword, user.password)
       if (!isMatch) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.BAD_REQUEST,
-          message: 'Old password is incorrect',
-        });
+          message: "Old password is incorrect",
+        })
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await bcrypt.hash(newPassword, 10)
 
       await this.prismaService.user.update({
         where: { id },
         data: { password: hashedPassword },
-      });
+      })
     } catch (error) {}
   }
 }
