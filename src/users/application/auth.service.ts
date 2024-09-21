@@ -4,7 +4,7 @@ import { SignupWithEmailCommand } from "./command/user/signup-with-email/signup-
 import { SignupWithPhoneCommand } from "./command/user/signup-with-phone/signup-with-phone.command"
 
 @Injectable()
-export class UserService {
+export class AuthService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
