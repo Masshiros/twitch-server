@@ -10,6 +10,7 @@ import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
+import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
 import { UserService } from "./user.service"
 
 @Module({
@@ -21,6 +22,7 @@ import { UserService } from "./user.service"
     SignupWithPhoneCommandHandler,
     DeleteUserCommandHandler,
     UpdateBioCommandHandler,
+    UpdateUsernameCommandHandler,
     AuthService,
     UserService,
     CommandBus,

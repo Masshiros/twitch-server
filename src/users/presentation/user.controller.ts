@@ -3,9 +3,11 @@ import { InjectMapper } from "@automapper/nestjs"
 import { Body, Controller, Delete, Param, Patch } from "@nestjs/common"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
+import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
 import { UserService } from "../application/user.service"
 import { DeleteUserDto } from "./http/dto/request/user/delete-user.dto"
 import { UpdateBioDto } from "./http/dto/request/user/update-bio.dto"
+import { UpdateUsernameDto } from "./http/dto/request/user/update-username.dto"
 
 @Controller("users")
 export class UserController {
@@ -19,9 +21,22 @@ export class UserController {
     await this.userService.delete(command)
   }
   @Patch(":id")
-  async UpdateBio(@Param() param: { id: string }, @Body() body: UpdateBioDto) {
+  async updateBio(@Param() param: { id: string }, @Body() body: UpdateBioDto) {
     const command = this.mapper.map(body, UpdateBioDto, UpdateBioCommand)
     command.id = param.id
     await this.userService.updateBio(command)
+  }
+  @Patch("username/:id")
+  async updateUsername(
+    @Param() param: { id: string },
+    @Body() body: UpdateUsernameDto,
+  ) {
+    const command = this.mapper.map(
+      body,
+      UpdateUsernameDto,
+      UpdateUsernameCommand,
+    )
+    command.id = param.id
+    await this.userService.updateUsername(command)
   }
 }
