@@ -9,6 +9,7 @@ import { AuthService } from "./auth.service"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
+import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
 import { UserService } from "./user.service"
 
 @Module({
@@ -19,6 +20,7 @@ import { UserService } from "./user.service"
     SignupWithEmailCommandHandler,
     SignupWithPhoneCommandHandler,
     DeleteUserCommandHandler,
+    UpdateBioCommandHandler,
     AuthService,
     UserService,
     CommandBus,

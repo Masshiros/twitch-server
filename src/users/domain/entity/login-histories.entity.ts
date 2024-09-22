@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
+import { BaseEntity } from "src/common/entity"
 
-export class LoginHistory {
-  private _id: string
+export class LoginHistory extends BaseEntity {
   private props: {
     userId: string
     deviceId: string
@@ -11,23 +11,16 @@ export class LoginHistory {
     reason?: string
   }
 
-  constructor(
-    props: {
-      userId: string
-      deviceId: string
-      loginAt: Date
-      ipAddress: string
-      loginStatus: boolean
-      reason?: string
-    },
-    id?: string,
-  ) {
-    this._id = id || randomUUID()
+  constructor(props: {
+    userId: string
+    deviceId: string
+    loginAt: Date
+    ipAddress: string
+    loginStatus: boolean
+    reason?: string
+  }) {
+    super()
     this.props = props
-  }
-
-  get id(): string {
-    return this._id
   }
 
   get userId(): string {

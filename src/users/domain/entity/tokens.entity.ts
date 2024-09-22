@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
+import { BaseEntity } from "src/common/entity"
 
-export class Token {
-  private _id: string
+export class Token extends BaseEntity {
   private props: {
     userId: string
     deviceId: string
@@ -9,21 +9,14 @@ export class Token {
     expiresAt: Date
   }
 
-  constructor(
-    props: {
-      userId: string
-      deviceId: string
-      token: string
-      expiresAt: Date
-    },
-    id?: string,
-  ) {
-    this._id = id || randomUUID()
+  constructor(props: {
+    userId: string
+    deviceId: string
+    token: string
+    expiresAt: Date
+  }) {
+    super()
     this.props = props
-  }
-
-  get id(): string {
-    return this._id
   }
 
   get userId(): string {

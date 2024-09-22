@@ -110,7 +110,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
-  async updateUserProfile(user: UserAggregate): Promise<UserAggregate | null> {
+  async updateUserProfile(user: UserAggregate): Promise<void> {
     try {
       const { id, ...updateData } = user
       const updatedUser = await this.prismaService.user.update({
@@ -123,7 +123,6 @@ export class PrismaUserRepository implements IUserRepository {
           message: "User not found",
         })
       }
-      return UserMapper.toDomain(updatedUser)
     } catch (error) {
       if (error instanceof InfrastructureError) {
         throw error

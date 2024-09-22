@@ -5,9 +5,11 @@ import { Injectable } from "@nestjs/common"
 import { SignupWithEmailCommand } from "src/users/application/command/auth/signup-with-email/signup-with-email.command"
 import { SignupWithPhoneCommand } from "src/users/application/command/auth/signup-with-phone/signup-with-phone.command"
 import { DeleteUserCommand } from "src/users/application/command/user/delete-user/delete-user.command"
+import { UpdateBioCommand } from "src/users/application/command/user/update-bio/update-bio.command"
 import { SignupWithEmailDto } from "../dto/request/auth/signup-with-email.dto"
 import { SignupWithPhoneDto } from "../dto/request/auth/signup-with-phone.dto"
 import { DeleteUserDto } from "../dto/request/user/delete-user.dto"
+import { UpdateBioDto } from "../dto/request/user/update-bio.dto"
 
 @Injectable()
 export class UserProfile extends AutomapperProfile {
@@ -30,6 +32,11 @@ export class UserProfile extends AutomapperProfile {
         mapper,
         DeleteUserDto,
         DeleteUserCommand,
+      ).reverse()
+      createMap<UpdateBioDto, UpdateBioCommand>(
+        mapper,
+        UpdateBioDto,
+        UpdateBioCommand,
       ).reverse()
     }
   }

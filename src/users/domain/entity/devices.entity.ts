@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto"
+import { BaseEntity } from "src/common/entity"
 import { type EDeviceType } from "../enum/device_type.enum"
 import { type LoginHistory } from "./login-histories.entity"
 import { type Token } from "./tokens.entity"
 
-export class Device {
-  private _id: string
+export class Device extends BaseEntity {
   private props: {
     userId: string
     type: EDeviceType
@@ -14,23 +14,16 @@ export class Device {
     loginHistories: LoginHistory[]
   }
 
-  constructor(
-    props: {
-      userId: string
-      type: EDeviceType
-      name: string
-      lastUsed: Date
-      tokens: Token[]
-      loginHistories: LoginHistory[]
-    },
-    id?: string,
-  ) {
-    this._id = id || randomUUID()
+  constructor(props: {
+    userId: string
+    type: EDeviceType
+    name: string
+    lastUsed: Date
+    tokens: Token[]
+    loginHistories: LoginHistory[]
+  }) {
+    super()
     this.props = props
-  }
-
-  get id(): string {
-    return this._id
   }
 
   get userId(): string {

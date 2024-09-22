@@ -12,12 +12,14 @@ import {
 } from "class-validator"
 import { BaseAggregate } from "src/common/aggregate"
 import { type Device } from "../entity/devices.entity"
+import { ExternalLink } from "../entity/external-links.entity"
 import { type LoginHistory } from "../entity/login-histories.entity"
 import { type Token } from "../entity/tokens.entity"
 
 interface UserAggregateProps {
   categoryId: string
   name: string
+  displayName: string
   slug: string
   email: string
   password: string
@@ -29,10 +31,12 @@ interface UserAggregateProps {
   view?: number
   bio?: string
   avatar?: string
+  lastUsernameChangeAt?: Date
   thumbnail?: string
   devices?: Device[]
   tokens?: Token[]
   loginHistories?: LoginHistory[]
+  externalLinks?: ExternalLink[]
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -44,6 +48,9 @@ export class UserAggregate extends BaseAggregate {
   @IsString()
   @Expose()
   private _name: string
+  @IsString()
+  @Expose()
+  private _displayName: string
 
   @IsString()
   @Expose()
@@ -91,6 +98,11 @@ export class UserAggregate extends BaseAggregate {
   @Expose()
   private _avatar?: string
 
+  @Type(() => Date)
+  @IsOptional()
+  @Expose()
+  private _lastUsernameChangeAt: Date
+
   @IsString()
   @IsOptional()
   @Expose()
@@ -101,12 +113,15 @@ export class UserAggregate extends BaseAggregate {
   private _devices: Device[]
   @Expose()
   private _loginHistories: LoginHistory[]
+  @Expose()
+  private _externalLinks: ExternalLink[]
 
   constructor(props: UserAggregateProps, id?: string) {
     super()
     this._id = id || randomUUID()
     this._categoryId = props.categoryId
     this._name = props.name
+    this._displayName = props.displayName
     this._slug = props.slug
     this._email = props.email
     this._password = props.password
@@ -118,11 +133,13 @@ export class UserAggregate extends BaseAggregate {
     this._view = props.view ?? 0
     this._bio = props.bio
     this._avatar = props.avatar
+    this._lastUsernameChangeAt = props.lastUsernameChangeAt
     this._thumbnail = props.thumbnail
 
     this._devices = props.devices || []
     this._tokens = props.tokens || []
     this._loginHistories = props.loginHistories || []
+    this._externalLinks = props.externalLinks || []
     this._createdAt = props.createdAt || new Date()
     this._updatedAt = props.updatedAt || new Date()
     this._deletedAt = props.deletedAt
@@ -143,6 +160,12 @@ export class UserAggregate extends BaseAggregate {
 
   set name(value: string) {
     this._name = value
+  }
+  get displayName(): string {
+    return this._displayName
+  }
+  set displayName(value: string) {
+    this._displayName = value
   }
 
   get slug(): string {
@@ -232,7 +255,12 @@ export class UserAggregate extends BaseAggregate {
   set avatar(value: string | undefined) {
     this._avatar = value
   }
-
+  get lastUsernameChangeAt(): Date {
+    return this._lastUsernameChangeAt
+  }
+  set lastUsernameChangeAt(value: Date) {
+    this._lastUsernameChangeAt = value
+  }
   get thumbnail(): string | undefined {
     return this._thumbnail
   }
