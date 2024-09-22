@@ -15,28 +15,29 @@ datasource db {
 // MODELS
 
 model User {
-  id             String    @id @default(uuid())
-  categoryId     String
-  name           String
-  slug           String
-  email          String    @unique
-  password       String
-  phoneNumber    String
-  dob            DateTime
-  emailVerified  Boolean   @default(false)
-  phoneVerified  Boolean   @default(false)
-  isLive         Boolean   @default(false)
-  view           Int       @default(0)
-  bio            String?
-  avatar         String?
-  thumbnail      String?
-  category       Category  @relation(fields: [categoryId], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now()) @updatedAt
-  deletedAt      DateTime?
-  devices        Device[]
-  tokens         Token[]
-  loginHistories LoginHistory[]
+  id                        String    @id @default(uuid())
+  categoryId                String
+  name                      String
+  slug                      String
+  email                     String    @unique
+  password                  String
+  phoneNumber               String
+  dob                       DateTime
+  emailVerified             Boolean   @default(false)
+  phoneVerified             Boolean   @default(false)
+  isLive                    Boolean   @default(false)
+  view                      Int       @default(0)
+  bio                       String?
+  avatar                    String?
+  thumbnail                 String?
+  category                  Category  @relation(fields: [categoryId], references: [id])
+  lastUsernameChangeAt      DateTime? 
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @default(now()) @updatedAt
+  deletedAt                 DateTime?
+  devices                   Device[]
+  tokens                    Token[]
+  loginHistories            LoginHistory[]
 }
 
 enum ECategory {
