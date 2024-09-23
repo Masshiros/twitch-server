@@ -5,9 +5,9 @@ import { DeleteUserCommand } from "../application/command/user/delete-user/delet
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
 import { UserService } from "../application/user.service"
-import { DeleteUserDto } from "./http/dto/request/user/delete-user.dto"
-import { UpdateBioDto } from "./http/dto/request/user/update-bio.dto"
-import { UpdateUsernameDto } from "./http/dto/request/user/update-username.dto"
+import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
+import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
+import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
 
 @Controller("users")
 export class UserController {
@@ -16,24 +16,31 @@ export class UserController {
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
   @Delete(":id")
-  async deleteUser(@Param() param: DeleteUserDto) {
-    const command = this.mapper.map(param, DeleteUserDto, DeleteUserCommand)
+  async deleteUser(@Param() param: DeleteUserRequestDto) {
+    const command = this.mapper.map(
+      param,
+      DeleteUserRequestDto,
+      DeleteUserCommand,
+    )
     await this.userService.delete(command)
   }
   @Patch(":id")
-  async updateBio(@Param() param: { id: string }, @Body() body: UpdateBioDto) {
-    const command = this.mapper.map(body, UpdateBioDto, UpdateBioCommand)
+  async updateBio(
+    @Param() param: { id: string },
+    @Body() body: UpdateBioRequestDto,
+  ) {
+    const command = this.mapper.map(body, UpdateBioRequestDto, UpdateBioCommand)
     command.id = param.id
     await this.userService.updateBio(command)
   }
   @Patch("username/:id")
   async updateUsername(
     @Param() param: { id: string },
-    @Body() body: UpdateUsernameDto,
+    @Body() body: UpdateUsernameRequestDto,
   ) {
     const command = this.mapper.map(
       body,
-      UpdateUsernameDto,
+      UpdateUsernameRequestDto,
       UpdateUsernameCommand,
     )
     command.id = param.id

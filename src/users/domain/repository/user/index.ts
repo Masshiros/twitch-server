@@ -7,6 +7,7 @@ export abstract class IUserRepository {
   isPhoneExisted: (phone: string) => Promise<boolean>
   findById: (id: string) => Promise<UserAggregate | null>
   findByEmail: (email: string) => Promise<UserAggregate | null>
+  findByUsername: (email: string) => Promise<UserAggregate | null>
   delete: (id: string) => Promise<void>
   updateUserProfile: (user: UserAggregate) => Promise<void>
   updatePassword: (
@@ -14,4 +15,6 @@ export abstract class IUserRepository {
     oldPassword: string,
     newPassword: string,
   ) => Promise<void>
+  // TODO: Update payload type later
+  generateToken: (payload: any) => Promise<string>
 }

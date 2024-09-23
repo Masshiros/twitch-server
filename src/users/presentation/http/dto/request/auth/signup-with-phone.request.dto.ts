@@ -1,6 +1,6 @@
 import { IsISO8601, IsNotEmpty, IsString } from "class-validator"
 
-export class SignupWithPhoneDto {
+export class SignupWithPhoneRequestDto {
   @IsString()
   @IsNotEmpty()
   readonly phone: string

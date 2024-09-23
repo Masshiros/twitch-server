@@ -1,3 +1,4 @@
+import { JwtService } from "@nestjs/jwt"
 import bcrypt from "bcrypt"
 import {
   InfrastructureError,
@@ -9,7 +10,10 @@ import { UserMapper } from "../mappers/user.prisma.mapper"
 import { type PrismaService } from "../prisma.service"
 
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
   async delete(id: string): Promise<void> {
     try {
       await this.prismaService.user.delete({ where: { id: id } })
@@ -110,6 +114,23 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async findByUsername(username: string): Promise<UserAggregate | null> {
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: { name: username },
+      })
+      const data = UserMapper.toDomain(user)
+      return data ?? null
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
+  }
   async updateUserProfile(user: UserAggregate): Promise<void> {
     try {
       const { id, ...updateData } = user
@@ -166,5 +187,8 @@ export class PrismaUserRepository implements IUserRepository {
         data: { password: hashedPassword },
       })
     } catch (error) {}
+  }
+  async generateToken(payload: any): Promise<string> {
+    return await this.jwtService.signAsync(payload)
   }
 }

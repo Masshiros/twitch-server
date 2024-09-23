@@ -1,6 +1,6 @@
 import { IsString, IsUUID } from "class-validator"
 
-export class UpdateBioDto {
+export class UpdateBioRequestDto {
   @IsString()
   readonly displayName?: string
   @IsString()

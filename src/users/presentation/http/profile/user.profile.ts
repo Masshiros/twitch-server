@@ -2,16 +2,18 @@ import { createMap, type Mapper } from "@automapper/core"
 import type { MappingProfile } from "@automapper/core"
 import { AutomapperProfile, InjectMapper } from "@automapper/nestjs"
 import { Injectable } from "@nestjs/common"
+import { SignInCommand } from "src/users/application/command/auth/signin/signin.command"
 import { SignupWithEmailCommand } from "src/users/application/command/auth/signup-with-email/signup-with-email.command"
 import { SignupWithPhoneCommand } from "src/users/application/command/auth/signup-with-phone/signup-with-phone.command"
 import { DeleteUserCommand } from "src/users/application/command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "src/users/application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "src/users/application/command/user/update-username/update-username.command"
-import { SignupWithEmailDto } from "../dto/request/auth/signup-with-email.dto"
-import { SignupWithPhoneDto } from "../dto/request/auth/signup-with-phone.dto"
-import { DeleteUserDto } from "../dto/request/user/delete-user.dto"
-import { UpdateBioDto } from "../dto/request/user/update-bio.dto"
-import { UpdateUsernameDto } from "../dto/request/user/update-username.dto"
+import { SigninRequestDto } from "../dto/request/auth/signin.request.dto"
+import { SignupWithEmailRequestDto } from "../dto/request/auth/signup-with-email.request.dto"
+import { SignupWithPhoneRequestDto } from "../dto/request/auth/signup-with-phone.request.dto"
+import { DeleteUserRequestDto } from "../dto/request/user/delete-user.request.dto"
+import { UpdateBioRequestDto } from "../dto/request/user/update-bio.request.dto"
+import { UpdateUsernameRequestDto } from "../dto/request/user/update-username.request.dto"
 
 @Injectable()
 export class UserProfile extends AutomapperProfile {
@@ -20,30 +22,35 @@ export class UserProfile extends AutomapperProfile {
   }
   override get profile(): MappingProfile {
     return (mapper) => {
-      createMap<SignupWithEmailDto, SignupWithEmailCommand>(
+      createMap<SignupWithEmailRequestDto, SignupWithEmailCommand>(
         mapper,
-        SignupWithEmailDto,
+        SignupWithEmailRequestDto,
         SignupWithEmailCommand,
       ).reverse()
-      createMap<SignupWithPhoneDto, SignupWithPhoneCommand>(
+      createMap<SignupWithPhoneRequestDto, SignupWithPhoneCommand>(
         mapper,
-        SignupWithPhoneDto,
+        SignupWithPhoneRequestDto,
         SignupWithPhoneCommand,
       ).reverse()
-      createMap<DeleteUserDto, DeleteUserCommand>(
+      createMap<DeleteUserRequestDto, DeleteUserCommand>(
         mapper,
-        DeleteUserDto,
+        DeleteUserRequestDto,
         DeleteUserCommand,
       ).reverse()
-      createMap<UpdateBioDto, UpdateBioCommand>(
+      createMap<UpdateBioRequestDto, UpdateBioCommand>(
         mapper,
-        UpdateBioDto,
+        UpdateBioRequestDto,
         UpdateBioCommand,
       ).reverse()
-      createMap<UpdateUsernameDto, UpdateUsernameCommand>(
+      createMap<UpdateUsernameRequestDto, UpdateUsernameCommand>(
         mapper,
-        UpdateUsernameDto,
+        UpdateUsernameRequestDto,
         UpdateUsernameCommand,
+      ).reverse()
+      createMap<SigninRequestDto, SignInCommand>(
+        mapper,
+        SigninRequestDto,
+        SignInCommand,
       ).reverse()
     }
   }
