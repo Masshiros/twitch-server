@@ -17,7 +17,7 @@ export class UpdateUsernameCommandHandler {
   ) {}
   async execute(
     command: UpdateUsernameCommand,
-    currentUser: { id: string; email: string },
+    currentUser: { id: string; username: string },
   ) {
     const { id: targetUserId, username } = command
     // validate user id
@@ -65,7 +65,7 @@ export class UpdateUsernameCommandHandler {
     }
     // validate current user exist
     const currentUserAggregate: UserAggregate | null =
-      await this.userRepository.findByEmail(currentUser.email)
+      await this.userRepository.findByUsername(currentUser.username)
 
     if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
       throw new CommandError({

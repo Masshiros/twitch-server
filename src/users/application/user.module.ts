@@ -13,23 +13,29 @@ import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
+import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { UserService } from "./user.service"
 
+const commandHandlers = [
+  SignupWithEmailCommandHandler,
+  SignupWithPhoneCommandHandler,
+  DeleteUserCommandHandler,
+  UpdateBioCommandHandler,
+  UpdateUsernameCommandHandler,
+  SignInCommandHandler,
+]
+const queryHandlers = [GetUserQueryHandler]
 @Module({
   controllers: [AuthController, UserController],
   providers: [
     UserFactory,
     UserProfile,
-    SignupWithEmailCommandHandler,
-    SignupWithPhoneCommandHandler,
-    DeleteUserCommandHandler,
-    UpdateBioCommandHandler,
-    UpdateUsernameCommandHandler,
-    SignInCommandHandler,
     AuthService,
     UserService,
     CommandBus,
     QueryBus,
+    ...commandHandlers,
+    ...queryHandlers,
   ],
   imports: [
     DatabaseModule,

@@ -19,7 +19,7 @@ export class UpdateBioCommandHandler {
   ) {}
   async execute(
     command: UpdateBioCommand,
-    currentUser: { id: string; email: string },
+    currentUser: { id: string; username: string },
   ): Promise<void> {
     const { id: targetUserId, displayName, bio } = command
     // validate user id
@@ -67,7 +67,7 @@ export class UpdateBioCommandHandler {
     }
     // validate current user exist
     const currentUserAggregate: UserAggregate | null =
-      await this.userRepository.findByEmail(currentUser.email)
+      await this.userRepository.findByUsername(currentUser.username)
 
     if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
       throw new CommandError({

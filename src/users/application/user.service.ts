@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "./command/user/update-username/update-username.command"
+import { GetUserQuery } from "./query/user/get-user/get-user.query"
 
 @Injectable()
 export class UserService {
@@ -18,5 +19,8 @@ export class UserService {
   }
   updateUsername(updateUsernameCommand: UpdateUsernameCommand) {
     return this.commandBus.execute(updateUsernameCommand)
+  }
+  getUser(getUserQuery: GetUserQuery) {
+    return this.queryBus.execute(getUserQuery)
   }
 }

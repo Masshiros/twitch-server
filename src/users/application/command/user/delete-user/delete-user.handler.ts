@@ -17,7 +17,7 @@ export class DeleteUserCommandHandler {
   ) {}
   async execute(
     command: DeleteUserCommand,
-    currentUser: { id: string; email: string },
+    currentUser: { id: string; username: string },
   ): Promise<any> {
     // validate current user's id equal the one need to delete's id
     const { id: targetUserId } = command
@@ -44,7 +44,7 @@ export class DeleteUserCommandHandler {
     }
     // validate current user is exist
     const currentUserAggregate: UserAggregate | null =
-      await this.userRepository.findByEmail(currentUser.email)
+      await this.userRepository.findByUsername(currentUser.username)
     if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
       throw new CommandError({
         code: CommandErrorCode.BAD_REQUEST,

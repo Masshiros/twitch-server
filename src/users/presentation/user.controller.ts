@@ -1,13 +1,25 @@
 import { Mapper } from "@automapper/core"
 import { InjectMapper } from "@automapper/nestjs"
-import { Body, Controller, Delete, Param, Patch } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Response,
+} from "@nestjs/common"
+import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
+import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { UserService } from "../application/user.service"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
+import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
+import { GetUserResponseDto } from "./http/dto/response/user/get-user.response.dto"
 
 @Controller("users")
 export class UserController {
@@ -45,5 +57,14 @@ export class UserController {
     )
     command.id = param.id
     await this.userService.updateUsername(command)
+  }
+  @Get(":id")
+  async getUser(
+    @Param() param: GetUserRequestDto,
+    @Response() response: ExpressResponse<GetUserResponseDto>,
+  ) {
+    const query = this.mapper.map(param, GetUserRequestDto, GetUserQuery)
+    const result = await this.userService.getUser(query)
+    response.send(result)
   }
 }

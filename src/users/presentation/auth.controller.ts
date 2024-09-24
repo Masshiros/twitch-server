@@ -9,7 +9,7 @@ import { SignupWithPhoneCommand } from "../application/command/auth/signup-with-
 import { SigninRequestDto } from "./http/dto/request/auth/signin.request.dto"
 import { SignupWithEmailRequestDto } from "./http/dto/request/auth/signup-with-email.request.dto"
 import { SignupWithPhoneRequestDto } from "./http/dto/request/auth/signup-with-phone.request.dto"
-import { SigninResponseDto } from "./http/dto/response/signin.response.dto"
+import { SigninResponseDto } from "./http/dto/response/auth/signin.response.dto"
 
 @Controller("auth")
 export class AuthController {

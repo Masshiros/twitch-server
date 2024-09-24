@@ -8,10 +8,12 @@ import { SignupWithPhoneCommand } from "src/users/application/command/auth/signu
 import { DeleteUserCommand } from "src/users/application/command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "src/users/application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "src/users/application/command/user/update-username/update-username.command"
+import { GetUserQuery } from "src/users/application/query/user/get-user/get-user.query"
 import { SigninRequestDto } from "../dto/request/auth/signin.request.dto"
 import { SignupWithEmailRequestDto } from "../dto/request/auth/signup-with-email.request.dto"
 import { SignupWithPhoneRequestDto } from "../dto/request/auth/signup-with-phone.request.dto"
 import { DeleteUserRequestDto } from "../dto/request/user/delete-user.request.dto"
+import { GetUserRequestDto } from "../dto/request/user/get-user.request.dto"
 import { UpdateBioRequestDto } from "../dto/request/user/update-bio.request.dto"
 import { UpdateUsernameRequestDto } from "../dto/request/user/update-username.request.dto"
 
@@ -51,6 +53,11 @@ export class UserProfile extends AutomapperProfile {
         mapper,
         SigninRequestDto,
         SignInCommand,
+      ).reverse()
+      createMap<GetUserRequestDto, GetUserQuery>(
+        mapper,
+        GetUserRequestDto,
+        GetUserQuery,
       ).reverse()
     }
   }
