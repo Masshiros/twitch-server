@@ -9,17 +9,27 @@ export class LoginHistory extends BaseEntity {
     ipAddress: string
     loginStatus: boolean
     reason?: string
+    createdAt?: Date
+    updatedAt?: Date
+    deletedAt?: Date
   }
 
-  constructor(props: {
-    userId: string
-    deviceId: string
-    loginAt: Date
-    ipAddress: string
-    loginStatus: boolean
-    reason?: string
-  }) {
+  constructor(
+    props: {
+      userId: string
+      deviceId: string
+      loginAt: Date
+      ipAddress: string
+      loginStatus: boolean
+      reason?: string
+      createdAt?: Date
+      updatedAt?: Date
+      deletedAt?: Date
+    },
+    id?: string,
+  ) {
     super()
+    this._id = id
     this.props = props
   }
 

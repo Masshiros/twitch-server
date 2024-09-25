@@ -12,17 +12,27 @@ export class Device extends BaseEntity {
     lastUsed: Date
     tokens: Token[]
     loginHistories: LoginHistory[]
+    createdAt?: Date
+    updatedAt?: Date
+    deletedAt?: Date
   }
 
-  constructor(props: {
-    userId: string
-    type: EDeviceType
-    name: string
-    lastUsed: Date
-    tokens: Token[]
-    loginHistories: LoginHistory[]
-  }) {
+  constructor(
+    props: {
+      userId: string
+      type: EDeviceType
+      name: string
+      lastUsed: Date
+      tokens: Token[]
+      loginHistories: LoginHistory[]
+      createdAt?: Date
+      updatedAt?: Date
+      deletedAt?: Date
+    },
+    id?: string,
+  ) {
     super()
+    this._id = id
     this.props = props
   }
 

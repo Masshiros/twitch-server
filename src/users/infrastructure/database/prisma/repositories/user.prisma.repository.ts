@@ -4,8 +4,9 @@ import {
   InfrastructureError,
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
-import { UserFilters } from "src/common/interface"
+import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/users/domain/aggregate"
+import { Token } from "src/users/domain/entity/tokens.entity"
 import { type IUserRepository } from "src/users/domain/repository/user"
 import { UserMapper } from "../mappers/user.prisma.mapper"
 import { type PrismaService } from "../prisma.service"
@@ -187,33 +188,48 @@ export class PrismaUserRepository implements IUserRepository {
         where: { id },
         data: { password: hashedPassword },
       })
-    } catch (error) {}
-  }
-  async generateToken(payload: any): Promise<string> {
-    return await this.jwtService.signAsync(payload)
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
   }
   async getAllWithPagination(
     offset: number = 0,
     limit: number = 1,
     filters: UserFilters = {},
   ): Promise<UserAggregate[] | null> {
-    // fetch users with filters
-    const users = await this.prismaService.user.findMany({
-      where: { ...filters },
-      skip: offset,
-      take: limit,
+    try {
+      // fetch users with filters
+      const users = await this.prismaService.user.findMany({
+        where: { ...filters },
+        skip: offset,
+        take: limit,
 
-      select: {
-        id: true,
-      },
-    })
-    // return result
-    const ids = users.map((user) => user.id)
-    const queryUsers = await this.prismaService.user.findMany({
-      where: { id: { in: ids } },
-      orderBy: { createdAt: "desc" },
-    })
-    const results = queryUsers.map((e) => UserMapper.toDomain(e))
-    return results ?? null
+        select: {
+          id: true,
+        },
+      })
+      // return result
+      const ids = users.map((user) => user.id)
+      const queryUsers = await this.prismaService.user.findMany({
+        where: { id: { in: ids } },
+        orderBy: { createdAt: "desc" },
+      })
+      const results = queryUsers.map((e) => UserMapper.toDomain(e))
+      return results ?? null
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
   }
 }

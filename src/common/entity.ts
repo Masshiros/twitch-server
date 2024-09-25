@@ -1,8 +1,8 @@
 export class BaseEntity {
-  private _id: string
-  private _createdAt: Date
-  private _updatedAt: Date
-  private _deletedAt: Date
+  protected _id: string
+  protected _createdAt: Date
+  protected _updatedAt: Date
+  protected _deletedAt: Date
   get id(): string {
     return this._id
   }

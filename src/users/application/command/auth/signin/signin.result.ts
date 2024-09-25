@@ -1,3 +1,4 @@
 export class SignInCommandResult {
-  readonly token: string
+  readonly accessToken: string
+  readonly refreshToken: string
 }

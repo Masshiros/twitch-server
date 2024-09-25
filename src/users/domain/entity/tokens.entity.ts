@@ -7,16 +7,26 @@ export class Token extends BaseEntity {
     deviceId: string
     token: string
     expiresAt: Date
+    createdAt?: Date
+    updatedAt?: Date
+    deletedAt?: Date
   }
 
-  constructor(props: {
-    userId: string
-    deviceId: string
-    token: string
-    expiresAt: Date
-  }) {
+  constructor(
+    props: {
+      userId: string
+      deviceId: string
+      token: string
+      expiresAt: Date
+      createdAt?: Date
+      updatedAt?: Date
+      deletedAt?: Date
+    },
+    id?: string,
+  ) {
     super()
     this.props = props
+    this._id = id
   }
 
   get userId(): string {
