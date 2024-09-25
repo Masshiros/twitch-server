@@ -16,7 +16,7 @@ datasource db {
 
 model User {
   id                        String    @id @default(uuid())
-  categoryId                String
+  categoryId                String    
   name                      String
   displayName               String
   slug                      String
@@ -40,6 +40,7 @@ model User {
   devices                   Device[]
   tokens                    Token[]
   loginHistories            LoginHistory[]
+  @@index([categoryId])
 }
 model ExternalLink{
   id                String    @id @default(uuid())

@@ -13,6 +13,7 @@ import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
+import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { UserService } from "./user.service"
 
@@ -24,7 +25,7 @@ const commandHandlers = [
   UpdateUsernameCommandHandler,
   SignInCommandHandler,
 ]
-const queryHandlers = [GetUserQueryHandler]
+const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
 @Module({
   controllers: [AuthController, UserController],
   providers: [

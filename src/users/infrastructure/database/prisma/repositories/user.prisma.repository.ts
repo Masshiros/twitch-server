@@ -4,6 +4,7 @@ import {
   InfrastructureError,
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
+import { UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/users/domain/aggregate"
 import { type IUserRepository } from "src/users/domain/repository/user"
 import { UserMapper } from "../mappers/user.prisma.mapper"
@@ -190,5 +191,29 @@ export class PrismaUserRepository implements IUserRepository {
   }
   async generateToken(payload: any): Promise<string> {
     return await this.jwtService.signAsync(payload)
+  }
+  async getAllWithPagination(
+    offset: number = 0,
+    limit: number = 1,
+    filters: UserFilters = {},
+  ): Promise<UserAggregate[] | null> {
+    // fetch users with filters
+    const users = await this.prismaService.user.findMany({
+      where: { ...filters },
+      skip: offset,
+      take: limit,
+
+      select: {
+        id: true,
+      },
+    })
+    // return result
+    const ids = users.map((user) => user.id)
+    const queryUsers = await this.prismaService.user.findMany({
+      where: { id: { in: ids } },
+      orderBy: { createdAt: "desc" },
+    })
+    const results = queryUsers.map((e) => UserMapper.toDomain(e))
+    return results ?? null
   }
 }

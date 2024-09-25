@@ -1,3 +1,4 @@
+import { UserFilters } from "src/common/interface"
 import { type UserAggregate } from "../../aggregate"
 
 export abstract class IUserRepository {
@@ -17,4 +18,9 @@ export abstract class IUserRepository {
   ) => Promise<void>
   // TODO: Update payload type later
   generateToken: (payload: any) => Promise<string>
+  getAllWithPagination: (
+    offset: number,
+    limit: number,
+    filters: UserFilters,
+  ) => Promise<UserAggregate[] | null>
 }
