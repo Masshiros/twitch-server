@@ -271,8 +271,14 @@ export class UserAggregate extends BaseAggregate {
   get devices(): Device[] {
     return this._devices
   }
-  set devices(value: Device[] | undefined) {
-    this._devices = value
+  set devices(value: Device | undefined) {
+    this._devices.push(value)
+  }
+  get tokens(): Token[] {
+    return this._tokens
+  }
+  set tokens(value: Token | undefined) {
+    this._tokens.push(value)
   }
   // TODO: Update later
 }

@@ -16,9 +16,14 @@ export abstract class IUserRepository {
     oldPassword: string,
     newPassword: string,
   ) => Promise<void>
+  // updateToken: (user: UserAggregate) => Promise<void>
   getAllWithPagination: (
     offset: number,
     limit: number,
     filters: UserFilters,
   ) => Promise<UserAggregate[] | null>
+  generateToken: (payload: TokenPayload) => Promise<string>
+  storeToken: (token: string) => Promise<void>
+  decodeToken: (token: string) => Promise<TokenPayload>
+  deleteToken: (token: string) => Promise<void>
 }

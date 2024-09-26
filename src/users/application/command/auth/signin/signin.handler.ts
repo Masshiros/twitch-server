@@ -11,7 +11,6 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { TokenPayload } from "src/common/interface"
 import { UserAggregate } from "src/users/domain/aggregate"
 import { UserFactory } from "src/users/domain/factory/user"
-import { ITokenRepository } from "src/users/domain/repository/token"
 import { IUserRepository } from "src/users/domain/repository/user"
 import { comparePassword } from "utils/encrypt"
 import { SignInCommand } from "./signin.command"
@@ -21,7 +20,6 @@ import { SignInCommandResult } from "./signin.result"
 export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly tokenRepository: ITokenRepository,
     private readonly userFactory: UserFactory,
   ) {}
   async execute(command: SignInCommand): Promise<SignInCommandResult> {
@@ -90,11 +88,11 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         // TODO(role): Add role
       }
       const [accessToken, refreshToken] = await Promise.all([
-        this.tokenRepository.generateToken(accessTokenPayload),
-        this.tokenRepository.generateToken(refreshTokenPayload),
+        this.userRepository.generateToken(accessTokenPayload),
+        this.userRepository.generateToken(refreshTokenPayload),
       ])
       // store refreshToken
-      await this.tokenRepository.storeToken(refreshToken)
+      await this.userRepository.storeToken(refreshToken)
 
       return { accessToken, refreshToken }
     } catch (err) {

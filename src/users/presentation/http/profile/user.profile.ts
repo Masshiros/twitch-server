@@ -2,6 +2,7 @@ import { createMap, type Mapper } from "@automapper/core"
 import type { MappingProfile } from "@automapper/core"
 import { AutomapperProfile, InjectMapper } from "@automapper/nestjs"
 import { Injectable } from "@nestjs/common"
+import { RefreshTokenCommand } from "src/users/application/command/auth/refresh-token/refresh-token.command"
 import { SignInCommand } from "src/users/application/command/auth/signin/signin.command"
 import { SignupWithEmailCommand } from "src/users/application/command/auth/signup-with-email/signup-with-email.command"
 import { SignupWithPhoneCommand } from "src/users/application/command/auth/signup-with-phone/signup-with-phone.command"
@@ -10,6 +11,7 @@ import { UpdateBioCommand } from "src/users/application/command/user/update-bio/
 import { UpdateUsernameCommand } from "src/users/application/command/user/update-username/update-username.command"
 import { GetAllUsersQuery } from "src/users/application/query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "src/users/application/query/user/get-user/get-user.query"
+import { RefreshTokenRequestDto } from "../dto/request/auth/refresh-token.request.dto"
 import { SigninRequestDto } from "../dto/request/auth/signin.request.dto"
 import { SignupWithEmailRequestDto } from "../dto/request/auth/signup-with-email.request.dto"
 import { SignupWithPhoneRequestDto } from "../dto/request/auth/signup-with-phone.request.dto"
@@ -65,6 +67,11 @@ export class UserProfile extends AutomapperProfile {
         mapper,
         GetAllUsersRequestDto,
         GetAllUsersQuery,
+      ).reverse()
+      createMap<RefreshTokenRequestDto, RefreshTokenCommand>(
+        mapper,
+        RefreshTokenRequestDto,
+        RefreshTokenCommand,
       ).reverse()
     }
   }

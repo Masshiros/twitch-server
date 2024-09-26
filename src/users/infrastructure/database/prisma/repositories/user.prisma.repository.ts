@@ -8,6 +8,7 @@ import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/users/domain/aggregate"
 import { Token } from "src/users/domain/entity/tokens.entity"
 import { type IUserRepository } from "src/users/domain/repository/user"
+import { TokenMapper } from "../mappers/token.prisma.mapper"
 import { UserMapper } from "../mappers/user.prisma.mapper"
 import { type PrismaService } from "../prisma.service"
 
@@ -198,6 +199,42 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  // async updateToken(user: UserAggregate): Promise<void> {
+  //   try {
+  //     const tokens = await this.prismaService.token.findMany({
+  //       where: { id: { in: user.tokens.map((token) => token.id) } },
+  //     })
+  //     const updateOperations = user.tokens.map((domainToken) => {
+  //       const matchingToken = tokens.find(
+  //         (token) => token.id === domainToken.id,
+  //       )
+
+  //       if (matchingToken) {
+  //         return this.prismaService.token.update({
+  //           where: { id: domainToken.id },
+  //           data: {
+  //             token: domainToken.token,
+  //             userId: user.id,
+  //             // TODO: Update device module later
+  //             deviceId: "device-id",
+  //             expiresAt: domainToken.expiresAt,
+  //             updatedAt: new Date(),
+  //           },
+  //         })
+  //       }
+  //       return null
+  //     })
+  //     await this.prismaService.$transaction(updateOperations.filter(Boolean))
+  //   } catch (error) {
+  //     if (error instanceof InfrastructureError) {
+  //       throw error
+  //     }
+  //     throw new InfrastructureError({
+  //       code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+  //       message: "Internal Server Error",
+  //     })
+  //   }
+  // }
   async getAllWithPagination(
     offset: number = 0,
     limit: number = 1,
@@ -222,6 +259,70 @@ export class PrismaUserRepository implements IUserRepository {
       })
       const results = queryUsers.map((e) => UserMapper.toDomain(e))
       return results ?? null
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
+  }
+  async generateToken(payload: TokenPayload): Promise<string> {
+    try {
+      return await this.jwtService.signAsync(payload)
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
+  }
+  async decodeToken(token: string): Promise<TokenPayload> {
+    try {
+      return await this.jwtService.verifyAsync<TokenPayload>(token)
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
+  }
+  async storeToken(token: string): Promise<void> {
+    try {
+      const [sub, deviceId] = await this.jwtService.verifyAsync(token)
+      const tokenStored = new Token({
+        userId: sub,
+        token: token,
+        deviceId: deviceId,
+        // TODO(): handle jwt service later
+        expiresAt: new Date(),
+      })
+      const data = TokenMapper.toPersistence(tokenStored)
+      await this.prismaService.token.create({ data })
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
+  }
+  async deleteToken(token: string) {
+    try {
+      const tokenFound = await this.prismaService.token.findFirst({
+        where: { token },
+      })
+      await this.prismaService.token.delete({ where: { id: tokenFound.id } })
     } catch (error) {
       if (error instanceof InfrastructureError) {
         throw error

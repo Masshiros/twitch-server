@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
+import { RefreshTokenCommand } from "./command/auth/refresh-token/refresh-token.command"
 import { SignInCommand } from "./command/auth/signin/signin.command"
 import { SignupWithEmailCommand } from "./command/auth/signup-with-email/signup-with-email.command"
 import { SignupWithPhoneCommand } from "./command/auth/signup-with-phone/signup-with-phone.command"
@@ -18,5 +19,8 @@ export class AuthService {
   }
   signin(signinCommand: SignInCommand) {
     return this.commandBus.execute(signinCommand)
+  }
+  refreshToken(refreshTokenCommand: RefreshTokenCommand) {
+    return this.commandBus.execute(refreshTokenCommand)
   }
 }
