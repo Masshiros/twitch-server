@@ -8,9 +8,9 @@ import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/users/domain/aggregate"
 import { Token } from "src/users/domain/entity/tokens.entity"
 import { type IUserRepository } from "src/users/domain/repository/user"
+import { type PrismaService } from "../../../../../../prisma/prisma.service"
 import { TokenMapper } from "../mappers/token.prisma.mapper"
 import { UserMapper } from "../mappers/user.prisma.mapper"
-import { type PrismaService } from "../prisma.service"
 
 export class PrismaUserRepository implements IUserRepository {
   constructor(

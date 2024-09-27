@@ -7,7 +7,7 @@ import { UserModule } from "./users/application/user.module"
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ validate }),
+    ConfigModule.forRoot({ validate: validate }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
