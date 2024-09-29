@@ -15,8 +15,7 @@ datasource db {
 // MODELS
 
 model User {
-  id                        String    @id @default(uuid())
-  categoryId                String    
+  id                        String    @id @default(uuid())   
   name                      String
   displayName               String
   slug                      String
@@ -24,14 +23,15 @@ model User {
   password                  String
   phoneNumber               String
   dob                       DateTime
-  emailVerified             Boolean   @default(false)
-  phoneVerified             Boolean   @default(false)
-  isLive                    Boolean   @default(false)
+  emailVerifyToken          String    @default("")
+  phoneVerifyToken          String    @default("")
+  forgotPasswordToken       String    @default("")
+  isLive                    Boolean   @default(false)  
+  isActive                  Boolean   @default(true)
   view                      Int       @default(0)
   bio                       String?
   avatar                    String?
   thumbnail                 String?
-  category                  Category  @relation(fields: [categoryId], references: [id])
   lastUsernameChangeAt      DateTime? 
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @default(now()) @updatedAt
@@ -40,7 +40,10 @@ model User {
   devices                   Device[]
   tokens                    Token[]
   loginHistories            LoginHistory[]
-  @@index([categoryId])
+  userCategories            UsersCategories[]
+  @@index([isLive])
+  @@index([isActive])
+  
 }
 model ExternalLink{
   id                String    @id @default(uuid())
@@ -65,12 +68,24 @@ model Category {
   tagId           String?
   applicableTo    ECategory
   applicableId    String
-  users           User[]
+  userId          String    
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now()) @updatedAt
   deletedAt       DateTime?
+  userCategories  UsersCategories[]
 }
+model UsersCategories {
+  id         String    @id @default(uuid())
+  userId     String
+  categoryId String
+  user       User      @relation(fields: [userId], references: [id])
+  category   Category  @relation(fields: [categoryId], references: [id])
 
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+
+  @@unique([userId, categoryId])
+}
 enum EDeviceType {
   MOBILE
   DESKTOP
