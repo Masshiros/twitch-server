@@ -7,7 +7,6 @@ export class UserMapper {
   static toDomain(prismaUser: PrismaUser): UserAggregate {
     return new UserAggregate(
       {
-        categoryId: prismaUser.categoryId,
         name: prismaUser.name,
         displayName: prismaUser.displayName,
         slug: prismaUser.slug,
@@ -15,9 +14,11 @@ export class UserMapper {
         password: prismaUser.password,
         phoneNumber: prismaUser.phoneNumber,
         dob: prismaUser.dob,
-        emailVerified: prismaUser.emailVerified,
-        phoneVerified: prismaUser.phoneVerified,
+        emailVerifyToken: prismaUser.emailVerifyToken,
+        phoneVerifyToken: prismaUser.phoneVerifyToken,
+        forgotPasswordToken: prismaUser.forgotPasswordToken,
         isLive: prismaUser.isLive,
+        isActive: prismaUser.isActive,
         view: prismaUser.view,
         bio: prismaUser.bio,
         avatar: prismaUser.avatar,
@@ -33,7 +34,7 @@ export class UserMapper {
   static toPersistence(domainUser: UserAggregate): PrismaUser {
     return {
       id: domainUser.id,
-      categoryId: domainUser.categoryId,
+
       name: domainUser.name,
       displayName: domainUser.displayName,
       slug: domainUser.slug,
@@ -41,9 +42,11 @@ export class UserMapper {
       password: domainUser.password,
       phoneNumber: domainUser.phoneNumber,
       dob: domainUser.dob,
-      emailVerified: domainUser.emailVerified,
-      phoneVerified: domainUser.phoneVerified,
+      emailVerifyToken: domainUser.emailVerifyToken,
+      phoneVerifyToken: domainUser.phoneVerifyToken,
+      forgotPasswordToken: domainUser.forgotPasswordToken,
       isLive: domainUser.isLive,
+      isActive: domainUser.isActive,
       view: domainUser.view,
       bio: domainUser.bio,
       avatar: domainUser.avatar,

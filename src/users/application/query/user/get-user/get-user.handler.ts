@@ -1,4 +1,5 @@
 import { QueryHandler } from "@nestjs/cqrs"
+import { plainToInstance } from "class-transformer"
 import {
   QueryError,
   QueryErrorCode,
@@ -19,22 +20,22 @@ export class GetUserQueryHandler {
   ) {}
   async execute(
     query: GetUserQuery,
-    currentUser: { id: string; username: string },
-  ): Promise<GetUserQueryResult> {
+    //currentUser: { id: string; username: string },
+  ): Promise<GetUserQueryResult | null> {
     const { id: targetUserId } = query
     try {
-      const currentUserAggregte: UserAggregate | null =
-        await this.userRepository.findByUsername(currentUser.username)
+      // const currentUserAggregte: UserAggregate | null =
+      //   await this.userRepository.findByUsername(currentUser.username)
 
-      if (!currentUserAggregte || currentUserAggregte.id !== currentUser.id) {
-        throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
-          message: "Unauthorized",
-          info: {
-            errorCode: QueryErrorDetailCode.UNAUTHORIZED,
-          },
-        })
-      }
+      // if (!currentUserAggregte || currentUserAggregte.id !== currentUser.id) {
+      //   throw new QueryError({
+      //     code: QueryErrorCode.BAD_REQUEST,
+      //     message: "Unauthorized",
+      //     info: {
+      //       errorCode: QueryErrorDetailCode.UNAUTHORIZED,
+      //     },
+      //   })
+      // }
 
       if (targetUserId.length === 0) {
         throw new QueryError({
@@ -59,11 +60,7 @@ export class GetUserQueryHandler {
         })
       }
 
-      return {
-        id: targetUserAggregate.id,
-        email: targetUserAggregate.email,
-        username: targetUserAggregate.name,
-      }
+      return { result: targetUserAggregate }
     } catch (err) {
       console.error(err.stack)
       if (err instanceof QueryError || err instanceof InfrastructureError) {
@@ -72,7 +69,7 @@ export class GetUserQueryHandler {
 
       throw new QueryError({
         code: QueryErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: err.message,
       })
     }
   }

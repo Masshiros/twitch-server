@@ -22,7 +22,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
     private readonly userRepository: IUserRepository,
     private readonly userFactory: UserFactory,
   ) {}
-  async execute(command: SignInCommand): Promise<SignInCommandResult> {
+  async execute(command: SignInCommand): Promise<SignInCommandResult | null> {
     const { username, password } = command
     try {
       // validate data of body

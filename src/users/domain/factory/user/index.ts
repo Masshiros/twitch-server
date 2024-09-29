@@ -1,24 +1,68 @@
-import { plainToInstance } from "class-transformer"
+import { randomUUID } from "crypto"
 import { UserAggregate } from "../../aggregate"
+import { Device } from "../../entity/devices.entity"
+import { ExternalLink } from "../../entity/external-links.entity"
+import { LoginHistory } from "../../entity/login-histories.entity"
+import { Token } from "../../entity/tokens.entity"
 
+// Define the types of parameters you'll pass to the factory
 export type CreateUserAggregateParams = {
   id?: string
-  categoryId?: string
+
+  email?: string
   name?: string
   slug?: string
   password?: string
   phoneNumber?: string
   dob?: Date
-  emailVerified?: boolean
-  phoneVerified?: boolean
+  emailVerifyToken?: string
+  phoneVerifyToken?: string
+  forgotPasswordToken?: string
   isLive?: boolean
+  isActive?: boolean
   view?: number
   bio?: string
   avatar?: string
+  lastUsernameChangeAt?: Date
   thumbnail?: string
+  devices?: Device[]
+  tokens?: Token[]
+  loginHistories?: LoginHistory[]
+  externalLinks?: ExternalLink[]
 }
+
+// UserFactory class responsible for creating UserAggregate
 export class UserFactory {
-  createAggregate(params: CreateUserAggregateParams) {
-    return plainToInstance(UserAggregate, { ...params })
+  createAggregate(params: CreateUserAggregateParams): UserAggregate {
+    return new UserAggregate(
+      {
+        name: params.name ?? "", // Name is required, so assign default
+        displayName: params.name ?? "",
+        slug: params.slug ?? "",
+        email: params.email ?? "",
+        password: params.password ?? "",
+        phoneNumber: params.phoneNumber ?? "",
+        dob: params.dob ?? new Date(),
+        emailVerifyToken: params.emailVerifyToken ?? "",
+        phoneVerifyToken: params.phoneVerifyToken ?? "",
+        forgotPasswordToken: params.forgotPasswordToken ?? "",
+        isLive: params.isLive ?? false,
+        isActive: params.isActive ?? false,
+
+        view: params.view ?? 0,
+        bio: params.bio ?? "",
+        avatar: params.avatar ?? "",
+        lastUsernameChangeAt: params.lastUsernameChangeAt ?? new Date(),
+        thumbnail: params.thumbnail ?? "",
+        devices: params.devices ?? [], // Default to empty arrays if undefined
+        tokens: params.tokens ?? [],
+        loginHistories: params.loginHistories ?? [],
+        externalLinks: params.externalLinks ?? [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null, // Set deletedAt to null unless specified
+      },
+      params.id || randomUUID(), // Use provided id or generate a new UUID
+    )
   }
 }

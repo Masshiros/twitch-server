@@ -1,24 +1,26 @@
 import { ApiPropertyOptional } from "@nestjs/swagger"
+import { Type } from "class-transformer"
 import { IsBoolean, IsOptional, IsString } from "class-validator"
 import { JwtPayload } from "jsonwebtoken"
 import { tokenType } from "libs/constants/enum"
 
 export class UserFilters {
   @ApiPropertyOptional({
-    description: "The ID of the category to filter users by",
-    example: "category123",
+    description: "Whether the user is live or not",
+    example: true,
+    nullable: true,
   })
-  @IsString()
   @IsOptional()
-  categoryId?: string
-
+  @IsBoolean()
+  isLive?: boolean | null
   @ApiPropertyOptional({
     description: "Whether the user is active or not",
     example: true,
+    nullable: true,
   })
-  @IsBoolean()
   @IsOptional()
-  isActive?: boolean
+  @IsBoolean()
+  isActive?: boolean | null
 }
 export interface TokenPayload extends JwtPayload {
   sub: string

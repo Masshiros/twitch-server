@@ -17,11 +17,15 @@ export abstract class IUserRepository {
     newPassword: string,
   ) => Promise<void>
   // updateToken: (user: UserAggregate) => Promise<void>
-  getAllWithPagination: (
-    offset: number,
-    limit: number,
-    filters: UserFilters,
-  ) => Promise<UserAggregate[] | null>
+  getAllWithPagination: ({
+    limit,
+    offset,
+    filters,
+  }: {
+    limit: number
+    offset: number
+    filters: UserFilters
+  }) => Promise<UserAggregate[] | null>
   generateToken: (payload: TokenPayload) => Promise<string>
   storeToken: (token: string) => Promise<void>
   decodeToken: (token: string) => Promise<TokenPayload>

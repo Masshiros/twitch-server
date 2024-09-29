@@ -17,7 +17,6 @@ import { type LoginHistory } from "../entity/login-histories.entity"
 import { type Token } from "../entity/tokens.entity"
 
 interface UserAggregateProps {
-  categoryId: string
   name: string
   displayName: string
   slug: string
@@ -25,9 +24,11 @@ interface UserAggregateProps {
   password: string
   phoneNumber: string
   dob: Date
-  emailVerified?: boolean
-  phoneVerified?: boolean
+  emailVerifyToken?: string
+  phoneVerifyToken?: string
+  forgotPasswordToken?: string
   isLive?: boolean
+  isActive?: boolean
   view?: number
   bio?: string
   avatar?: string
@@ -42,9 +43,6 @@ interface UserAggregateProps {
   deletedAt?: Date
 }
 export class UserAggregate extends BaseAggregate {
-  @IsUUID()
-  private _categoryId: string
-
   @IsString()
   @Expose()
   private _name: string
@@ -71,17 +69,23 @@ export class UserAggregate extends BaseAggregate {
   @Expose()
   private _dob: Date
 
-  @IsBoolean()
+  @IsString()
   @Expose()
-  private _emailVerified: boolean = false
+  private _emailVerifyToken: string = ""
 
-  @IsBoolean()
+  @IsString()
   @Expose()
-  private _phoneVerified: boolean = false
+  private _phoneVerifyToken: string = ""
+  @IsString()
+  @Expose()
+  private _forgotPasswordToken: string = ""
 
   @IsBoolean()
   @Expose()
   private _isLive: boolean = false
+  @IsBoolean()
+  @Expose()
+  private _isActive: boolean = true
 
   @IsInt()
   @Min(0)
@@ -119,17 +123,18 @@ export class UserAggregate extends BaseAggregate {
   constructor(props: UserAggregateProps, id?: string) {
     super()
     this._id = id || randomUUID()
-    this._categoryId = props.categoryId
-    this._name = props.name
-    this._displayName = props.displayName
-    this._slug = props.slug
-    this._email = props.email
-    this._password = props.password
-    this._phoneNumber = props.phoneNumber
+    this._name = props.name ?? ""
+    this._displayName = props.displayName ?? ""
+    this._slug = props.slug ?? ""
+    this._email = props.email ?? ""
+    this._password = props.password ?? ""
+    this._phoneNumber = props.phoneNumber ?? ""
     this._dob = props.dob
-    this._emailVerified = props.emailVerified ?? false
-    this._phoneVerified = props.phoneVerified ?? false
+    this._emailVerifyToken = props.emailVerifyToken ?? ""
+    this._phoneVerifyToken = props.phoneVerifyToken ?? ""
+    this._forgotPasswordToken = props.forgotPasswordToken ?? ""
     this._isLive = props.isLive ?? false
+    this._isActive = props.isActive ?? true
     this._view = props.view ?? 0
     this._bio = props.bio
     this._avatar = props.avatar
@@ -145,14 +150,6 @@ export class UserAggregate extends BaseAggregate {
     this._deletedAt = props.deletedAt
   }
   // Getters and Setters
-
-  get categoryId(): string {
-    return this._categoryId
-  }
-
-  set categoryId(value: string) {
-    this._categoryId = value
-  }
 
   get name(): string {
     return this._name
@@ -208,20 +205,26 @@ export class UserAggregate extends BaseAggregate {
     this._dob = value
   }
 
-  get emailVerified(): boolean {
-    return this._emailVerified
+  get emailVerifyToken(): string {
+    return this._emailVerifyToken
   }
 
-  set emailVerified(value: boolean) {
-    this._emailVerified = value
+  set emailVerifyToken(value: string) {
+    this._emailVerifyToken = value
   }
 
-  get phoneVerified(): boolean {
-    return this._phoneVerified
+  get phoneVerifyToken(): string {
+    return this._phoneVerifyToken
   }
 
-  set phoneVerified(value: boolean) {
-    this._phoneVerified = value
+  set phoneVerifyToken(value: string) {
+    this._phoneVerifyToken = value
+  }
+  get forgotPasswordToken(): string {
+    return this._forgotPasswordToken
+  }
+  set forgotPasswordToken(value: string) {
+    this._forgotPasswordToken = value
   }
 
   get isLive(): boolean {
@@ -230,6 +233,13 @@ export class UserAggregate extends BaseAggregate {
 
   set isLive(value: boolean) {
     this._isLive = value
+  }
+  get isActive(): boolean {
+    return this._isActive
+  }
+
+  set isActive(value: boolean) {
+    this._isActive = value
   }
 
   get view(): number {

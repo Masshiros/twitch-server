@@ -1,6 +1,6 @@
 type UpdateUsernameCommandParams = {
-  id: string
-  username: string
+  id?: string
+  username?: string
 }
 export class UpdateUsernameCommand {
   id: string

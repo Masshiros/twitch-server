@@ -1,17 +1,19 @@
+import { Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import bcrypt from "bcrypt"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
+import { PrismaService } from "prisma/prisma.service"
 import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/users/domain/aggregate"
 import { Token } from "src/users/domain/entity/tokens.entity"
 import { type IUserRepository } from "src/users/domain/repository/user"
-import { type PrismaService } from "../../../../../../prisma/prisma.service"
 import { TokenMapper } from "../mappers/token.prisma.mapper"
 import { UserMapper } from "../mappers/user.prisma.mapper"
 
+@Injectable()
 export class PrismaUserRepository implements IUserRepository {
   constructor(
     private readonly prismaService: PrismaService,
@@ -33,6 +35,7 @@ export class PrismaUserRepository implements IUserRepository {
   async createUser(user: UserAggregate): Promise<void> {
     try {
       const data = UserMapper.toPersistence(user)
+      console.log(data)
       await this.prismaService.user.create({ data: data })
     } catch (error) {
       if (error instanceof InfrastructureError) {
@@ -40,7 +43,7 @@ export class PrismaUserRepository implements IUserRepository {
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
@@ -54,6 +57,7 @@ export class PrismaUserRepository implements IUserRepository {
       }
       return true
     } catch (error) {
+      console.error(error)
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -235,13 +239,18 @@ export class PrismaUserRepository implements IUserRepository {
   //     })
   //   }
   // }
-  async getAllWithPagination(
-    offset: number = 0,
-    limit: number = 1,
-    filters: UserFilters = {},
-  ): Promise<UserAggregate[] | null> {
+  async getAllWithPagination({
+    limit = 1,
+    offset = 0,
+    filters = {},
+  }: {
+    limit: number
+    offset: number
+    filters: UserFilters
+  }): Promise<UserAggregate[] | null> {
     try {
       // fetch users with filters
+
       const users = await this.prismaService.user.findMany({
         where: { ...filters },
         skip: offset,
@@ -251,6 +260,7 @@ export class PrismaUserRepository implements IUserRepository {
           id: true,
         },
       })
+      console.log(users)
       // return result
       const ids = users.map((user) => user.id)
       const queryUsers = await this.prismaService.user.findMany({
@@ -265,7 +275,7 @@ export class PrismaUserRepository implements IUserRepository {
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }

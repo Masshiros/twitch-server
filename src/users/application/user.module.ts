@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common"
-import { CommandBus, QueryBus } from "@nestjs/cqrs"
+import { CommandBus, CqrsModule, QueryBus } from "@nestjs/cqrs"
 import { JwtModule } from "@nestjs/jwt"
+import { PrismaService } from "prisma/prisma.service"
 import { DatabaseModule } from "../../../prisma/database.module"
 import { UserFactory } from "../domain/factory/user/index"
+import { UserDatabaseModule } from "../infrastructure/database/user.database.module"
 import { AuthController } from "../presentation/auth.controller"
-import { UserProfile } from "../presentation/http/profile/user.profile"
 import { UserController } from "../presentation/user.controller"
 import { AuthService } from "./auth.service"
 import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
@@ -30,22 +31,11 @@ const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
   controllers: [AuthController, UserController],
   providers: [
     UserFactory,
-    UserProfile,
     AuthService,
     UserService,
-    CommandBus,
-    QueryBus,
     ...commandHandlers,
     ...queryHandlers,
   ],
-  imports: [
-    DatabaseModule,
-    JwtModule.register({
-      global: true,
-      // TODO: config module later
-      secret: "secret",
-      signOptions: { expiresIn: "60s" },
-    }),
-  ],
+  imports: [CqrsModule, UserDatabaseModule],
 })
 export class UserModule {}

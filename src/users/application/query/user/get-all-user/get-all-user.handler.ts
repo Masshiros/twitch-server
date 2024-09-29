@@ -12,14 +12,17 @@ export class GetAllUsersQueryHandler {
     private readonly userRepository: IUserRepository,
     private readonly userFactory: UserFactory,
   ) {}
-  async execute(query: GetAllUsersQuery): Promise<GetAllUsersQueryResult> {
+  async execute(
+    query: GetAllUsersQuery,
+  ): Promise<GetAllUsersQueryResult | null> {
     const { limit, offset, filters } = query
+
     try {
-      const result = await this.userRepository.getAllWithPagination(
+      const result = await this.userRepository.getAllWithPagination({
         limit,
         offset,
         filters,
-      )
+      })
       return { result }
     } catch (err) {
       console.error(err.stack)

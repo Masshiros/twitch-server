@@ -1,5 +1,5 @@
 type UpdateBioCommandParams = {
-  id: string
+  id?: string
   displayName?: string
   bio?: string
 }

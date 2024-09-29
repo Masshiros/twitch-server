@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common"
 import { CommandHandler, type ICommandHandler } from "@nestjs/cqrs"
 import {
   CommandError,
@@ -35,7 +36,7 @@ export class SignupWithEmailCommandHandler
         })
       }
       // validate email exist
-      if (!(await this.userRepository.isEmailExisted(email))) {
+      if (await this.userRepository.isEmailExisted(email)) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message: "Email already exists",
@@ -76,7 +77,11 @@ export class SignupWithEmailCommandHandler
         })
       }
 
-      const user: UserAggregate = this.userFactory.createAggregate({})
+      const user: UserAggregate = this.userFactory.createAggregate({
+        email: email,
+        password: password,
+      })
+      console.log(user)
       user.email = email
       user.password = await hashPassword(password)
       user.name = name

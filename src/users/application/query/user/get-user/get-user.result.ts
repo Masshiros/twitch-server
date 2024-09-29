@@ -1,5 +1,5 @@
+import { UserAggregate } from "src/users/domain/aggregate"
+
 export class GetUserQueryResult {
-  readonly id: string
-  readonly email: string
-  readonly username: string
+  result: UserAggregate
 }

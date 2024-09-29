@@ -35,7 +35,7 @@ export class SignupWithPhoneCommandHandler
         })
       }
       // validate phone exist
-      if (!(await this.userRepository.isPhoneExisted(phone))) {
+      if (await this.userRepository.isPhoneExisted(phone)) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message: "Phone already exists",

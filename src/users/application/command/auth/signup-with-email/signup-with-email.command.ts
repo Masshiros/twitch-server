@@ -1,15 +1,15 @@
 export type SignupWithEmailCommandParams = {
   email: string
   password: string
-  name: string
   dob: Date
+  name: string
 }
 
 export class SignupWithEmailCommand {
   email: string
   password: string
-  name: string
   dob: Date
+  name: string
 
   constructor(params: SignupWithEmailCommandParams) {
     this.email = params.email

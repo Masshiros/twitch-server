@@ -1,10 +1,28 @@
+import { Expose } from "class-transformer"
 import { IsString } from "class-validator"
 
 export class GetUserResponseDto {
-  @IsString()
-  readonly id: string
-  @IsString()
-  readonly email: string
-  @IsString()
-  readonly username: string
+  @Expose()
+  id: string
+  @Expose()
+  email: string
+  @Expose()
+  phone: string
+  @Expose()
+  username: string
+
+  @Expose()
+  displayName: string
+
+  @Expose()
+  avatar?: string
+
+  @Expose()
+  bio?: string
+
+  @Expose()
+  thumbnail?: string
+
+  @Expose()
+  isLive: boolean
 }
