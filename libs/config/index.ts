@@ -18,6 +18,14 @@ export class EnvironmentVariables {
   DATABASE_NAME: string
   @IsNotEmpty()
   DATABASE_SCHEMA: string
+  @IsNotEmpty()
+  POSTMARK_SERVER_TOKEN: string
+  @IsNotEmpty()
+  TWILIO_ACCOUNT_SID: string
+  @IsNotEmpty()
+  TWILIO_AUTH_TOKEN: string
+  @IsNotEmpty()
+  TWILIO_VERIFICATION_SERVICE_SID: string
 }
 export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
@@ -40,5 +48,9 @@ const config = {
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
   DATABASE_NAME: process.env.DATABASE_NAME,
   DATABASE_SCHEMA: process.env.DATABASE_SCHEMA,
+  POSTMARK_SERVER_TOKEN: process.env.POSTMARK_SERVER_TOKEN,
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+  TWILIO_VERIFICATION_SERVICE_SID: process.env.TWILIO_VERIFICATION_SERVICE_SID,
 }
 export default config

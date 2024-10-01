@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common"
 import { CommandBus, CqrsModule, QueryBus } from "@nestjs/cqrs"
 import { JwtModule } from "@nestjs/jwt"
+import { PostmarkModule } from "libs/integration/postmark/postmark.module"
+import { TwilioModule } from "libs/integration/twilio/twilio.module"
 import { PrismaService } from "prisma/prisma.service"
 import { DatabaseModule } from "../../../prisma/database.module"
 import { UserFactory } from "../domain/factory/user/index"
@@ -36,6 +38,6 @@ const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
     ...commandHandlers,
     ...queryHandlers,
   ],
-  imports: [CqrsModule, UserDatabaseModule],
+  imports: [CqrsModule, UserDatabaseModule, PostmarkModule, TwilioModule],
 })
 export class UserModule {}

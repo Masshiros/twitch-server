@@ -4,6 +4,9 @@ import { validate } from "libs/config"
 import { UserModule } from "./users/application/user.module"
 
 @Module({
-  imports: [ConfigModule.forRoot({ validate: validate }), UserModule],
+  imports: [
+    ConfigModule.forRoot({ validate: validate, isGlobal: true }),
+    UserModule,
+  ],
 })
 export class AppModule {}
