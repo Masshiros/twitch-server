@@ -20,6 +20,7 @@ export type CreateUserAggregateParams = {
   forgotPasswordToken?: string
   isLive?: boolean
   isActive?: boolean
+  is2FA?: boolean
   view?: number
   bio?: string
   avatar?: string
@@ -47,8 +48,8 @@ export class UserFactory {
         phoneVerifyToken: params.phoneVerifyToken ?? "",
         forgotPasswordToken: params.forgotPasswordToken ?? "",
         isLive: params.isLive ?? false,
-        isActive: params.isActive ?? false,
-
+        isActive: params.isActive ?? true,
+        is2FA: params.is2FA ?? false,
         view: params.view ?? 0,
         bio: params.bio ?? "",
         avatar: params.avatar ?? "",

@@ -29,6 +29,7 @@ interface UserAggregateProps {
   forgotPasswordToken?: string
   isLive?: boolean
   isActive?: boolean
+  is2FA?: boolean
   view?: number
   bio?: string
   avatar?: string
@@ -86,6 +87,9 @@ export class UserAggregate extends BaseAggregate {
   @IsBoolean()
   @Expose()
   private _isActive: boolean = true
+  @IsBoolean()
+  @Expose()
+  private _is2FA: boolean = false
 
   @IsInt()
   @Min(0)
@@ -135,6 +139,7 @@ export class UserAggregate extends BaseAggregate {
     this._forgotPasswordToken = props.forgotPasswordToken ?? ""
     this._isLive = props.isLive ?? false
     this._isActive = props.isActive ?? true
+    this._is2FA = props.is2FA ?? false
     this._view = props.view ?? 0
     this._bio = props.bio
     this._avatar = props.avatar
@@ -240,6 +245,13 @@ export class UserAggregate extends BaseAggregate {
 
   set isActive(value: boolean) {
     this._isActive = value
+  }
+  get is2FA(): boolean {
+    return this._is2FA
+  }
+
+  set is2FA(value: boolean) {
+    this._is2FA = value
   }
 
   get view(): number {

@@ -84,7 +84,7 @@ export class UpdateBioCommandHandler {
     if (!bio || bio === "") {
       targetUserAggregate.bio = bio
     }
-    await this.userRepository.updateUserProfile(targetUserAggregate)
+    await this.userRepository.update(targetUserAggregate)
     try {
     } catch (error) {
       console.error(error.stack)

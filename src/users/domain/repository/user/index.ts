@@ -10,7 +10,7 @@ export abstract class IUserRepository {
   findByEmail: (email: string) => Promise<UserAggregate | null>
   findByUsername: (email: string) => Promise<UserAggregate | null>
   delete: (id: string) => Promise<void>
-  updateUserProfile: (user: UserAggregate) => Promise<void>
+  update: (user: UserAggregate) => Promise<void>
   updatePassword: (
     id: string,
     oldPassword: string,

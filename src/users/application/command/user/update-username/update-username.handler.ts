@@ -76,7 +76,7 @@ export class UpdateUsernameCommandHandler {
         },
       })
     }
-    //TODO: validate last update username date
+
     const nextAllowedChangeDate = new Date(
       targetUserAggregate.lastUsernameChangeAt,
     )
@@ -100,6 +100,6 @@ export class UpdateUsernameCommandHandler {
       targetUserAggregate.name = username
       targetUserAggregate.lastUsernameChangeAt = new Date()
     }
-    await this.userRepository.updateUserProfile(targetUserAggregate)
+    await this.userRepository.update(targetUserAggregate)
   }
 }

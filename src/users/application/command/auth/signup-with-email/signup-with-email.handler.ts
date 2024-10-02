@@ -99,7 +99,7 @@ export class SignupWithEmailCommandHandler
 
       throw new CommandError({
         code: CommandErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: err.message,
       })
     }
   }

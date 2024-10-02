@@ -12,6 +12,7 @@ import { ApiTags } from "@nestjs/swagger"
 import { plainToInstance } from "class-transformer"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
+import { ToggleTwoFaCommand } from "../application/command/auth/toggle-two-fa/toggle-two-fa.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
@@ -21,6 +22,7 @@ import { UserService } from "../application/user.service"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
+import { ToggleTwoFaRequestDto } from "./http/dto/request/user/toggle-two-fa.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
 import { GetAllUsersResponseDto } from "./http/dto/response/user/get-all-user.response.dto"
@@ -114,5 +116,11 @@ export class UserController {
     )
 
     response.send(result)
+  }
+  //Toggle user's 2 FA
+  @Patch("/toggle-2-fa/:id")
+  async toggle2FA(@Param() param: ToggleTwoFaRequestDto) {
+    const command = new ToggleTwoFaCommand(param)
+    await this.userService.toggle2FA(command)
   }
 }

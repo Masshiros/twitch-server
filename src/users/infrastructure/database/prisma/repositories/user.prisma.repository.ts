@@ -138,17 +138,29 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
-  async updateUserProfile(user: UserAggregate): Promise<void> {
+  async update(user: UserAggregate): Promise<void> {
     try {
-      const { id, ...updateData } = user
-      const updatedUser = await this.prismaService.user.update({
+      const { id } = user
+      let foundUser = await this.prismaService.user.findUnique({
         where: { id },
-        data: updateData,
       })
-      if (!updatedUser) {
+
+      if (!foundUser) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.NOT_FOUND,
           message: "User not found",
+        })
+      }
+      foundUser = UserMapper.toPersistence(user)
+      const updatedUser = await this.prismaService.user.update({
+        where: { id },
+        data: foundUser,
+      })
+      console.log(updatedUser)
+      if (!updatedUser) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.NOT_FOUND,
+          message: "Update operation not work",
         })
       }
     } catch (error) {
@@ -157,7 +169,7 @@ export class PrismaUserRepository implements IUserRepository {
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }

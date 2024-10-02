@@ -12,14 +12,14 @@ export class PostmarkService {
     this.client = new ServerClient(this.serverToken)
   }
 
-  sendEmail(data: { html: string }) {
+  sendEmail(data: { to: string; subject: string; html: string }) {
     const { html } = data
 
     return this.client.sendEmail({
       From: "twitch@gw.edu.vn",
-      To: "tech+read@aiquant.space",
-      Subject: "Hello from Coach",
-      HtmlBody: html,
+      To: data.to,
+      Subject: data.subject,
+      HtmlBody: data.html,
       MessageStream: "outbound",
     })
   }
