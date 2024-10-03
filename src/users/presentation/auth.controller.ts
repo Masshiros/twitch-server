@@ -2,6 +2,7 @@ import { Body, Controller, Param, Patch, Post, Response } from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
+import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { AuthService } from "../application/auth.service"
 import { ConfirmEmailCommand } from "../application/command/auth/confirm-email/confirm-email.command"
 import { RefreshTokenCommand } from "../application/command/auth/refresh-token/refresh-token.command"
@@ -30,6 +31,7 @@ export class AuthController {
     description: "Creates a new user with email and password",
     type: null,
   })
+  @ResponseMessage("Sign up with email successfully")
   @Post("/signup-with-email")
   async signUpWithEmail(@Body() body: SignupWithEmailRequestDto) {
     const command = new SignupWithEmailCommand(body)

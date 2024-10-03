@@ -22,6 +22,7 @@ export class UserFilters {
   @IsBoolean()
   isActive?: boolean | null
 }
+
 export interface TokenPayload extends JwtPayload {
   sub: string
   email: string

@@ -3,9 +3,12 @@ import {
   ValidationError,
   ValidationPipe,
 } from "@nestjs/common"
-import { NestFactory } from "@nestjs/core"
+import { NestFactory, Reflector } from "@nestjs/core"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import config from "libs/config"
+import { ErrorInterceptor } from "libs/interceptor/error.interceptor"
+import { LoggerInterceptor } from "libs/interceptor/logger.interceptor"
+import { TransformInterceptor } from "libs/interceptor/response.interceptor"
 import { AppModule } from "./app.module"
 
 async function bootstrap() {
@@ -42,7 +45,10 @@ async function bootstrap() {
       transform: true,
     }),
   )
-
+  // set up interceptor
+  app.useGlobalInterceptors(new TransformInterceptor(new Reflector()))
+  app.useGlobalInterceptors(new ErrorInterceptor())
+  app.useGlobalInterceptors(new LoggerInterceptor())
   await app.listen(config.APP_PORT || 3000)
 }
 
