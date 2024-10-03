@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { ConfirmEmailCommand } from "./command/auth/confirm-email/confirm-email.command"
 import { RefreshTokenCommand } from "./command/auth/refresh-token/refresh-token.command"
+import { ResendVerifyEmailCommand } from "./command/auth/resend-verify-email/resend-verify-email.command"
 import { SignInCommand } from "./command/auth/signin/signin.command"
 import { SignupWithEmailCommand } from "./command/auth/signup-with-email/signup-with-email.command"
 import { SignupWithPhoneCommand } from "./command/auth/signup-with-phone/signup-with-phone.command"
@@ -30,5 +31,8 @@ export class AuthService {
   }
   toggle2FA(toggleTwoFAcommand: ToggleTwoFaCommand) {
     return this.commandBus.execute(toggleTwoFAcommand)
+  }
+  resendVerifyEmail(command: ResendVerifyEmailCommand) {
+    return this.commandBus.execute(command)
   }
 }

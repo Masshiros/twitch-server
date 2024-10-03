@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common"
 import { CommandHandler, type ICommandHandler } from "@nestjs/cqrs"
+import { emailConfig } from "libs/constants/emails"
+import { tokenType } from "libs/constants/enum"
 import NodemailerService from "libs/integration/email/nodemailer/nodemailer.service"
+import { TokenPayload } from "src/common/interface"
 import { EmailTemplate } from "src/users/domain/value-object/email-template.vo"
 import {
   CommandError,
@@ -15,6 +18,7 @@ import { type UserAggregate } from "../../../../domain/aggregate"
 import { UserFactory } from "../../../../domain/factory/user"
 import { IUserRepository } from "../../../../domain/repository/user/index"
 import { SignupWithEmailCommand } from "./signup-with-email.command"
+import { SignupWithEmailCommandResult } from "./signup-with-email.result"
 
 @CommandHandler(SignupWithEmailCommand)
 export class SignupWithEmailCommandHandler
@@ -25,7 +29,9 @@ export class SignupWithEmailCommandHandler
     private readonly userFactory: UserFactory,
     private readonly emailService: NodemailerService,
   ) {}
-  async execute(command: SignupWithEmailCommand): Promise<void> {
+  async execute(
+    command: SignupWithEmailCommand,
+  ): Promise<SignupWithEmailCommandResult> {
     const { email, password, name, dob } = command
     try {
       // validate email length
@@ -92,7 +98,6 @@ export class SignupWithEmailCommandHandler
       // send email confirmation
       const otp = Math.floor(100000 + Math.random() * 900000).toString()
       const hashedOtp = await hashToken(otp)
-      console.log(hashedOtp)
       if (!hashedOtp) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
@@ -103,20 +108,45 @@ export class SignupWithEmailCommandHandler
         })
       }
       user.emailVerifyToken = hashedOtp
+
       // send email
       const template = new EmailTemplate(
-        "Your Two-Factor Authentication Code",
-        "Please enter this code to enable Two-Factor Authentication: {{code}}",
+        emailConfig.confirmEmail.subject,
+        emailConfig.confirmEmail.body,
       )
 
       const formattedTemplate = EmailTemplate.withCode(template, otp)
+      // generate AT and RT
+      const accessTokenPayload: TokenPayload = {
+        sub: user.id,
+        email: user.email,
+        username: user.name,
+        tokenType: tokenType.AccessToken,
 
-      await this.emailService.sendMail({
-        to: user.email,
-        subject: formattedTemplate.getSubject(),
-        html: formattedTemplate.getBody(),
-      })
-      await this.userRepository.createUser(user)
+        deviceId: "device-id",
+        // add others later
+      }
+      const refreshTokenPayload: TokenPayload = {
+        sub: user.id,
+        email: user.email,
+        username: user.name,
+
+        deviceId: "device-id",
+        tokenType: tokenType.RefreshToken,
+        // add others later
+      }
+
+      const [accessToken, refreshToken] = await Promise.all([
+        this.userRepository.generateToken(accessTokenPayload),
+        this.userRepository.generateToken(refreshTokenPayload),
+        this.emailService.sendMail({
+          to: user.email,
+          subject: formattedTemplate.getSubject(),
+          html: formattedTemplate.getBody(),
+        }),
+        this.userRepository.createUser(user),
+      ])
+      return { accessToken, refreshToken }
     } catch (err) {
       console.error(err.stack)
       if (

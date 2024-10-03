@@ -19,15 +19,17 @@ export class TransformInterceptor<T>
     next: CallHandler,
   ): Observable<Response<T>> {
     return next.handle().pipe(
-      map((data) => ({
-        statusCode: context.switchToHttp().getResponse().statusCode,
-        message:
-          this.reflector.get<string>(
-            "response_message",
-            context.getHandler(),
-          ) || "",
-        data,
-      })),
+      map((data) => {
+        return {
+          statusCode: context.switchToHttp().getResponse().statusCode,
+          message:
+            this.reflector.get<string>(
+              "response_message",
+              context.getHandler(),
+            ) || "",
+          data,
+        }
+      }),
     )
   }
 }

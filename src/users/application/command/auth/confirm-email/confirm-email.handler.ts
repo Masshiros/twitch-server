@@ -51,8 +51,7 @@ export class ConfirmEmailCommandHandler {
       })
     }
     // validate otp is true
-    console.log(otp)
-    console.log(user.emailVerifyToken)
+
     if (!(await compareToken(otp, user.emailVerifyToken))) {
       throw new CommandError({
         code: CommandErrorCode.BAD_REQUEST,
@@ -81,9 +80,11 @@ export class ConfirmEmailCommandHandler {
       tokenType: tokenType.RefreshToken,
       // add others later
     }
+    user.emailVerifyToken = ""
     const [accessToken, refreshToken] = await Promise.all([
       this.userRepository.generateToken(accessTokenPayload),
       this.userRepository.generateToken(refreshTokenPayload),
+      this.userRepository.update(user),
     ])
 
     // store refreshToken

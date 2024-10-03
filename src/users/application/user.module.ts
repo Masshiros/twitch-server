@@ -12,6 +12,7 @@ import { AuthController } from "../presentation/auth.controller"
 import { UserController } from "../presentation/user.controller"
 import { AuthService } from "./auth.service"
 import { ConfirmEmailCommandHandler } from "./command/auth/confirm-email/confirm-email.handler"
+import { ResendVerifyEmailCommandHandler } from "./command/auth/resend-verify-email/resend-verify-email.handler"
 import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
@@ -32,6 +33,7 @@ const commandHandlers = [
   SignInCommandHandler,
   ToggleTwoFaCommandHandler,
   ConfirmEmailCommandHandler,
+  ResendVerifyEmailCommandHandler,
 ]
 const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
 @Module({

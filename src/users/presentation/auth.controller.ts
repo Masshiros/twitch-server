@@ -6,6 +6,7 @@ import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { AuthService } from "../application/auth.service"
 import { ConfirmEmailCommand } from "../application/command/auth/confirm-email/confirm-email.command"
 import { RefreshTokenCommand } from "../application/command/auth/refresh-token/refresh-token.command"
+import { ResendVerifyEmailCommand } from "../application/command/auth/resend-verify-email/resend-verify-email.command"
 import { SignInCommand } from "../application/command/auth/signin/signin.command"
 import { SignupWithEmailCommand } from "../application/command/auth/signup-with-email/signup-with-email.command"
 import { SignupWithPhoneCommand } from "../application/command/auth/signup-with-phone/signup-with-phone.command"
@@ -19,6 +20,7 @@ import { ToggleTwoFaRequestDto } from "./http/dto/request/user/toggle-two-fa.req
 import { ConfirmEmailResponseDto } from "./http/dto/response/auth/confirm-email.response.dto"
 import { RefreshTokenResponseDto } from "./http/dto/response/auth/refresh-token.response.dto"
 import { SigninResponseDto } from "./http/dto/response/auth/signin.response.dto"
+import { SignupWithEmailResponseDto } from "./http/dto/response/auth/signup-with-email.response.dto"
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -33,9 +35,12 @@ export class AuthController {
   })
   @ResponseMessage("Sign up with email successfully")
   @Post("/signup-with-email")
-  async signUpWithEmail(@Body() body: SignupWithEmailRequestDto) {
+  async signUpWithEmail(
+    @Body() body: SignupWithEmailRequestDto,
+  ): Promise<SignupWithEmailResponseDto | null> {
     const command = new SignupWithEmailCommand(body)
-    await this.authService.signupWithEmail(command)
+    const result = await this.authService.signupWithEmail(command)
+    return result
   }
 
   // POST: Sign up with phone
@@ -101,5 +106,14 @@ export class AuthController {
     })
     const result = await this.authService.confirmEmail(command)
     response.send(result)
+  }
+  @Post("/resend-confirm-email")
+  async resendConfirmEmail() {
+    const command = new ResendVerifyEmailCommand({
+      // TODO: implement current user - auth guard later
+      id: "be37bb0c-ed3c-46c8-9cec-63cff64c7d70",
+    })
+
+    await this.authService.resendVerifyEmail(command)
   }
 }

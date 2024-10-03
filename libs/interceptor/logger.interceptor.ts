@@ -31,6 +31,7 @@ export class LoggerInterceptor implements NestInterceptor {
       // 200 - success response
       map((data) => {
         responseLogger({ requestId: request._id, response, data })
+        return data
       }),
       // 4xx, 5xx - error response
       tap(null, (exception: HttpException | Error) => {
