@@ -4,11 +4,11 @@ import {
   CommandErrorCode,
   CommandErrorDetailCode,
 } from "libs/exception/application/command"
-import { PostmarkService } from "libs/integration/postmark/postmark.service"
 import { UserAggregate } from "src/users/domain/aggregate"
 import { UserFactory } from "src/users/domain/factory/user"
 import { IUserRepository } from "src/users/domain/repository/user"
 import { EmailTemplate } from "src/users/domain/value-object/email-template.vo"
+import { hashToken } from "utils/encrypt"
 import { ToggleTwoFaCommand } from "./toggle-two-fa.command"
 
 @CommandHandler(ToggleTwoFaCommand)
@@ -16,7 +16,6 @@ export class ToggleTwoFaCommandHandler {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly userFactory: UserFactory,
-    private readonly emailService: PostmarkService,
   ) {}
   async execute(
     command: ToggleTwoFaCommand,
@@ -72,19 +71,5 @@ export class ToggleTwoFaCommandHandler {
     // }
     targetUserAggregate.is2FA = !targetUserAggregate.is2FA
     await this.userRepository.update(targetUserAggregate)
-    // TODO: update generate otp
-    // send email
-    const template = new EmailTemplate(
-      "Your Two-Factor Authentication Code",
-      "Please enter this code to enable Two-Factor Authentication: {{code}}",
-    )
-
-    const formattedTemplate = EmailTemplate.withCode(template, "123456")
-
-    await this.emailService.sendEmail({
-      to: targetUserAggregate.email,
-      subject: formattedTemplate.getSubject(),
-      html: formattedTemplate.getBody(),
-    })
   }
 }

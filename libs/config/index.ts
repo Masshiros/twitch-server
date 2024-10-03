@@ -7,6 +7,8 @@ export class EnvironmentVariables {
   @IsOptional()
   APP_PORT?: number
   @IsNotEmpty()
+  HASH_SALT_LENGTH?: number
+  @IsNotEmpty()
   DATABASE_HOST: string
   @IsNotEmpty()
   DATABASE_PORT: number
@@ -18,6 +20,12 @@ export class EnvironmentVariables {
   DATABASE_NAME: string
   @IsNotEmpty()
   DATABASE_SCHEMA: string
+  @IsNotEmpty()
+  NODEMAILER_EMAIL_SERVICE: string
+  @IsNotEmpty()
+  NODEMAILER_EMAIL_USER: string
+  @IsNotEmpty()
+  NODEMAILER_EMAIL_PASSWORD: string
   @IsNotEmpty()
   POSTMARK_SERVER_TOKEN: string
   @IsNotEmpty()
@@ -42,12 +50,16 @@ export function validate(config: Record<string, unknown>) {
 const config = {
   APP_NAME: process.env.APP_NAME || "booking-service",
   APP_PORT: +process.env.APP_PORT || 3000,
+  HASH_SALT_LENGTH: +process.env.HASH_SALT_LENGTH || 10,
   DATABASE_HOST: process.env.DATABASE_HOST,
   DATABASE_PORT: process.env.DATABASE_PORT,
   DATABASE_USERNAME: process.env.DATABASE_USERNAME,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
   DATABASE_NAME: process.env.DATABASE_NAME,
   DATABASE_SCHEMA: process.env.DATABASE_SCHEMA,
+  NODEMAILER_EMAIL_SERVICE: process.env.NODEMAILER_EMAIL_SERVICE,
+  NODEMAILER_EMAIL_USER: process.env.NODEMAILER_EMAIL_USER,
+  NODEMAILER_EMAIL_PASSWORD: process.env.NODEMAILER_EMAIL_PASSWORD,
   POSTMARK_SERVER_TOKEN: process.env.POSTMARK_SERVER_TOKEN,
   TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,

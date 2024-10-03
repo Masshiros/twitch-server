@@ -319,7 +319,9 @@ export class PrismaUserRepository implements IUserRepository {
   }
   async storeToken(token: string): Promise<void> {
     try {
-      const [sub, deviceId] = await this.jwtService.verifyAsync(token)
+      console.log(token)
+      const { sub, deviceId } =
+        await this.jwtService.verifyAsync<TokenPayload>(token)
       const tokenStored = new Token({
         userId: sub,
         token: token,
@@ -335,7 +337,7 @@ export class PrismaUserRepository implements IUserRepository {
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }

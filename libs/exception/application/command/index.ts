@@ -9,6 +9,9 @@ export type CommandErrorCode =
   (typeof CommandErrorCode)[keyof typeof CommandErrorCode]
 
 export const CommandErrorDetailCode = {
+  OTP_CAN_NOT_BE_CREATED: "OTP_CAN_NOT_BE_CREATED",
+  OTP_CAN_NOT_BE_EMPTY: "OTP_CAN_NOT_BE_EMPTY",
+  INVALID_OTP: "INVALID_OTP",
   EMAIL_ALREADY_EXIST: "EMAIL_ALREADY_EXIST",
   EMAIL_CAN_NOT_BE_EMPTY: "EMAIL_CAN_NOT_BE_EMPTY",
   PHONE_ALREADY_EXIST: "PHONE_ALREADY_EXIST",
@@ -26,6 +29,7 @@ export const CommandErrorDetailCode = {
   UNAUTHORIZED: "UNAUTHORIZED",
   CAN_NOT_UPDATE_PASSWORD_WITHOUT_SALT: "CAN_NOT_UPDATE_PASSWORD_WITHOUT_SALT",
   EMAIL_EXISTED: "EMAIL_EXISTED",
+  EMAIL_VERIFIED_BEFORE: "EMAIL_VERIFIED_BEFOR",
 } as const
 export type CommandErrorDetailCode =
   (typeof CommandErrorDetailCode)[keyof typeof CommandErrorDetailCode]

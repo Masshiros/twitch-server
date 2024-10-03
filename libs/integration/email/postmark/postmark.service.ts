@@ -16,7 +16,7 @@ export class PostmarkService {
     const { html } = data
 
     return this.client.sendEmail({
-      From: "twitch@gw.edu.vn",
+      From: "nguahoang2003@gmail.com",
       To: data.to,
       Subject: data.subject,
       HtmlBody: data.html,

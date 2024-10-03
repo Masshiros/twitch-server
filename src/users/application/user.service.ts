@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
+import { ConfirmEmailCommand } from "./command/auth/confirm-email/confirm-email.command"
 import { ToggleTwoFaCommand } from "./command/auth/toggle-two-fa/toggle-two-fa.command"
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
@@ -27,8 +28,5 @@ export class UserService {
   }
   getAllUsers(getAllUsersQuery: GetAllUsersQuery) {
     return this.queryBus.execute(getAllUsersQuery)
-  }
-  toggle2FA(toggleTwoFAcommand: ToggleTwoFaCommand) {
-    return this.commandBus.execute(toggleTwoFAcommand)
   }
 }

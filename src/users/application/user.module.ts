@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common"
 import { CommandBus, CqrsModule, QueryBus } from "@nestjs/cqrs"
 import { JwtModule } from "@nestjs/jwt"
-import { PostmarkModule } from "libs/integration/postmark/postmark.module"
+import { NodeMailerModule } from "libs/integration/email/nodemailer/nodemailer.module"
+import { PostmarkModule } from "libs/integration/email/postmark/postmark.module"
 import { TwilioModule } from "libs/integration/twilio/twilio.module"
 import { PrismaService } from "prisma/prisma.service"
 import { DatabaseModule } from "../../../prisma/database.module"
@@ -10,6 +11,7 @@ import { UserDatabaseModule } from "../infrastructure/database/user.database.mod
 import { AuthController } from "../presentation/auth.controller"
 import { UserController } from "../presentation/user.controller"
 import { AuthService } from "./auth.service"
+import { ConfirmEmailCommandHandler } from "./command/auth/confirm-email/confirm-email.handler"
 import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
@@ -29,6 +31,7 @@ const commandHandlers = [
   UpdateUsernameCommandHandler,
   SignInCommandHandler,
   ToggleTwoFaCommandHandler,
+  ConfirmEmailCommandHandler,
 ]
 const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
 @Module({
@@ -40,6 +43,6 @@ const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
     ...commandHandlers,
     ...queryHandlers,
   ],
-  imports: [CqrsModule, UserDatabaseModule, PostmarkModule, TwilioModule],
+  imports: [CqrsModule, UserDatabaseModule, NodeMailerModule, TwilioModule],
 })
 export class UserModule {}

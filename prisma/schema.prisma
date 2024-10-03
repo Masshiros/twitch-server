@@ -26,6 +26,7 @@ model User {
   emailVerifyToken          String    @default("")
   phoneVerifyToken          String    @default("")
   forgotPasswordToken       String    @default("")
+  otpToken                  String    @default("")
   isLive                    Boolean   @default(false)  
   isActive                  Boolean   @default(true)
   is2FA                     Boolean   @default(false)

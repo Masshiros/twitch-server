@@ -117,10 +117,4 @@ export class UserController {
 
     response.send(result)
   }
-  //Toggle user's 2 FA
-  @Patch("/toggle-2-fa/:id")
-  async toggle2FA(@Param() param: ToggleTwoFaRequestDto) {
-    const command = new ToggleTwoFaCommand(param)
-    await this.userService.toggle2FA(command)
-  }
 }
