@@ -5,6 +5,7 @@ import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { AuthService } from "../application/auth.service"
 import { ConfirmEmailCommand } from "../application/command/auth/confirm-email/confirm-email.command"
+import { ForgotPasswordCommand } from "../application/command/auth/forgot-password/forgot-password.command"
 import { RefreshTokenCommand } from "../application/command/auth/refresh-token/refresh-token.command"
 import { ResendVerifyEmailCommand } from "../application/command/auth/resend-verify-email/resend-verify-email.command"
 import { SignInCommand } from "../application/command/auth/signin/signin.command"
@@ -12,6 +13,7 @@ import { SignupWithEmailCommand } from "../application/command/auth/signup-with-
 import { SignupWithPhoneCommand } from "../application/command/auth/signup-with-phone/signup-with-phone.command"
 import { ToggleTwoFaCommand } from "../application/command/auth/toggle-two-fa/toggle-two-fa.command"
 import { ConfirmEmailRequestDto } from "./http/dto/request/auth/confirm-email.request.dto"
+import { ForgotPasswordRequestDto } from "./http/dto/request/auth/forgot-password.request.dto"
 import { RefreshTokenRequestDto } from "./http/dto/request/auth/refresh-token.request.dto"
 import { SigninRequestDto } from "./http/dto/request/auth/signin.request.dto"
 import { SignupWithEmailRequestDto } from "./http/dto/request/auth/signup-with-email.request.dto"
@@ -115,5 +117,10 @@ export class AuthController {
     })
 
     await this.authService.resendVerifyEmail(command)
+  }
+  @Post("/forgot-password")
+  async forgotPassword(@Body() body: ForgotPasswordRequestDto) {
+    const command = new ForgotPasswordCommand(body)
+    await this.authService.forgotPassword(command)
   }
 }

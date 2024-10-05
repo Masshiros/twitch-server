@@ -19,4 +19,11 @@ export class EmailTemplate {
     const formattedBody = template.body.replace("{{code}}", code)
     return new EmailTemplate(template.subject, formattedBody)
   }
+  static withResetLink(
+    template: EmailTemplate,
+    resetLink: string,
+  ): EmailTemplate {
+    const formattedBody = template.body.replace("{{resetLink}}", resetLink)
+    return new EmailTemplate(template.subject, formattedBody)
+  }
 }

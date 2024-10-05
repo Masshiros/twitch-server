@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { CommandHandler, type ICommandHandler } from "@nestjs/cqrs"
+import config from "libs/config"
 import { emailConfig } from "libs/constants/emails"
 import { tokenType } from "libs/constants/enum"
 import NodemailerService from "libs/integration/email/nodemailer/nodemailer.service"
@@ -137,8 +138,14 @@ export class SignupWithEmailCommandHandler
       }
 
       const [accessToken, refreshToken] = await Promise.all([
-        this.userRepository.generateToken(accessTokenPayload),
-        this.userRepository.generateToken(refreshTokenPayload),
+        this.userRepository.generateToken(accessTokenPayload, {
+          secret: config.JWT_SECRET_ACCESS_TOKEN,
+          expiresIn: config.ACCESS_TOKEN_EXPIRES_IN,
+        }),
+        this.userRepository.generateToken(refreshTokenPayload, {
+          secret: config.JWT_SECRET_REFRESH_TOKEN,
+          expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
+        }),
         this.emailService.sendMail({
           to: user.email,
           subject: formattedTemplate.getSubject(),

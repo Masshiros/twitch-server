@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
-import { JwtService } from "@nestjs/jwt"
+import { JwtService, JwtSignOptions, JwtVerifyOptions } from "@nestjs/jwt"
 import bcrypt from "bcrypt"
+import config from "libs/config"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
@@ -10,6 +11,7 @@ import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/users/domain/aggregate"
 import { Token } from "src/users/domain/entity/tokens.entity"
 import { type IUserRepository } from "src/users/domain/repository/user"
+import { addTimeToNow } from "utils/date"
 import { TokenMapper } from "../mappers/token.prisma.mapper"
 import { UserMapper } from "../mappers/user.prisma.mapper"
 
@@ -121,6 +123,42 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async findByPhone(phone: string): Promise<UserAggregate | null> {
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: { phoneNumber: phone },
+      })
+      const data = UserMapper.toDomain(user)
+      return data ?? null
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      })
+    }
+  }
+  async findByEmailOrPhone(
+    emailOrPhone: string,
+  ): Promise<UserAggregate | null> {
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: { OR: [{ email: emailOrPhone }, { phoneNumber: emailOrPhone }] },
+      })
+      const data = UserMapper.toDomain(user)
+      return data ?? null
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async findByUsername(username: string): Promise<UserAggregate | null> {
     try {
       const user = await this.prismaService.user.findFirst({
@@ -156,7 +194,6 @@ export class PrismaUserRepository implements IUserRepository {
         where: { id },
         data: foundUser,
       })
-      console.log(updatedUser)
       if (!updatedUser) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.NOT_FOUND,
@@ -291,9 +328,12 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
-  async generateToken(payload: TokenPayload): Promise<string> {
+  async generateToken(
+    payload: TokenPayload,
+    options: JwtSignOptions,
+  ): Promise<string> {
     try {
-      return await this.jwtService.signAsync(payload)
+      return await this.jwtService.signAsync(payload, options)
     } catch (error) {
       if (error instanceof InfrastructureError) {
         throw error
@@ -304,9 +344,12 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
-  async decodeToken(token: string): Promise<TokenPayload> {
+  async decodeToken(
+    token: string,
+    options: JwtVerifyOptions,
+  ): Promise<TokenPayload> {
     try {
-      return await this.jwtService.verifyAsync<TokenPayload>(token)
+      return await this.jwtService.verifyAsync<TokenPayload>(token, options)
     } catch (error) {
       if (error instanceof InfrastructureError) {
         throw error
@@ -317,17 +360,19 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
-  async storeToken(token: string): Promise<void> {
+  async storeToken(token: string, options: JwtVerifyOptions): Promise<void> {
     try {
-      console.log(token)
-      const { sub, deviceId } =
-        await this.jwtService.verifyAsync<TokenPayload>(token)
+      const { sub, deviceId } = await this.jwtService.verifyAsync<TokenPayload>(
+        token,
+        options,
+      )
+      const expiresAt = addTimeToNow(config.REFRESH_TOKEN_EXPIRES_IN)
+
       const tokenStored = new Token({
         userId: sub,
         token: token,
         deviceId: deviceId,
-        // TODO(): handle jwt service later
-        expiresAt: new Date(),
+        expiresAt,
       })
       const data = TokenMapper.toPersistence(tokenStored)
       await this.prismaService.token.create({ data })

@@ -1,5 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs"
 import { JwtService } from "@nestjs/jwt"
+import config from "libs/config"
 import { tokenType } from "libs/constants/enum"
 import {
   CommandError,
@@ -88,15 +89,22 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         // TODO(role): Add role
       }
       const [accessToken, refreshToken] = await Promise.all([
-        this.userRepository.generateToken(accessTokenPayload),
-        this.userRepository.generateToken(refreshTokenPayload),
+        this.userRepository.generateToken(accessTokenPayload, {
+          secret: config.JWT_SECRET_ACCESS_TOKEN,
+          expiresIn: config.ACCESS_TOKEN_EXPIRES_IN,
+        }),
+        this.userRepository.generateToken(refreshTokenPayload, {
+          secret: config.JWT_SECRET_REFRESH_TOKEN,
+          expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
+        }),
       ])
       // store refreshToken
-      await this.userRepository.storeToken(refreshToken)
+      await this.userRepository.storeToken(refreshToken, {
+        secret: config.JWT_SECRET_REFRESH_TOKEN,
+      })
 
       return { accessToken, refreshToken }
     } catch (err) {
-      console.error(err.stack)
       if (
         err instanceof DomainError ||
         err instanceof CommandError ||

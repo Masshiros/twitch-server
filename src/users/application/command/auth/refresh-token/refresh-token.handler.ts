@@ -1,4 +1,5 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import config from "libs/config"
 import { tokenType } from "libs/constants/enum"
 import {
   CommandError,
@@ -23,10 +24,11 @@ export class RefreshTokenCommandHandler {
   ): Promise<RefreshTokenCommandResult> {
     const { refreshToken } = command
     try {
-      // validate token later
       // sign new tokens and delete old rt
       const { sub, email, username, deviceId } =
-        await this.userRepository.decodeToken(refreshToken)
+        await this.userRepository.decodeToken(refreshToken, {
+          secret: config.JWT_SECRET_REFRESH_TOKEN,
+        })
       const accessTokenPayload: TokenPayload = {
         sub,
         email,
@@ -48,12 +50,20 @@ export class RefreshTokenCommandHandler {
         // TODO(role): Add role
       }
       const [newAccessToken, newRefreshToken] = await Promise.all([
-        this.userRepository.generateToken(accessTokenPayload),
-        this.userRepository.generateToken(refreshTokenPayload),
-        this.userRepository.decodeToken(refreshToken),
+        this.userRepository.generateToken(accessTokenPayload, {
+          secret: config.JWT_SECRET_ACCESS_TOKEN,
+          expiresIn: config.ACCESS_TOKEN_EXPIRES_IN,
+        }),
+        this.userRepository.generateToken(refreshTokenPayload, {
+          secret: config.JWT_SECRET_REFRESH_TOKEN,
+          expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
+        }),
+        this.userRepository.deleteToken(refreshToken),
       ])
       // save new rt to db
-      await this.userRepository.storeToken(newRefreshToken)
+      await this.userRepository.storeToken(newRefreshToken, {
+        secret: config.JWT_SECRET_REFRESH_TOKEN,
+      })
       return { accessToken: newAccessToken, refreshToken: newRefreshToken }
     } catch (err) {
       if (

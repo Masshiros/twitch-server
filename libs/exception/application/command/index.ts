@@ -9,6 +9,7 @@ export type CommandErrorCode =
   (typeof CommandErrorCode)[keyof typeof CommandErrorCode]
 
 export const CommandErrorDetailCode = {
+  EMAIL_OR_PHONE_CAN_NOT_BE_EMPTY: "EMAIL_OR_PHONE_CAN_NOT_BE_EMPTY",
   OTP_CAN_NOT_BE_CREATED: "OTP_CAN_NOT_BE_CREATED",
   OTP_CAN_NOT_BE_EMPTY: "OTP_CAN_NOT_BE_EMPTY",
   INVALID_OTP: "INVALID_OTP",
