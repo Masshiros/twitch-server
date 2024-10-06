@@ -20,6 +20,7 @@ import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
 import { ToggleTwoFaCommandHandler } from "./command/auth/toggle-two-fa/toggle-two-fa.handler"
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
+import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
@@ -38,6 +39,7 @@ const commandHandlers = [
   ResendVerifyEmailCommandHandler,
   ForgotPasswordCommandHandler,
   ResetPasswordCommandHandler,
+  ToggleActivateCommandHandler,
 ]
 const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
 @Module({

@@ -16,7 +16,7 @@ datasource db {
 
 model User {
   id                        String    @id @default(uuid())   
-  name                      String
+  name                      String    @unique
   displayName               String
   slug                      String
   email                     String    @unique

@@ -24,6 +24,26 @@ export class SignupWithPhoneCommandHandler
   async execute(command: SignupWithPhoneCommand): Promise<void> {
     const { phone, password, name, dob } = command
     try {
+      // validate user name length
+      if (!name || name.length === 0) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Username can not be empty",
+          info: {
+            errorCode: CommandErrorDetailCode.USERNAME_CAN_NOT_BE_EMPTY,
+          },
+        })
+      }
+      // validate user name exist
+      if (await this.userRepository.findByUsername(name)) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Username is unavailable",
+          info: {
+            errorCode: CommandErrorDetailCode.USERNAME_EXIST,
+          },
+        })
+      }
       // validate phone length
       if (phone.length === 0) {
         throw new CommandError({

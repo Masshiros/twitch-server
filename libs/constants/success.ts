@@ -16,5 +16,6 @@ export const SuccessMessages = {
     DELETE_USER: "User deleted successfully",
     GET_ONE_USER: "Get user successfully",
     GET_ALL_USERS: "Get all user successfully",
+    TOGGLE_ACTIVATE: "Toggle activation of user successfully",
   },
 }

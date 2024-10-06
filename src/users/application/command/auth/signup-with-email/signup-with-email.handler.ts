@@ -35,8 +35,28 @@ export class SignupWithEmailCommandHandler
   ): Promise<SignupWithEmailCommandResult> {
     const { email, password, name, dob } = command
     try {
-      // validate email length
+      // validate user name length
+      if (!name || name.length === 0) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Username can not be empty",
+          info: {
+            errorCode: CommandErrorDetailCode.USERNAME_CAN_NOT_BE_EMPTY,
+          },
+        })
+      }
+      // validate user name exist
+      if (await this.userRepository.findByUsername(name)) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Username is unavailable",
+          info: {
+            errorCode: CommandErrorDetailCode.USERNAME_EXIST,
+          },
+        })
+      }
       if (email.length === 0) {
+        // validate email length
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message: "Email can not be empty",

@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   Response,
 } from "@nestjs/common"
@@ -16,6 +17,7 @@ import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { ToggleTwoFaCommand } from "../application/command/auth/toggle-two-fa/toggle-two-fa.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
+import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
@@ -24,6 +26,7 @@ import { UserService } from "../application/user.service"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
+import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activate.request.dto"
 import { ToggleTwoFaRequestDto } from "./http/dto/request/user/toggle-two-fa.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
@@ -124,5 +127,16 @@ export class UserController {
     )
 
     response.send(result)
+  }
+  @ApiOperationDecorator({
+    summary: "Toggle activate user",
+    description: "Activate or deactivate user",
+    type: ToggleActivateRequestDto,
+  })
+  @ResponseMessage(SuccessMessages.user.TOGGLE_ACTIVATE)
+  @Post("toggle-activate")
+  async toggleActivate(@Body() body: ToggleActivateRequestDto) {
+    const command = new ToggleActivateCommand(body)
+    await this.userService.toggleActivate(command)
   }
 }

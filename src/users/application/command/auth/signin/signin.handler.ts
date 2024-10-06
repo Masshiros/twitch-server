@@ -57,6 +57,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
           },
         })
       }
+
       // validate password match
       if (!comparePassword(password, userAggregate.password)) {
         throw new CommandError({
@@ -64,6 +65,15 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
           message: "Password is wrong",
           info: {
             errorCode: CommandErrorDetailCode.PASSWORD_IS_WRONG,
+          },
+        })
+      }
+      if (!userAggregate.isActive) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Your account has been deactivated. Reactivate your account",
+          info: {
+            errorCode: CommandErrorDetailCode.INACTIVATE_ACCOUNT,
           },
         })
       }

@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { ConfirmEmailCommand } from "./command/auth/confirm-email/confirm-email.command"
 import { ToggleTwoFaCommand } from "./command/auth/toggle-two-fa/toggle-two-fa.command"
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
+import { ToggleActivateCommand } from "./command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "./command/user/update-username/update-username.command"
 import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
@@ -28,5 +29,8 @@ export class UserService {
   }
   getAllUsers(getAllUsersQuery: GetAllUsersQuery) {
     return this.queryBus.execute(getAllUsersQuery)
+  }
+  toggleActivate(command: ToggleActivateCommand) {
+    return this.commandBus.execute(command)
   }
 }
