@@ -47,6 +47,7 @@ export class ForgotPasswordCommandHandler {
       // sign forgot token
       const forgotToken = await this.userRepository.generateToken(
         {
+          sub: user.id,
           tokenType: tokenType.ResetPasswordToken,
         },
         {

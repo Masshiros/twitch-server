@@ -5,6 +5,8 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
+  ApiQuery,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger"
@@ -13,13 +15,17 @@ interface ApiOperationDecoratorOptions {
   type?: any
   summary: string
   description: string
+  params?: { name: string; description: string; example?: any }[]
+  queries?: { name: string; description: string; example?: any }[]
 }
 export function ApiOperationDecorator({
   type,
   summary,
   description,
+  params,
+  queries,
 }: ApiOperationDecoratorOptions) {
-  return applyDecorators(
+  const decorators = [
     ApiOperation({ summary }),
     ApiOkResponse({
       type,
@@ -31,6 +37,34 @@ export function ApiOperationDecorator({
     ApiUnprocessableEntityResponse({ description: "Invalid data" }),
     ApiInternalServerErrorResponse({
       description: "Internal server error, please try later",
-    }), // 500
-  )
+    }),
+  ]
+
+  // Add @ApiParam if params are provided
+  if (params) {
+    params.forEach((param) => {
+      decorators.push(
+        ApiParam({
+          name: param.name,
+          description: param.description,
+          example: param.example,
+        }),
+      )
+    })
+  }
+
+  // Add @ApiQuery if queries are provided
+  if (queries) {
+    queries.forEach((query) => {
+      decorators.push(
+        ApiQuery({
+          name: query.name,
+          description: query.description,
+          example: query.example,
+        }),
+      )
+    })
+  }
+
+  return applyDecorators(...decorators)
 }

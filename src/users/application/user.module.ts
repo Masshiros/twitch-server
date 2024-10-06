@@ -14,6 +14,7 @@ import { AuthService } from "./auth.service"
 import { ConfirmEmailCommandHandler } from "./command/auth/confirm-email/confirm-email.handler"
 import { ForgotPasswordCommandHandler } from "./command/auth/forgot-password/forgot-password.handler"
 import { ResendVerifyEmailCommandHandler } from "./command/auth/resend-verify-email/resend-verify-email.handler"
+import { ResetPasswordCommandHandler } from "./command/auth/reset-password/reset-password.handler"
 import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
@@ -36,6 +37,7 @@ const commandHandlers = [
   ConfirmEmailCommandHandler,
   ResendVerifyEmailCommandHandler,
   ForgotPasswordCommandHandler,
+  ResetPasswordCommandHandler,
 ]
 const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
 @Module({

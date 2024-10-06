@@ -80,7 +80,7 @@ export class SignupWithEmailCommandHandler
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message:
-            "Invalid password, it must have at least 8 characters, at least one character and one number",
+            "Invalid password, it must have at least 8 characters, at least one uppercase letter, one lowercase letter, one number and one special character",
           info: {
             errorCode: CommandErrorDetailCode.INVALID_USER_PASSWORD,
           },

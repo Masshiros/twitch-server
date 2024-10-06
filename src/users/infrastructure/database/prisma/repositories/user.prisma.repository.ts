@@ -356,7 +356,7 @@ export class PrismaUserRepository implements IUserRepository {
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }

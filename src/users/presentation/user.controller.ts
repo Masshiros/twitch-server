@@ -11,7 +11,9 @@ import {
 import { ApiTags } from "@nestjs/swagger"
 import { plainToInstance } from "class-transformer"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
+import { SuccessMessages } from "libs/constants/success"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
+import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { ToggleTwoFaCommand } from "../application/command/auth/toggle-two-fa/toggle-two-fa.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
@@ -37,16 +39,19 @@ export class UserController {
     summary: "Delete a user",
     description: "Delete a user",
   })
+  @ResponseMessage(SuccessMessages.user.DELETE_USER)
   @Delete(":id")
   async deleteUser(@Param() param: DeleteUserRequestDto) {
     const command = new DeleteUserCommand(param)
     await this.userService.delete(command)
   }
+
   @ApiOperationDecorator({
     summary: "Update user bio",
     description: "Updates the bio and display name of the user",
     type: null,
   })
+  @ResponseMessage(SuccessMessages.user.UPDATE_BIO)
   @Patch(":id")
   async updateBio(
     @Param() param: { id: string },
@@ -63,6 +68,7 @@ export class UserController {
     description: "Updates the username of the user",
     type: null,
   })
+  @ResponseMessage(SuccessMessages.user.UPDATE_USERNAME)
   @Patch("username/:id")
   async updateUsername(
     @Param() param: { id: string },
@@ -79,6 +85,7 @@ export class UserController {
     description: "Fetches a user by the given ID",
     type: GetUserResponseDto,
   })
+  @ResponseMessage(SuccessMessages.user.GET_ONE_USER)
   @Get(":id")
   async getUser(
     @Param() param: GetUserRequestDto,
@@ -98,6 +105,7 @@ export class UserController {
     description: "Fetches a paginated list of users with optional filters",
     type: GetUserResponseDto,
   })
+  @ResponseMessage(SuccessMessages.user.GET_ALL_USERS)
   @Get("")
   async getAllUsers(
     @Query() param: GetAllUsersRequestDto,
