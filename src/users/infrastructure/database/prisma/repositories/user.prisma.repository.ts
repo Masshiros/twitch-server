@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { JwtService, JwtSignOptions, JwtVerifyOptions } from "@nestjs/jwt"
+import { Prisma } from "@prisma/client"
 import bcrypt from "bcrypt"
 import config from "libs/config"
 import {
@@ -9,9 +10,14 @@ import {
 import { PrismaService } from "prisma/prisma.service"
 import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/users/domain/aggregate"
+import { Device } from "src/users/domain/entity/devices.entity"
+import { LoginHistory } from "src/users/domain/entity/login-histories.entity"
 import { Token } from "src/users/domain/entity/tokens.entity"
 import { type IUserRepository } from "src/users/domain/repository/user"
 import { addTimeToNow } from "utils/date"
+import { handlePrismaError } from "utils/prisma-error"
+import { DeviceMapper } from "../mappers/device.mapper"
+import { LoginHistoryMapper } from "../mappers/login-history.mapper"
 import { TokenMapper } from "../mappers/token.prisma.mapper"
 import { UserMapper } from "../mappers/user.prisma.mapper"
 
@@ -21,25 +27,33 @@ export class PrismaUserRepository implements IUserRepository {
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
+
   async delete(id: string): Promise<void> {
     try {
       await this.prismaService.user.delete({ where: { id: id } })
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
+
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
   async createUser(user: UserAggregate): Promise<void> {
     try {
       const data = UserMapper.toPersistence(user)
-      console.log(data)
+
       await this.prismaService.user.create({ data: data })
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -59,13 +73,15 @@ export class PrismaUserRepository implements IUserRepository {
       }
       return true
     } catch (error) {
-      console.error(error)
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
@@ -80,12 +96,15 @@ export class PrismaUserRepository implements IUserRepository {
       }
       return true
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
@@ -94,15 +113,22 @@ export class PrismaUserRepository implements IUserRepository {
       const user = await this.prismaService.user.findFirst({
         where: { id: id },
       })
+      if (!user) {
+        return null
+      }
       const data = UserMapper.toDomain(user)
       return data ?? null
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
+
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
@@ -111,15 +137,21 @@ export class PrismaUserRepository implements IUserRepository {
       const user = await this.prismaService.user.findFirst({
         where: { email: email },
       })
+      if (!user) {
+        return null
+      }
       const data = UserMapper.toDomain(user)
       return data ?? null
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
@@ -128,15 +160,21 @@ export class PrismaUserRepository implements IUserRepository {
       const user = await this.prismaService.user.findFirst({
         where: { phoneNumber: phone },
       })
+      if (!user) {
+        return null
+      }
       const data = UserMapper.toDomain(user)
       return data ?? null
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
@@ -147,9 +185,15 @@ export class PrismaUserRepository implements IUserRepository {
       const user = await this.prismaService.user.findFirst({
         where: { OR: [{ email: emailOrPhone }, { phoneNumber: emailOrPhone }] },
       })
+      if (!user) {
+        return null
+      }
       const data = UserMapper.toDomain(user)
       return data ?? null
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -164,15 +208,21 @@ export class PrismaUserRepository implements IUserRepository {
       const user = await this.prismaService.user.findFirst({
         where: { name: username },
       })
+      if (!user) {
+        return null
+      }
       const data = UserMapper.toDomain(user)
       return data ?? null
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
       })
     }
   }
@@ -201,6 +251,9 @@ export class PrismaUserRepository implements IUserRepository {
         })
       }
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -243,6 +296,9 @@ export class PrismaUserRepository implements IUserRepository {
         data: { password: hashedPassword },
       })
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -319,6 +375,9 @@ export class PrismaUserRepository implements IUserRepository {
       const results = queryUsers.map((e) => UserMapper.toDomain(e))
       return results ?? null
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -335,6 +394,9 @@ export class PrismaUserRepository implements IUserRepository {
     try {
       return await this.jwtService.signAsync(payload, options)
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -351,6 +413,9 @@ export class PrismaUserRepository implements IUserRepository {
     try {
       return await this.jwtService.verifyAsync<TokenPayload>(token, options)
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -377,6 +442,9 @@ export class PrismaUserRepository implements IUserRepository {
       const data = TokenMapper.toPersistence(tokenStored)
       await this.prismaService.token.create({ data })
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -393,12 +461,142 @@ export class PrismaUserRepository implements IUserRepository {
       })
       await this.prismaService.token.delete({ where: { id: tokenFound.id } })
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       if (error instanceof InfrastructureError) {
         throw error
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
         message: "Internal Server Error",
+      })
+    }
+  }
+  async createOrUpdateDevice(device: Device): Promise<void> {
+    try {
+      const existingDevice = await this.prismaService.device.findFirst({
+        where: { userId: device.userId, userAgent: device.userAgent },
+      })
+      const storedDevice = DeviceMapper.toPersistence(device)
+      if (existingDevice) {
+        await this.prismaService.device.update({
+          where: { id: existingDevice.id },
+          data: {
+            ...storedDevice,
+            lastUsed: new Date(),
+          },
+        })
+      } else {
+        await this.prismaService.device.create({
+          data: {
+            ...storedDevice,
+            lastUsed: new Date(),
+          },
+        })
+      }
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async deleteDevice(deviceId: string): Promise<void> {
+    try {
+      await this.prismaService.device.delete({
+        where: { id: deviceId },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getAllDevices(userId: any): Promise<Device[] | null> {
+    try {
+      const devicesList = await this.prismaService.device.findMany({
+        where: { userId },
+      })
+      const result = devicesList.map((device) => DeviceMapper.toDomain(device))
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async createLoginHistory(value: LoginHistory): Promise<void> {
+    try {
+      const history = LoginHistoryMapper.toPersistence(value)
+      await this.prismaService.loginHistory.create({ data: { ...history } })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getLoginHistories(userId: string): Promise<LoginHistory[] | null> {
+    try {
+      const histories = await this.prismaService.loginHistory.findMany({
+        where: { userId },
+        orderBy: { loginAt: "desc" },
+      })
+      const result = histories.map((e) => LoginHistoryMapper.toDomain(e))
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async deleteLoginHistory(id: string): Promise<void> {
+    try {
+      await this.prismaService.loginHistory.delete({ where: { id: id } })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
       })
     }
   }

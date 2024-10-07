@@ -1,6 +1,8 @@
 import { JwtSignOptions, JwtVerifyOptions } from "@nestjs/jwt"
 import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "../../aggregate"
+import { Device } from "../../entity/devices.entity"
+import { LoginHistory } from "../../entity/login-histories.entity"
 
 export abstract class IUserRepository {
   // user
@@ -11,7 +13,7 @@ export abstract class IUserRepository {
   // findByEmail: (email: string) => Promise<UserAggregate | null>
   // findByPhone: (phone: string) => Promise<UserAggregate | null>
   findByEmailOrPhone: (emailOrPhone: string) => Promise<UserAggregate | null>
-  findByUsername: (email: string) => Promise<UserAggregate | null>
+  findByUsername: (username: string) => Promise<UserAggregate | null>
   delete: (id: string) => Promise<void>
   update: (user: UserAggregate) => Promise<void>
   updatePassword: (
@@ -39,4 +41,12 @@ export abstract class IUserRepository {
     options: JwtVerifyOptions,
   ) => Promise<TokenPayload>
   deleteToken: (token: string) => Promise<void>
+  // device
+  createOrUpdateDevice: (device: Device) => Promise<void>
+  deleteDevice: (deviceId: string) => Promise<void>
+  getAllDevices: (userId) => Promise<Device[] | null>
+  // login histories
+  createLoginHistory: (value: LoginHistory) => Promise<void>
+  getLoginHistories: (userId: string) => Promise<LoginHistory[] | null>
+  deleteLoginHistory: (id: string) => Promise<void>
 }

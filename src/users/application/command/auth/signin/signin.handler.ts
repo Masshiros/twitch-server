@@ -11,9 +11,12 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { TokenPayload } from "src/common/interface"
 import { UserAggregate } from "src/users/domain/aggregate"
+import { Device } from "src/users/domain/entity/devices.entity"
+import { LoginHistory } from "src/users/domain/entity/login-histories.entity"
 import { UserFactory } from "src/users/domain/factory/user"
 import { IUserRepository } from "src/users/domain/repository/user"
 import { comparePassword } from "utils/encrypt"
+import { v4 as uuidv4 } from "uuid"
 import { SignInCommand } from "./signin.command"
 import { SignInCommandResult } from "./signin.result"
 
@@ -24,7 +27,15 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
     private readonly userFactory: UserFactory,
   ) {}
   async execute(command: SignInCommand): Promise<SignInCommandResult | null> {
-    const { username, password } = command
+    const {
+      username,
+      password,
+      ipAddress,
+      userAgent,
+      deviceType,
+
+      deviceName,
+    } = command
     try {
       // validate data of body
       if (username.length === 0) {
@@ -77,14 +88,37 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
           },
         })
       }
+      // validate user email verify
+      if (userAggregate.emailVerifyToken !== "") {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message:
+            "Your account has not been verified. Please check your gmail to verify your account",
+          info: {
+            errorCode: CommandErrorDetailCode.EMAIL_IS_NOT_VERIFIED,
+          },
+        })
+      }
+      // new device
+      const device = new Device(
+        {
+          userId: userAggregate.id,
+          type: deviceType,
+          ipAddress: ipAddress,
+          name: deviceName,
+          userAgent: userAgent,
+          lastUsed: new Date(),
+        },
+        uuidv4(),
+      )
+
       // jwt
       const accessTokenPayload: TokenPayload = {
         sub: userAggregate.id,
         email: userAggregate.email,
         username: userAggregate.name,
         tokenType: tokenType.AccessToken,
-        // TODO(device): handle device id later
-        deviceId: "device-id",
+
         // add others later
         // TODO(role): Add role
       }
@@ -92,12 +126,12 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         sub: userAggregate.id,
         email: userAggregate.email,
         username: userAggregate.name,
-        // TODO(device): handle device id later
-        deviceId: "device-id",
         tokenType: tokenType.RefreshToken,
+        deviceId: device.id,
         // add others later
         // TODO(role): Add role
       }
+
       const [accessToken, refreshToken] = await Promise.all([
         this.userRepository.generateToken(accessTokenPayload, {
           secret: config.JWT_SECRET_ACCESS_TOKEN,
@@ -107,11 +141,27 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
           secret: config.JWT_SECRET_REFRESH_TOKEN,
           expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
         }),
+        this.userRepository.createOrUpdateDevice(device),
       ])
-      // store refreshToken
-      await this.userRepository.storeToken(refreshToken, {
-        secret: config.JWT_SECRET_REFRESH_TOKEN,
-      })
+      if (accessToken) {
+        // new login history
+        const loginHistory = new LoginHistory(
+          {
+            userId: userAggregate.id,
+            deviceId: device.id,
+            loginAt: new Date(),
+            loginStatus: true,
+          },
+          uuidv4(),
+        )
+        await this.userRepository.createLoginHistory(loginHistory)
+      }
+      if (refreshToken) {
+        // store refreshToken
+        await this.userRepository.storeToken(refreshToken, {
+          secret: config.JWT_SECRET_REFRESH_TOKEN,
+        })
+      }
 
       return { accessToken, refreshToken }
     } catch (err) {

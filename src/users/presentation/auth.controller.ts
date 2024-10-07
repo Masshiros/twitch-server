@@ -40,12 +40,9 @@ export class AuthController {
   })
   @ResponseMessage(SuccessMessages.auth.SIGNUP_EMAIL)
   @Post("/signup-with-email")
-  async signUpWithEmail(
-    @Body() body: SignupWithEmailRequestDto,
-  ): Promise<SignupWithEmailResponseDto | null> {
+  async signUpWithEmail(@Body() body: SignupWithEmailRequestDto) {
     const command = new SignupWithEmailCommand(body)
-    const result = await this.authService.signupWithEmail(command)
-    return result
+    await this.authService.signupWithEmail(command)
   }
 
   // POST: Sign up with phone
@@ -122,17 +119,13 @@ export class AuthController {
   @ResponseMessage(SuccessMessages.auth.CONFIRM_EMAIL)
   // confirm user email
   @Post("/confirm-email")
-  async confirmEmail(
-    @Body() body: ConfirmEmailRequestDto,
-    @Response() response: ExpressResponse<ConfirmEmailResponseDto | null>,
-  ) {
+  async confirmEmail(@Body() body: ConfirmEmailRequestDto) {
     const command = new ConfirmEmailCommand({
       // TODO: implement current user - auth guard later
-      id: "be37bb0c-ed3c-46c8-9cec-63cff64c7d70",
+      id: "fc566cd8-1a6c-4367-993f-a72fabd46f3",
       ...body,
     })
-    const result = await this.authService.confirmEmail(command)
-    response.send(result)
+    await this.authService.confirmEmail(command)
   }
 
   @ApiOperationDecorator({

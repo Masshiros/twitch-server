@@ -1,4 +1,3 @@
-// src/user/mappers/user.mapper.ts
 
 import { type User as PrismaUser } from "@prisma/client"
 import { UserAggregate } from "src/users/domain/aggregate"

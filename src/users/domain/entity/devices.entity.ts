@@ -1,17 +1,14 @@
 import { randomUUID } from "crypto"
 import { BaseEntity } from "src/common/entity"
-import { type EDeviceType } from "../enum/device_type.enum"
-import { type LoginHistory } from "./login-histories.entity"
-import { type Token } from "./tokens.entity"
 
 export class Device extends BaseEntity {
   private props: {
     userId: string
-    type: EDeviceType
+    type: string
     name: string
     lastUsed: Date
-    tokens: Token[]
-    loginHistories: LoginHistory[]
+    userAgent: string
+    ipAddress: string
     createdAt?: Date
     updatedAt?: Date
     deletedAt?: Date
@@ -20,11 +17,11 @@ export class Device extends BaseEntity {
   constructor(
     props: {
       userId: string
-      type: EDeviceType
+      type: string
       name: string
       lastUsed: Date
-      tokens: Token[]
-      loginHistories: LoginHistory[]
+      userAgent: string
+      ipAddress: string
       createdAt?: Date
       updatedAt?: Date
       deletedAt?: Date
@@ -40,7 +37,7 @@ export class Device extends BaseEntity {
     return this.props.userId
   }
 
-  get type(): EDeviceType {
+  get type(): string {
     return this.props.type
   }
 
@@ -55,11 +52,16 @@ export class Device extends BaseEntity {
   set lastUsed(dateTime: Date) {
     this.props.lastUsed = dateTime
   }
-  get tokens(): Token[] {
-    return this.props.tokens
+  get userAgent(): string {
+    return this.props.userAgent
   }
-
-  get loginHistories(): LoginHistory[] {
-    return this.props.loginHistories
+  set userAgent(value: string) {
+    this.props.userAgent = value
+  }
+  get ipAddress(): string {
+    return this.props.ipAddress
+  }
+  set ipAddress(value: string) {
+    this.props.ipAddress = value
   }
 }

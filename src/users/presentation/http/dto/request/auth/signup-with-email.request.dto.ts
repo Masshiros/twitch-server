@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsNotEmpty, IsString } from "class-validator"
+import { IsISO8601, IsNotEmpty, IsString } from "class-validator"
 
 export class SignupWithEmailRequestDto {
   @ApiProperty({
@@ -23,6 +23,7 @@ export class SignupWithEmailRequestDto {
     example: "2000-01-01",
   })
   @IsString()
+  @IsISO8601()
   @IsNotEmpty()
   readonly dob: Date
 

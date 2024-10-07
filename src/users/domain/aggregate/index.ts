@@ -305,7 +305,19 @@ export class UserAggregate extends BaseAggregate {
     return this._devices
   }
   set devices(value: Device | undefined) {
+    const existingDevice = this._devices.find(
+      (device) => device.userAgent === value.userAgent,
+    )
+    if (existingDevice) {
+      this._devices.filter((device) => device.id !== existingDevice.id)
+    }
     this._devices.push(value)
+  }
+  get loginHistories(): LoginHistory[] {
+    return this._loginHistories
+  }
+  set loginHistories(value: LoginHistory | undefined) {
+    this._loginHistories.push(value)
   }
   get tokens(): Token[] {
     return this._tokens

@@ -19,7 +19,6 @@ import { type UserAggregate } from "../../../../domain/aggregate"
 import { UserFactory } from "../../../../domain/factory/user"
 import { IUserRepository } from "../../../../domain/repository/user/index"
 import { SignupWithEmailCommand } from "./signup-with-email.command"
-import { SignupWithEmailCommandResult } from "./signup-with-email.result"
 
 @CommandHandler(SignupWithEmailCommand)
 export class SignupWithEmailCommandHandler
@@ -30,9 +29,7 @@ export class SignupWithEmailCommandHandler
     private readonly userFactory: UserFactory,
     private readonly emailService: NodemailerService,
   ) {}
-  async execute(
-    command: SignupWithEmailCommand,
-  ): Promise<SignupWithEmailCommandResult> {
+  async execute(command: SignupWithEmailCommand) {
     const { email, password, name, dob } = command
     try {
       // validate user name length
@@ -137,35 +134,8 @@ export class SignupWithEmailCommandHandler
       )
 
       const formattedTemplate = EmailTemplate.withCode(template, otp)
-      // generate AT and RT
-      const accessTokenPayload: TokenPayload = {
-        sub: user.id,
-        email: user.email,
-        username: user.name,
-        tokenType: tokenType.AccessToken,
 
-        deviceId: "device-id",
-        // add others later
-      }
-      const refreshTokenPayload: TokenPayload = {
-        sub: user.id,
-        email: user.email,
-        username: user.name,
-
-        deviceId: "device-id",
-        tokenType: tokenType.RefreshToken,
-        // add others later
-      }
-
-      const [accessToken, refreshToken] = await Promise.all([
-        this.userRepository.generateToken(accessTokenPayload, {
-          secret: config.JWT_SECRET_ACCESS_TOKEN,
-          expiresIn: config.ACCESS_TOKEN_EXPIRES_IN,
-        }),
-        this.userRepository.generateToken(refreshTokenPayload, {
-          secret: config.JWT_SECRET_REFRESH_TOKEN,
-          expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
-        }),
+      await Promise.all([
         this.emailService.sendMail({
           to: user.email,
           subject: formattedTemplate.getSubject(),
@@ -173,7 +143,6 @@ export class SignupWithEmailCommandHandler
         }),
         this.userRepository.createUser(user),
       ])
-      return { accessToken, refreshToken }
     } catch (err) {
       console.error(err.stack)
       if (

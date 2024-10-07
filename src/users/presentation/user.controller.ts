@@ -92,14 +92,13 @@ export class UserController {
   @Get(":id")
   async getUser(
     @Param() param: GetUserRequestDto,
-    @Response() response: ExpressResponse<GetUserResponseDto | null>,
-  ) {
+  ): Promise<GetUserResponseDto | null> {
     const query = new GetUserQuery(param)
     const user = await this.userService.getUser(query)
     const result = plainToInstance(GetUserResponseDto, user.result, {
       excludeExtraneousValues: true,
     })
-    response.send(result)
+    return result
   }
 
   // GET: Get All Users with Pagination
@@ -112,9 +111,7 @@ export class UserController {
   @Get("")
   async getAllUsers(
     @Query() param: GetAllUsersRequestDto,
-    @Response() response: ExpressResponse<GetAllUsersResponseDto | null>,
-  ) {
-    console.log(param)
+  ): Promise<GetAllUsersResponseDto | null> {
     const query = new GetAllUsersQuery(param)
     const users = await this.userService.getAllUsers(query)
     if (!users.result) {
@@ -126,7 +123,7 @@ export class UserController {
       }),
     )
 
-    response.send(result)
+    return result
   }
   @ApiOperationDecorator({
     summary: "Toggle activate user",

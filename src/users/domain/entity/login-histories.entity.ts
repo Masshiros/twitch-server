@@ -6,7 +6,6 @@ export class LoginHistory extends BaseEntity {
     userId: string
     deviceId: string
     loginAt: Date
-    ipAddress: string
     loginStatus: boolean
     reason?: string
     createdAt?: Date
@@ -19,7 +18,6 @@ export class LoginHistory extends BaseEntity {
       userId: string
       deviceId: string
       loginAt: Date
-      ipAddress: string
       loginStatus: boolean
       reason?: string
       createdAt?: Date
@@ -44,11 +42,6 @@ export class LoginHistory extends BaseEntity {
   get loginAt(): Date {
     return this.props.loginAt
   }
-
-  get ipAddress(): string {
-    return this.props.ipAddress
-  }
-
   get loginStatus(): boolean {
     return this.props.loginStatus
   }

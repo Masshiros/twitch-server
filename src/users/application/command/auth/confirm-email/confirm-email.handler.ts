@@ -15,9 +15,7 @@ import { ConfirmEmailCommandResult } from "./confirm-email.result"
 @CommandHandler(ConfirmEmailCommand)
 export class ConfirmEmailCommandHandler {
   constructor(private readonly userRepository: IUserRepository) {}
-  async execute(
-    command: ConfirmEmailCommand,
-  ): Promise<ConfirmEmailCommandResult> {
+  async execute(command: ConfirmEmailCommand): Promise<void> {
     const { id, otp } = command
 
     // validate otp exist
@@ -62,43 +60,41 @@ export class ConfirmEmailCommandHandler {
         },
       })
     }
-    // generate AT and RT
-    const accessTokenPayload: TokenPayload = {
-      sub: user.id,
-      email: user.email,
-      username: user.name,
-      tokenType: tokenType.AccessToken,
-
-      deviceId: "device-id",
-      // add others later
-    }
-    const refreshTokenPayload: TokenPayload = {
-      sub: user.id,
-      email: user.email,
-      username: user.name,
-
-      deviceId: "device-id",
-      tokenType: tokenType.RefreshToken,
-      // add others later
-    }
+    // // generate AT and RT
+    // const accessTokenPayload: TokenPayload = {
+    //   sub: user.id,
+    //   email: user.email,
+    //   username: user.name,
+    //   tokenType: tokenType.AccessToken,
+    //   // add others later
+    // }
+    // const refreshTokenPayload: TokenPayload = {
+    //   sub: user.id,
+    //   email: user.email,
+    //   username: user.name,
+    //   tokenType: tokenType.RefreshToken,
+    //   deviceId: "device-id"
+    //   // add others later
+    // }
     user.emailVerifyToken = ""
-    const [accessToken, refreshToken] = await Promise.all([
-      this.userRepository.generateToken(accessTokenPayload, {
-        secret: config.JWT_SECRET_ACCESS_TOKEN,
-        expiresIn: config.ACCESS_TOKEN_EXPIRES_IN,
-      }),
-      this.userRepository.generateToken(refreshTokenPayload, {
-        secret: config.JWT_SECRET_REFRESH_TOKEN,
-        expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
-      }),
-      this.userRepository.update(user),
-    ])
+    await this.userRepository.update(user)
+    // const [accessToken, refreshToken] = await Promise.all([
+    //   this.userRepository.generateToken(accessTokenPayload, {
+    //     secret: config.JWT_SECRET_ACCESS_TOKEN,
+    //     expiresIn: config.ACCESS_TOKEN_EXPIRES_IN,
+    //   }),
+    //   this.userRepository.generateToken(refreshTokenPayload, {
+    //     secret: config.JWT_SECRET_REFRESH_TOKEN,
+    //     expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
+    //   }),
+    //   this.userRepository.update(user),
+    // ])
 
-    // store refreshToken
-    await this.userRepository.storeToken(refreshToken, {
-      secret: config.JWT_SECRET_REFRESH_TOKEN,
-    })
+    // // store refreshToken
+    // await this.userRepository.storeToken(refreshToken, {
+    //   secret: config.JWT_SECRET_REFRESH_TOKEN,
+    // })
 
-    return { accessToken, refreshToken }
+    // return { accessToken, refreshToken }
   }
 }
