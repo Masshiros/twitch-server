@@ -37,7 +37,17 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
-        return new BadRequestException(validationErrors)
+        const customErrorMessages = validationErrors.map((error) => {
+          return {
+            field: error.property,
+            errors: Object.values(error.constraints || {}),
+          }
+        })
+        return new BadRequestException({
+          statusCode: 400,
+          message: "Validation failed",
+          errors: customErrorMessages,
+        })
       },
       validationError: {
         target: false,

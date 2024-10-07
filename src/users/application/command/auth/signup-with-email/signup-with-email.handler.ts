@@ -134,7 +134,6 @@ export class SignupWithEmailCommandHandler
       )
 
       const formattedTemplate = EmailTemplate.withCode(template, otp)
-
       await Promise.all([
         this.emailService.sendMail({
           to: user.email,

@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   NestInterceptor,
   NotFoundException,
+  ValidationError,
 } from "@nestjs/common"
 import {
   CommandError,
@@ -32,8 +33,22 @@ export class ErrorInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((err) => {
         let responseError
+        if (err instanceof BadRequestException) {
+          const response = err.getResponse()
 
-        if (err instanceof CommandError) {
+          if (response && typeof response === "object" && response["errors"]) {
+            const validationErrors = response["errors"].map((error: any) => ({
+              field: error.field,
+              errors: error.errors,
+            }))
+
+            responseError = new BadRequestException({
+              statusCode: 400,
+              message: "Validation failed",
+              errors: validationErrors,
+            })
+          }
+        } else if (err instanceof CommandError) {
           switch (err.code) {
             case CommandErrorCode.BAD_REQUEST:
               responseError = new BadRequestException(
