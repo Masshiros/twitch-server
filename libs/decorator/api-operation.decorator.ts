@@ -1,6 +1,7 @@
 import { applyDecorators } from "@nestjs/common"
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -17,6 +18,7 @@ interface ApiOperationDecoratorOptions {
   description: string
   params?: { name: string; description: string; example?: any }[]
   queries?: { name: string; description: string; example?: any }[]
+  auth?: boolean
 }
 export function ApiOperationDecorator({
   type,
@@ -24,6 +26,7 @@ export function ApiOperationDecorator({
   description,
   params,
   queries,
+  auth = false,
 }: ApiOperationDecoratorOptions) {
   const decorators = [
     ApiOperation({ summary }),
@@ -39,6 +42,9 @@ export function ApiOperationDecorator({
       description: "Internal server error, please try later",
     }),
   ]
+  if (auth) {
+    decorators.push(ApiBearerAuth()) // This adds the Bearer Token to the Swagger UI
+  }
 
   // Add @ApiParam if params are provided
   if (params) {

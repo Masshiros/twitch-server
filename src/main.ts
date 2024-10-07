@@ -14,6 +14,7 @@ import { AppModule } from "./app.module"
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   const swaggerConfig = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle("Twitch API")
     .setDescription("API of Twitch server")
     .setVersion("1.0")
