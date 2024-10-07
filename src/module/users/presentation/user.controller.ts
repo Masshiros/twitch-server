@@ -14,15 +14,18 @@ import { plainToInstance } from "class-transformer"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { SuccessMessages } from "libs/constants/success"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
+import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
+import { GetListDeviceQuery } from "../application/query/device/get-list-device.query"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { UserService } from "../application/user.service"
+import { UserAggregate } from "../domain/aggregate"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
@@ -30,6 +33,7 @@ import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activat
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
 import { GetAllUsersResponseDto } from "./http/dto/response/user/get-all-user.response.dto"
+import { GetDeviceResponseDto } from "./http/dto/response/user/get-device.response.dto"
 import { GetUserResponseDto } from "./http/dto/response/user/get-user.response.dto"
 
 @ApiTags("User")
@@ -43,7 +47,7 @@ export class UserController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.user.DELETE_USER)
-  @Delete(":id")
+  @Delete("/:id")
   async deleteUser(@Param() param: DeleteUserRequestDto) {
     const command = new DeleteUserCommand(param)
     await this.userService.delete(command)
@@ -56,7 +60,7 @@ export class UserController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.user.UPDATE_BIO)
-  @Patch(":id")
+  @Patch("/:id")
   async updateBio(
     @Param() param: { id: string },
     @Body() body: UpdateBioRequestDto,
@@ -74,7 +78,7 @@ export class UserController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.user.UPDATE_USERNAME)
-  @Patch("username/:id")
+  @Patch("/username/:id")
   async updateUsername(
     @Param() param: { id: string },
     @Body() body: UpdateUsernameRequestDto,
@@ -92,7 +96,7 @@ export class UserController {
   })
   @ResponseMessage(SuccessMessages.user.GET_ONE_USER)
   @Public()
-  @Get(":id")
+  @Get("/specific-user/:id")
   async getUser(
     @Param() param: GetUserRequestDto,
   ): Promise<GetUserResponseDto | null> {
@@ -112,7 +116,7 @@ export class UserController {
   })
   @ResponseMessage(SuccessMessages.user.GET_ALL_USERS)
   @Public()
-  @Get("")
+  @Get("/")
   async getAllUsers(
     @Query() param: GetAllUsersRequestDto,
   ): Promise<GetAllUsersResponseDto | null> {
@@ -135,9 +139,31 @@ export class UserController {
     type: ToggleActivateRequestDto,
   })
   @ResponseMessage(SuccessMessages.user.TOGGLE_ACTIVATE)
-  @Post("toggle-activate")
+  @Post("/toggle-activate")
   async toggleActivate(@Body() body: ToggleActivateRequestDto) {
     const command = new ToggleActivateCommand(body)
     await this.userService.toggleActivate(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Get list devices of user",
+    description: "Get list devices user has logged in",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.user.GET_LIST_DEVICES)
+  @Get("/list-devices")
+  async getListDevices(
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetDeviceResponseDto[] | null> {
+    const query = new GetListDeviceQuery({ userId: user.id })
+    const devices = await this.userService.getListDevices(query)
+    if (!devices) {
+      return null
+    }
+    const result = devices.map((device) =>
+      plainToInstance(GetDeviceResponseDto, device, {
+        excludeExtraneousValues: true,
+      }),
+    )
+    return result
   }
 }

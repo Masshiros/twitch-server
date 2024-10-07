@@ -98,7 +98,7 @@ model Device {
   userAgent       String      @unique()
   ipAddress       String
 
-  tokens          Token[] 
+  token           Token? 
   loginHistories  LoginHistory[]
   // Relations
   user            User      @relation(fields: [userId], references: [id])
@@ -122,7 +122,7 @@ model LoginHistory {
 model Token{
   id              String    @id @default(uuid())
   userId          String
-  deviceId        String
+  deviceId        String    @unique
   token           String
   expiresAt       DateTime
 

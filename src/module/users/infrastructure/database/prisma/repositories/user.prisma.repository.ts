@@ -445,6 +445,7 @@ export class PrismaUserRepository implements IUserRepository {
       if (error instanceof InfrastructureError) {
         throw error
       }
+
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
         message: error.message,
@@ -457,6 +458,9 @@ export class PrismaUserRepository implements IUserRepository {
         token,
         options,
       )
+      await this.prismaService.token.delete({
+        where: { deviceId },
+      })
       const expiresAt = addTimeToNow(config.REFRESH_TOKEN_EXPIRES_IN)
 
       const tokenStored = new Token({
@@ -466,8 +470,10 @@ export class PrismaUserRepository implements IUserRepository {
         expiresAt,
       })
       const data = TokenMapper.toPersistence(tokenStored)
+      console.log(data)
       await this.prismaService.token.create({ data })
     } catch (error) {
+      console.log(error)
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)
       }
@@ -557,6 +563,9 @@ export class PrismaUserRepository implements IUserRepository {
       const devicesList = await this.prismaService.device.findMany({
         where: { userId },
       })
+      if (!devicesList || devicesList === null || devicesList.length === 0) {
+        return null
+      }
       const result = devicesList.map((device) => DeviceMapper.toDomain(device))
       return result ?? null
     } catch (error) {

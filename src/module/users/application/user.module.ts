@@ -1,11 +1,7 @@
 import { Module } from "@nestjs/common"
-import { CommandBus, CqrsModule, QueryBus } from "@nestjs/cqrs"
-import { JwtModule } from "@nestjs/jwt"
-import { PrismaService } from "prisma/prisma.service"
+import { CqrsModule } from "@nestjs/cqrs"
 import { NodeMailerModule } from "src/integration/email/nodemailer/nodemailer.module"
-import { PostmarkModule } from "src/integration/email/postmark/postmark.module"
 import { TwilioModule } from "src/integration/twilio/twilio.module"
-import { DatabaseModule } from "../../../../prisma/database.module"
 import { UserFactory } from "../domain/factory/user/index"
 import { UserDatabaseModule } from "../infrastructure/database/user.database.module"
 import { AuthController } from "../presentation/auth.controller"
@@ -23,6 +19,7 @@ import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
+import { GetListDeviceQueryHandler } from "./query/device/get-list-device.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { UserService } from "./user.service"
@@ -41,7 +38,11 @@ const commandHandlers = [
   ResetPasswordCommandHandler,
   ToggleActivateCommandHandler,
 ]
-const queryHandlers = [GetUserQueryHandler, GetAllUsersQueryHandler]
+const queryHandlers = [
+  GetUserQueryHandler,
+  GetAllUsersQueryHandler,
+  GetListDeviceQueryHandler,
+]
 @Module({
   controllers: [AuthController, UserController],
   providers: [

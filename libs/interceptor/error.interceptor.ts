@@ -33,6 +33,7 @@ export class ErrorInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((err) => {
         let responseError
+
         if (err instanceof BadRequestException) {
           const response = err.getResponse()
 
@@ -129,6 +130,12 @@ export class ErrorInterceptor implements NestInterceptor {
               )
               break
             case InfrastructureErrorCode.INTERNAL_SERVER_ERROR:
+              responseError = new InternalServerErrorException(
+                err.message,
+                JSON.stringify(err.info),
+              )
+
+              break
             default:
               responseError = new InternalServerErrorException(
                 err.message,

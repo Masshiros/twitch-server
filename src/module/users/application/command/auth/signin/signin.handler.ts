@@ -89,16 +89,16 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         })
       }
       // validate user email verify
-      if (userAggregate.emailVerifyToken !== "") {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message:
-            "Your account has not been verified. Please check your gmail to verify your account",
-          info: {
-            errorCode: CommandErrorDetailCode.EMAIL_IS_NOT_VERIFIED,
-          },
-        })
-      }
+      // if (userAggregate.emailVerifyToken !== "") {
+      //   throw new CommandError({
+      //     code: CommandErrorCode.BAD_REQUEST,
+      //     message:
+      //       "Your account has not been verified. Please check your gmail to verify your account",
+      //     info: {
+      //       errorCode: CommandErrorDetailCode.EMAIL_IS_NOT_VERIFIED,
+      //     },
+      //   })
+      // }
       // new device
       const device = new Device(
         {

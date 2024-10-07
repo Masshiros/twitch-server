@@ -6,6 +6,7 @@ import { DeleteUserCommand } from "./command/user/delete-user/delete-user.comman
 import { ToggleActivateCommand } from "./command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "./command/user/update-username/update-username.command"
+import { GetListDeviceQuery } from "./query/device/get-list-device.query"
 import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "./query/user/get-user/get-user.query"
 
@@ -32,5 +33,8 @@ export class UserService {
   }
   toggleActivate(command: ToggleActivateCommand) {
     return this.commandBus.execute(command)
+  }
+  getListDevices(query: GetListDeviceQuery) {
+    return this.queryBus.execute(query)
   }
 }

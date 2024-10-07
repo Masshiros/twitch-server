@@ -17,5 +17,7 @@ export const SuccessMessages = {
     GET_ONE_USER: "Get user successfully",
     GET_ALL_USERS: "Get all user successfully",
     TOGGLE_ACTIVATE: "Toggle activation of user successfully",
+    GET_LIST_DEVICES: "Get list devices successfully",
+    GET_LIST_HISTORIES: "Get login history successfully",
   },
 }
