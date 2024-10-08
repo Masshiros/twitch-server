@@ -9,6 +9,9 @@ export const SuccessMessages = {
     CONFIRM_EMAIL: "Email confirmed successfully",
     RESEND_CONFIRM_EMAIL: "Confirmation email resent successfully",
     TOGGLE_2FA: "Two-Factor Authentication toggled successfully",
+    LOGOUT: "Logout successfully",
+    LOGOUT_FROM_ONE_DEVICE: "Logout from this device successfully",
+    LOGOUT_FROM_ALL_DEVICE: "Logout from all device successfully",
   },
   user: {
     UPDATE_BIO: "User bio updated successfully",

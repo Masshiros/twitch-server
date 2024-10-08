@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common"
 import { CqrsModule } from "@nestjs/cqrs"
+import { DatabaseModule } from "prisma/database.module"
 import { NodeMailerModule } from "src/integration/email/nodemailer/nodemailer.module"
 import { TwilioModule } from "src/integration/twilio/twilio.module"
 import { UserFactory } from "../domain/factory/user/index"
@@ -9,6 +10,8 @@ import { UserController } from "../presentation/user.controller"
 import { AuthService } from "./auth.service"
 import { ConfirmEmailCommandHandler } from "./command/auth/confirm-email/confirm-email.handler"
 import { ForgotPasswordCommandHandler } from "./command/auth/forgot-password/forgot-password.handler"
+import { LogoutFromAllDeviceCommandHandler } from "./command/auth/logout-from-all-device/logout-from-all-device.handler"
+import { LogoutFromOneDeviceCommandHandler } from "./command/auth/logout-from-one-device/logout-from-one-device.handler"
 import { ResendVerifyEmailCommandHandler } from "./command/auth/resend-verify-email/resend-verify-email.handler"
 import { ResetPasswordCommandHandler } from "./command/auth/reset-password/reset-password.handler"
 import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
@@ -38,6 +41,8 @@ const commandHandlers = [
   ForgotPasswordCommandHandler,
   ResetPasswordCommandHandler,
   ToggleActivateCommandHandler,
+  LogoutFromAllDeviceCommandHandler,
+  LogoutFromOneDeviceCommandHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,

@@ -42,10 +42,14 @@ export abstract class IUserRepository {
     options: JwtVerifyOptions,
   ) => Promise<TokenPayload>
   deleteToken: (token: string) => Promise<void>
+  deleteTokenByDevice: (deviceId: string) => Promise<void>
+  deleteUserToken: (userId: string) => Promise<void>
   // device
   createOrUpdateDevice: (device: Device) => Promise<void>
   deleteDevice: (deviceId: string) => Promise<void>
-  getAllDevices: (userId) => Promise<Device[] | null>
+  deleteUserDevice: (userId: string) => Promise<void>
+  getDevice: (deviceId: string) => Promise<Device | null>
+  getAllDevices: (userId: string) => Promise<Device[] | null>
   // login histories
   createLoginHistory: (value: LoginHistory) => Promise<void>
   getLoginHistories: (userId: string) => Promise<LoginHistory[] | null>

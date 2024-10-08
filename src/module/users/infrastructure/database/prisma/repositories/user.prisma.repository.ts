@@ -476,7 +476,7 @@ export class PrismaUserRepository implements IUserRepository {
         expiresAt,
       })
       const data = TokenMapper.toPersistence(tokenStored)
-      console.log(data)
+
       await this.prismaService.token.create({ data })
     } catch (error) {
       console.log(error)
@@ -507,7 +507,42 @@ export class PrismaUserRepository implements IUserRepository {
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: error.message,
+      })
+    }
+  }
+  async deleteTokenByDevice(deviceId: string) {
+    try {
+      const token = await this.prismaService.token.findFirst({
+        where: { deviceId },
+      })
+      await this.prismaService.token.delete({ where: { id: token.id } })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async deleteUserToken(userId: string) {
+    try {
+      await this.prismaService.token.deleteMany({ where: { userId } })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
       })
     }
   }
@@ -565,7 +600,46 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
-  async getAllDevices(userId: any): Promise<Device[] | null> {
+  async deleteUserDevice(userId: string): Promise<void> {
+    try {
+      await this.prismaService.device.deleteMany({ where: { userId } })
+    } catch (error) {
+      console.log(error)
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getDevice(deviceId: string): Promise<Device> {
+    try {
+      const device = await this.prismaService.device.findFirst({
+        where: { id: deviceId },
+      })
+      if (!device) {
+        return null
+      }
+      return DeviceMapper.toDomain(device) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getAllDevices(userId: string): Promise<Device[] | null> {
     try {
       const devicesList = await this.prismaService.device.findMany({
         where: { userId },

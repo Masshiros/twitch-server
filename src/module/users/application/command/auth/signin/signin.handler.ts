@@ -121,7 +121,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         email: userAggregate.email,
         username: userAggregate.name,
         tokenType: tokenType.AccessToken,
-
+        deviceId: device.id,
         // add others later
         // TODO(role): Add role
       }

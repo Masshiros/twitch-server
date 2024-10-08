@@ -4,11 +4,15 @@ import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { SuccessMessages } from "libs/constants/success"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
+import { DecodedTokenPayload } from "libs/decorator/decoded_token_payload.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
+import { TokenPayload } from "src/common/interface"
 import { AuthService } from "../application/auth.service"
 import { ConfirmEmailCommand } from "../application/command/auth/confirm-email/confirm-email.command"
 import { ForgotPasswordCommand } from "../application/command/auth/forgot-password/forgot-password.command"
+import { LogoutFromAllDeviceCommand } from "../application/command/auth/logout-from-all-device/logout-from-all-device.command"
+import { LogoutFromOneDeviceCommand } from "../application/command/auth/logout-from-one-device/logout-from-one-device.command"
 import { RefreshTokenCommand } from "../application/command/auth/refresh-token/refresh-token.command"
 import { ResendVerifyEmailCommand } from "../application/command/auth/resend-verify-email/resend-verify-email.command"
 import { ResetPasswordCommand } from "../application/command/auth/reset-password/reset-password.command"
@@ -19,6 +23,7 @@ import { ToggleTwoFaCommand } from "../application/command/auth/toggle-two-fa/to
 import { UserAggregate } from "../domain/aggregate"
 import { ConfirmEmailRequestDto } from "./http/dto/request/auth/confirm-email.request.dto"
 import { ForgotPasswordRequestDto } from "./http/dto/request/auth/forgot-password.request.dto"
+import { LogoutFromOneDeviceRequestDto } from "./http/dto/request/auth/logout-from-one-device.request.dto"
 import { RefreshTokenRequestDto } from "./http/dto/request/auth/refresh-token.request.dto"
 import { ResetPasswordRequestDto } from "./http/dto/request/auth/reset-password.request.dto"
 import { SigninRequestDto } from "./http/dto/request/auth/signin.request.dto"
@@ -72,11 +77,10 @@ export class AuthController {
   @Post("/sign-in")
   async signIn(
     @Body() body: SigninRequestDto,
-    @Response() response: ExpressResponse<SigninResponseDto | null>,
-  ) {
+  ): Promise<SigninResponseDto | null> {
     const command = new SignInCommand(body)
     const result = await this.authService.signin(command)
-    response.send(result)
+    return result
   }
 
   // POST: Refresh token
@@ -179,5 +183,52 @@ export class AuthController {
     const command = new ResetPasswordCommand(body)
     command.token = token
     await this.authService.resetPassword(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Logout from all device",
+    description: "Logout from all device",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.auth.LOGOUT_FROM_ALL_DEVICE)
+  @Post("/logout-from-all-device")
+  async logoutFromAllDevice(@CurrentUser() user: UserAggregate) {
+    const command = new LogoutFromAllDeviceCommand({ userId: user.id })
+    await this.authService.logoutFromAllDevice(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Logout from current logged in device",
+    description: "Logout from this device which user login",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.auth.LOGOUT)
+  @Post("/logout")
+  async logout(
+    @CurrentUser() user: UserAggregate,
+    @DecodedTokenPayload() payload: TokenPayload,
+  ) {
+    const command = new LogoutFromOneDeviceCommand({
+      userId: user.id,
+      deviceId: payload.deviceId,
+    })
+    console.log(payload)
+    await this.authService.logoutFromOneDevice(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Logout from specific device",
+    description: "Logout from the device that user choose",
+    type: LogoutFromOneDeviceRequestDto,
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.auth.LOGOUT)
+  @Post("/logout/:deviceId")
+  async logoutFromOneDevice(
+    @CurrentUser() user: UserAggregate,
+    @Param("deviceId") deviceId: string,
+  ) {
+    const command = new LogoutFromOneDeviceCommand({
+      userId: user.id,
+      deviceId: deviceId,
+    })
+    await this.authService.logoutFromOneDevice(command)
   }
 }

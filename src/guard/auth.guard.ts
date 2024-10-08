@@ -73,6 +73,7 @@ export class AuthGuard implements CanActivate {
         )
       }
       request.user = user
+      request.decoded_access_token = payload
     } catch (err) {
       throw new BadRequestException(
         err.message,

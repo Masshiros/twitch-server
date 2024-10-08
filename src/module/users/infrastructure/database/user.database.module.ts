@@ -10,8 +10,6 @@ import { PrismaUserRepository } from "./prisma/repositories/user.prisma.reposito
     DatabaseModule,
     JwtModule.register({
       global: true,
-      // TODO: config module later
-      secret: "secret",
       signOptions: { expiresIn: "60s" },
     }),
   ],

@@ -25,17 +25,16 @@ export class RefreshTokenCommandHandler {
     const { refreshToken } = command
     try {
       // sign new tokens and delete old rt
-      const { sub, email, username } = await this.userRepository.decodeToken(
-        refreshToken,
-        {
+      const { sub, email, username, deviceId } =
+        await this.userRepository.decodeToken(refreshToken, {
           secret: config.JWT_SECRET_REFRESH_TOKEN,
-        },
-      )
+        })
       const accessTokenPayload: TokenPayload = {
         sub,
         email,
         username,
         tokenType: tokenType.AccessToken,
+        deviceId: deviceId,
 
         // add others later
         // TODO(role): Add role
@@ -45,6 +44,7 @@ export class RefreshTokenCommandHandler {
         email,
         username,
         tokenType: tokenType.RefreshToken,
+        deviceId: deviceId,
         // add others later
         // TODO(role): Add role
       }
