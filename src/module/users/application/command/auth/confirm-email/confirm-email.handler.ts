@@ -16,7 +16,7 @@ import { ConfirmEmailCommandResult } from "./confirm-email.result"
 export class ConfirmEmailCommandHandler {
   constructor(private readonly userRepository: IUserRepository) {}
   async execute(command: ConfirmEmailCommand): Promise<void> {
-    const { otp } = command
+    const { otp, username } = command
 
     // validate otp exist
     if (!otp) {
@@ -29,7 +29,7 @@ export class ConfirmEmailCommandHandler {
       })
     }
     // verify current user
-    const user = await this.userRepository.findByOtp(otp)
+    const user = await this.userRepository.findByUsername(username)
     if (!user) {
       throw new CommandError({
         code: CommandErrorCode.BAD_REQUEST,

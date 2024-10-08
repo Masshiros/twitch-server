@@ -3,12 +3,12 @@ import { QueryError, QueryErrorCode } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { LoginHistory } from "src/module/users/domain/entity/login-histories.entity"
 import { IUserRepository } from "src/module/users/domain/repository/user"
-import { GetListDeviceQuery } from "../../device/get-list-device/get-list-device.query"
+import { GetListLoginHistoriesQuery } from "./get-list-login-histories.query"
 
-@QueryHandler(GetListDeviceQuery)
-export class GetListDeviceQueryHandler {
+@QueryHandler(GetListLoginHistoriesQuery)
+export class GetListLoginHistoriesQueryHandler {
   constructor(private readonly userRepository: IUserRepository) {}
-  async execute(query: GetListDeviceQuery): Promise<LoginHistory[]> {
+  async execute(query: GetListLoginHistoriesQuery): Promise<LoginHistory[]> {
     const { userId } = query
     try {
       return await this.userRepository.getLoginHistories(userId)

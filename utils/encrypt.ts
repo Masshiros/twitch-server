@@ -1,3 +1,4 @@
+import { createHash } from "crypto"
 import bcrypt from "bcrypt"
 import config from "libs/config"
 
@@ -16,4 +17,9 @@ export const hashToken = async (token: string): Promise<string> => {
 }
 export const compareToken = (token: string, hashedToken: string) => {
   return bcrypt.compare(token, hashedToken)
+}
+export const generateDeviceId = (userId: string, userAgent: string) => {
+  return createHash("sha256")
+    .update(userId + userAgent)
+    .digest("hex")
 }

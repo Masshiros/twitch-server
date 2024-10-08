@@ -458,9 +458,15 @@ export class PrismaUserRepository implements IUserRepository {
         token,
         options,
       )
-      await this.prismaService.token.delete({
+      // find token
+      const foundToken = await this.prismaService.token.findFirst({
         where: { deviceId },
       })
+      if (foundToken) {
+        await this.prismaService.token.delete({
+          where: { deviceId },
+        })
+      }
       const expiresAt = addTimeToNow(config.REFRESH_TOKEN_EXPIRES_IN)
 
       const tokenStored = new Token({
@@ -508,8 +514,9 @@ export class PrismaUserRepository implements IUserRepository {
   async createOrUpdateDevice(device: Device): Promise<void> {
     try {
       const existingDevice = await this.prismaService.device.findFirst({
-        where: { userId: device.userId, userAgent: device.userAgent },
+        where: { id: device.id },
       })
+      console.log(existingDevice)
       const storedDevice = DeviceMapper.toPersistence(device)
       if (existingDevice) {
         await this.prismaService.device.update({
@@ -581,6 +588,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async createLoginHistory(value: LoginHistory): Promise<void> {
     try {
       const history = LoginHistoryMapper.toPersistence(value)

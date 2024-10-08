@@ -15,7 +15,7 @@ import { Device } from "src/module/users/domain/entity/devices.entity"
 import { LoginHistory } from "src/module/users/domain/entity/login-histories.entity"
 import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user"
-import { comparePassword } from "utils/encrypt"
+import { comparePassword, generateDeviceId } from "utils/encrypt"
 import { v4 as uuidv4 } from "uuid"
 import { SignInCommand } from "./signin.command"
 import { SignInCommandResult } from "./signin.result"
@@ -89,17 +89,20 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         })
       }
       // validate user email verify
-      // if (userAggregate.emailVerifyToken !== "") {
-      //   throw new CommandError({
-      //     code: CommandErrorCode.BAD_REQUEST,
-      //     message:
-      //       "Your account has not been verified. Please check your gmail to verify your account",
-      //     info: {
-      //       errorCode: CommandErrorDetailCode.EMAIL_IS_NOT_VERIFIED,
-      //     },
-      //   })
-      // }
+      if (userAggregate.emailVerifyToken !== "") {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message:
+            "Your account has not been verified. Please check your gmail to verify your account",
+          info: {
+            errorCode: CommandErrorDetailCode.EMAIL_IS_NOT_VERIFIED,
+          },
+        })
+      }
       // new device
+
+      // generate device Id
+      const deviceId = generateDeviceId(userAggregate.id, userAgent)
       const device = new Device(
         {
           userId: userAggregate.id,
@@ -109,7 +112,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
           userAgent: userAgent,
           lastUsed: new Date(),
         },
-        uuidv4(),
+        deviceId,
       )
 
       // jwt
@@ -175,7 +178,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
 
       throw new CommandError({
         code: CommandErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: err.message,
       })
     }
   }

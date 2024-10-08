@@ -29,5 +29,6 @@ export interface TokenPayload extends JwtPayload {
   email?: string
   username?: string
   deviceId?: string
+  userAgent?: string
   tokenType: tokenType
 }

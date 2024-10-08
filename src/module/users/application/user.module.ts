@@ -19,7 +19,8 @@ import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
-import { GetListDeviceQueryHandler } from "./query/device/get-list-device.handler"
+import { GetListDeviceQueryHandler } from "./query/device/get-list-device/get-list-device.handler"
+import { GetListLoginHistoriesQueryHandler } from "./query/login-history/get-list-login-histories/get-list-login-histories.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { UserService } from "./user.service"
@@ -42,6 +43,7 @@ const queryHandlers = [
   GetUserQueryHandler,
   GetAllUsersQueryHandler,
   GetListDeviceQueryHandler,
+  GetListLoginHistoriesQueryHandler,
 ]
 @Module({
   controllers: [AuthController, UserController],

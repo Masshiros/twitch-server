@@ -9,4 +9,11 @@ export class ConfirmEmailRequestDto {
   @IsString()
   @IsNotEmpty()
   readonly otp: string
+  @ApiProperty({
+    description: "The username of user",
+    example: "John",
+  })
+  @IsString()
+  @IsNotEmpty()
+  readonly username: string
 }
