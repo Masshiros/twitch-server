@@ -21,7 +21,8 @@ import { DeleteUserCommand } from "../application/command/user/delete-user/delet
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
-import { GetListDeviceQuery } from "../application/query/device/get-list-device.query"
+import { GetListDeviceQuery } from "../application/query/device/get-list-device/get-list-device.query"
+import { GetListLoginHistoriesQuery } from "../application/query/login-history/get-list-login-histories/get-list-login-histories.query"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { UserService } from "../application/user.service"
@@ -34,6 +35,7 @@ import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
 import { GetAllUsersResponseDto } from "./http/dto/response/user/get-all-user.response.dto"
 import { GetDeviceResponseDto } from "./http/dto/response/user/get-device.response.dto"
+import { GetLoginHistoryResponseDto } from "./http/dto/response/user/get-login-history.response.dto"
 import { GetUserResponseDto } from "./http/dto/response/user/get-user.response.dto"
 
 @ApiTags("User")
@@ -161,6 +163,27 @@ export class UserController {
     }
     const result = devices.map((device) =>
       plainToInstance(GetDeviceResponseDto, device, {
+        excludeExtraneousValues: true,
+      }),
+    )
+    return result
+  }
+  @ApiOperationDecorator({
+    summary: "Get list login histories of user",
+    description: "Get list login histories user has logged in",
+    auth: true,
+  })
+  @Get("/list-login-histories")
+  async getListLoginHistories(
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetLoginHistoryResponseDto[] | null> {
+    const query = new GetListLoginHistoriesQuery({ userId: user.id })
+    const histories = await this.userService.getListLoginHistories(query)
+    if (!histories) {
+      return null
+    }
+    const result = histories.map((history) =>
+      plainToInstance(GetLoginHistoryResponseDto, history, {
         excludeExtraneousValues: true,
       }),
     )
