@@ -2,7 +2,7 @@ import { QueryHandler } from "@nestjs/cqrs"
 import { QueryError, QueryErrorCode } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { Device } from "src/module/users/domain/entity/devices.entity"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetListDeviceQuery } from "./get-list-device.query"
 
 @QueryHandler(GetListDeviceQuery)

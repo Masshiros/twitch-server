@@ -7,7 +7,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { passwordRegex } from "utils/constants"
 import { hashPassword } from "utils/encrypt"
 import { ResetPasswordCommand } from "./reset-password.command"

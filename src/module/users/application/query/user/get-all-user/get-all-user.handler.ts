@@ -2,7 +2,7 @@ import { QueryHandler } from "@nestjs/cqrs"
 import { QueryError, QueryErrorCode } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { UserFactory } from "src/module/users/domain/factory/user"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetAllUsersQuery } from "./get-all-user.query"
 import { GetAllUsersQueryResult } from "./get-all-user.result"
 

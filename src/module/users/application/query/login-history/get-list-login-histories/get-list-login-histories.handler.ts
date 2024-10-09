@@ -2,7 +2,7 @@ import { QueryHandler } from "@nestjs/cqrs"
 import { QueryError, QueryErrorCode } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { LoginHistory } from "src/module/users/domain/entity/login-histories.entity"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetListLoginHistoriesQuery } from "./get-list-login-histories.query"
 
 @QueryHandler(GetListLoginHistoriesQuery)

@@ -17,7 +17,7 @@ import { mailRegex, passwordRegex } from "../../../../../../../utils/constants"
 import { hashPassword, hashToken } from "../../../../../../../utils/encrypt"
 import { type UserAggregate } from "../../../../domain/aggregate"
 import { UserFactory } from "../../../../domain/factory/user"
-import { IUserRepository } from "../../../../domain/repository/user/index"
+import { IUserRepository } from "../../../../domain/repository/user/user.interface.repository"
 import { SignupWithEmailCommand } from "./signup-with-email.command"
 
 @CommandHandler(SignupWithEmailCommand)
@@ -103,29 +103,16 @@ export class SignupWithEmailCommandHandler
           },
         })
       }
-      const user: UserAggregate = this.userFactory.createAggregate({
-        email: email,
-        password: password,
-      })
-
-      user.email = email
-      user.password = await hashPassword(password)
-      user.name = name
-      user.dob = dob
 
       // send email confirmation
       const otp = Math.floor(100000 + Math.random() * 900000).toString()
-      const hashedOtp = await hashToken(otp)
-      if (!hashedOtp) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Error happen when generate otp. Try again later",
-          info: {
-            errorCode: CommandErrorDetailCode.OTP_CAN_NOT_BE_CREATED,
-          },
-        })
-      }
-      user.emailVerifyToken = hashedOtp
+      const user: UserAggregate = await this.userFactory.createAggregate({
+        email: email,
+        password: password,
+        name: name,
+        dob: dob,
+        emailVerifyToken: otp,
+      })
 
       // send email
       const template = new EmailTemplate(

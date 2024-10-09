@@ -23,4 +23,10 @@ export const SuccessMessages = {
     GET_LIST_DEVICES: "Get list devices successfully",
     GET_LIST_HISTORIES: "Get login history successfully",
   },
+  followers: {
+    FOLLOW_USER: "Follow user successfully",
+    UNFOLLOW_USER: "Unfollow user successfully",
+    GET_LIST_FOLLOWERS: "Get list followers successfully",
+    GET_LIST_FOLLOWINGS: "Get list followings successfully",
+  },
 }

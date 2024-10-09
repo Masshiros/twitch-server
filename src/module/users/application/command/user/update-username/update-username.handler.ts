@@ -6,7 +6,7 @@ import {
 } from "libs/exception/application/command"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { UpdateUsernameCommand } from "./update-username.command"
 
 @CommandHandler(UpdateUsernameCommand)

@@ -8,7 +8,7 @@ import {
 } from "libs/exception/application/command"
 import { TokenPayload } from "src/common/interface"
 import NodemailerService from "src/integration/email/nodemailer/nodemailer.service"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { EmailTemplate } from "src/module/users/domain/value-object/email-template.vo"
 import { hashToken } from "utils/encrypt"
 import { ResendVerifyEmailCommand } from "./resend-verify-email.command"

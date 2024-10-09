@@ -9,7 +9,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { TokenPayload } from "src/common/interface"
 import { UserFactory } from "src/module/users/domain/factory/user"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { RefreshTokenCommand } from "./refresh-token.command"
 import { RefreshTokenCommandResult } from "./refresh-token.result"
 

@@ -20,7 +20,7 @@ import {
   PresentationErrorCode,
   PresentationErrorDetailCode,
 } from "libs/exception/presentation"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 
 @Injectable()
 export class AuthGuard implements CanActivate {

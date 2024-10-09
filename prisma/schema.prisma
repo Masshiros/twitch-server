@@ -43,10 +43,25 @@ model User {
   tokens                    Token[]
   loginHistories            LoginHistory[]
   userCategories            UsersCategories[]
+  followedBy                Follower[]          @relation("UserFollowing")  
+  following                 Follower[]          @relation("UserFollowers") 
   @@index([isLive])
   @@index([isActive])
+  @@map("users")
   
 }
+model Follower {
+  sourceUserId  String
+  destinationUserId String
+  followDate  DateTime @default(now())
+
+  sourceUser        User @relation("UserFollowers", fields: [sourceUserId], references: [id])
+  destinationUser   User @relation("UserFollowing", fields: [destinationUserId], references: [id])
+
+  @@id([sourceUserId, destinationUserId])
+  @@map("followers") 
+}
+
 model ExternalLink{
   id                String    @id @default(uuid())
   title             String    
@@ -56,6 +71,7 @@ model ExternalLink{
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @default(now()) @updatedAt
   deletedAt         DateTime?
+  @@map("externalLinks")
 }
 enum ECategory {
   USER
@@ -75,6 +91,7 @@ model Category {
   updatedAt       DateTime  @default(now()) @updatedAt
   deletedAt       DateTime?
   userCategories  UsersCategories[]
+  @@map("categories")
 }
 model UsersCategories {
   id         String    @id @default(uuid())
@@ -87,6 +104,7 @@ model UsersCategories {
   updatedAt  DateTime  @default(now()) @updatedAt
 
   @@unique([userId, categoryId])
+  @@map("userCategories")
 }
 
 model Device {
@@ -95,7 +113,7 @@ model Device {
   type            String
   name            String
   lastUsed        DateTime
-  userAgent       String      @unique()
+  userAgent       String     
   ipAddress       String
 
   token           Token? 
@@ -105,6 +123,7 @@ model Device {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now()) @updatedAt
   deletedAt       DateTime?
+  @@map("devices")
 }
 model LoginHistory {
   id              String   @id @default(uuid())
@@ -118,6 +137,7 @@ model LoginHistory {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now()) @updatedAt
   deletedAt       DateTime?
+  @@map("loginHistories")
 }
 model Token{
   id              String    @id @default(uuid())
@@ -131,4 +151,5 @@ model Token{
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now()) @updatedAt
   deletedAt       DateTime?
+  @@map("tokens")
 }

@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto"
+import { hashPassword, hashToken } from "utils/encrypt"
 import { UserAggregate } from "../../aggregate"
 import { Device } from "../../entity/devices.entity"
 import { ExternalLink } from "../../entity/external-links.entity"
@@ -35,17 +36,19 @@ export type CreateUserAggregateParams = {
 
 // UserFactory class responsible for creating UserAggregate
 export class UserFactory {
-  createAggregate(params: CreateUserAggregateParams): UserAggregate {
+  async createAggregate(
+    params: CreateUserAggregateParams,
+  ): Promise<UserAggregate> {
     return new UserAggregate(
       {
-        name: params.name ?? "", // Name is required, so assign default
+        name: params.name ?? "",
         displayName: params.name ?? "",
         slug: params.slug ?? "",
         email: params.email ?? "",
-        password: params.password ?? "",
+        password: (await hashPassword(params.password)) ?? "",
         phoneNumber: params.phoneNumber ?? "",
         dob: params.dob ?? new Date(),
-        emailVerifyToken: params.emailVerifyToken ?? "",
+        emailVerifyToken: (await hashToken(params.emailVerifyToken)) ?? "",
         phoneVerifyToken: params.phoneVerifyToken ?? "",
         forgotPasswordToken: params.forgotPasswordToken ?? "",
         otpToken: params.otpToken ?? "",

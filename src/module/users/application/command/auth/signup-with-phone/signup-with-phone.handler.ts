@@ -8,7 +8,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { mailRegex, passwordRegex, phoneRegex } from "utils/constants"
 import { hashPassword } from "utils/encrypt"
 import { SignupWithPhoneCommand } from "./signup-with-phone.command"
@@ -96,11 +96,13 @@ export class SignupWithPhoneCommandHandler
           },
         })
       }
-      const user: UserAggregate = this.userFactory.createAggregate({})
-      user.phoneNumber = phone
-      user.password = await hashPassword(password)
-      user.name = name
-      user.dob = dob
+      const user: UserAggregate = await this.userFactory.createAggregate({
+        phoneNumber: phone,
+        password,
+        name,
+        dob,
+      })
+
       await this.userRepository.createUser(user)
     } catch (err) {
       console.error(err.stack)

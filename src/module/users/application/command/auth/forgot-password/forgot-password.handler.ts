@@ -11,7 +11,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import NodemailerService from "src/integration/email/nodemailer/nodemailer.service"
 import { UserFactory } from "src/module/users/domain/factory/user"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { EmailTemplate } from "src/module/users/domain/value-object/email-template.vo"
 import { ForgotPasswordCommand } from "./forgot-password.command"
 

@@ -6,7 +6,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { LogoutFromAllDeviceCommand } from "./logout-from-all-device.command"
 
 @CommandHandler(LogoutFromAllDeviceCommand)

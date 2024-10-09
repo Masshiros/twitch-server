@@ -8,7 +8,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
-import { IUserRepository } from "src/module/users/domain/repository/user"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { UpdateBioCommand } from "./update-bio.command"
 
 @CommandHandler(UpdateBioCommand)
