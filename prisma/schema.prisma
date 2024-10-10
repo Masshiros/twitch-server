@@ -42,7 +42,8 @@ model User {
   devices                   Device[]
   tokens                    Token[]
   loginHistories            LoginHistory[]
-  userCategories            UsersCategories[]
+  CategoryFollowers         CategoryFollowers[] @relation("Users")
+  userCategories            UsersCategories[]   @relation("Users")
   followedBy                Follower[]          @relation("UserFollowing")  
   following                 Follower[]          @relation("UserFollowers") 
   @@index([isLive])
@@ -77,34 +78,67 @@ enum ECategory {
   USER
   LIVESTREAM
 }
+enum ETag{
+  CATEGORY
+  LIVESTREAM
+}
 model Category {
   id              String    @id @default(uuid())
   currentTotalView Int      @default(0)
-  name            String
-  slug            String
+  numberOfFollowers Int     @default(0)
+  name            String    
+  slug            String    @unique()
   image           String?
-  tagId           String?
   applicableTo    ECategory
-  applicableId    String
-  userId          String    
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now()) @updatedAt
   deletedAt       DateTime?
-  userCategories  UsersCategories[]
+  userCategories            UsersCategories[] @relation("Categories")
+  categoryFollowers         CategoryFollowers[] @relation("Categories")
+  tagsCategories  TagsCategories[]  @relation("Categories")
   @@map("categories")
 }
+model Tag{
+  id              String @id @default(uuid())
+  name            String
+  slug            String    @unique()
+  applicableTo    ETag
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
+  tagsCategories  TagsCategories[]  @relation("Tags")
+  @@map("tags")
+}
+model TagsCategories{
+  tagId           String 
+  categoryId      String
+  tag             Tag       @relation("Tags", fields: [tagId],references: [id])
+  category        Category  @relation("Categories",fields: [categoryId],references: [id])
+  @@id([tagId,categoryId])
+  @@map("tagCategories")
+}
 model UsersCategories {
-  id         String    @id @default(uuid())
   userId     String
   categoryId String
-  user       User      @relation(fields: [userId], references: [id])
-  category   Category  @relation(fields: [categoryId], references: [id])
+  user       User      @relation("Users",fields: [userId], references: [id])
+  category   Category  @relation("Categories",fields: [categoryId], references: [id])
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @default(now()) @updatedAt
 
-  @@unique([userId, categoryId])
+  @@id([userId, categoryId])
   @@map("userCategories")
+}
+model CategoryFollowers{
+  userId     String
+  categoryId String
+  user       User      @relation("Users",fields: [userId], references: [id])
+  category   Category  @relation("Categories",fields: [categoryId], references: [id])
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  @@id([userId, categoryId])
+  @@map("categoryFollowers")
 }
 
 model Device {
@@ -127,8 +161,8 @@ model Device {
 }
 model LoginHistory {
   id              String   @id @default(uuid())
-  userId          String   // Foreign key for User
-  deviceId        String   // Foreign key for Device
+  userId          String  
+  deviceId        String   
   loginAt         DateTime
   loginStatus     Boolean
   reason          String?

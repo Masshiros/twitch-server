@@ -1,12 +1,12 @@
 import { randomUUID } from "crypto"
 import { hashPassword, hashToken } from "utils/encrypt"
+import { generateSlug } from "utils/string-format"
 import { UserAggregate } from "../../aggregate"
 import { Device } from "../../entity/devices.entity"
 import { ExternalLink } from "../../entity/external-links.entity"
 import { LoginHistory } from "../../entity/login-histories.entity"
 import { Token } from "../../entity/tokens.entity"
 
-// Define the types of parameters you'll pass to the factory
 export type CreateUserAggregateParams = {
   id?: string
 
@@ -34,7 +34,6 @@ export type CreateUserAggregateParams = {
   externalLinks?: ExternalLink[]
 }
 
-// UserFactory class responsible for creating UserAggregate
 export class UserFactory {
   async createAggregate(
     params: CreateUserAggregateParams,
@@ -43,7 +42,7 @@ export class UserFactory {
       {
         name: params.name ?? "",
         displayName: params.name ?? "",
-        slug: params.slug ?? "",
+        slug: generateSlug(params.name) ?? "",
         email: params.email ?? "",
         password: (await hashPassword(params.password)) ?? "",
         phoneNumber: params.phoneNumber ?? "",
@@ -60,15 +59,15 @@ export class UserFactory {
         avatar: params.avatar ?? "",
         lastUsernameChangeAt: params.lastUsernameChangeAt ?? new Date(),
         thumbnail: params.thumbnail ?? "",
-        devices: params.devices ?? [], // Default to empty arrays if undefined
+        devices: params.devices ?? [],
         tokens: params.tokens ?? [],
         loginHistories: params.loginHistories ?? [],
         externalLinks: params.externalLinks ?? [],
         createdAt: new Date(),
         updatedAt: new Date(),
-        deletedAt: null, // Set deletedAt to null unless specified
+        deletedAt: null,
       },
-      params.id || randomUUID(), // Use provided id or generate a new UUID
+      params.id || randomUUID(),
     )
   }
 }
