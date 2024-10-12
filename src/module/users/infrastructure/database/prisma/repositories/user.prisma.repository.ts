@@ -272,7 +272,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
       if (!updatedUser) {
         throw new InfrastructureError({
-          code: InfrastructureErrorCode.NOT_FOUND,
+          code: InfrastructureErrorCode.BAD_REQUEST,
           message: "Update operation not work",
         })
       }

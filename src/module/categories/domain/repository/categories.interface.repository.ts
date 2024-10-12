@@ -9,6 +9,7 @@ export abstract class ICategoriesRepository {
   getTagBySlug: (slug: string) => Promise<Tag | null>
   getTagById: (id: string) => Promise<Tag | null>
   getTagsByCategory: (category: Category) => Promise<Tag[] | null>
+  assignTagsToCategory: (tags: Tag[], category: Category) => Promise<void>
   // category
   addCategory: (category: Category) => Promise<void>
   removeCategory: (category: Category) => Promise<void>

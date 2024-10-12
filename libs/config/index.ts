@@ -48,6 +48,10 @@ export class EnvironmentVariables {
   TWILIO_AUTH_TOKEN: string
   @IsNotEmpty()
   TWILIO_VERIFICATION_SERVICE_SID: string
+  @IsNotEmpty()
+  REDIS_HOST: string
+  @IsNotEmpty()
+  REDIS_PORT: number
 }
 export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
@@ -87,5 +91,7 @@ const config = {
   TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
   TWILIO_VERIFICATION_SERVICE_SID: process.env.TWILIO_VERIFICATION_SERVICE_SID,
+  REDIS_HOST: process.env.REDIS_HOST,
+  REDIS_PORT: +process.env.REDIS_PORT,
 }
 export default config

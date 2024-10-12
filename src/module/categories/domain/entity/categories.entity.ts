@@ -9,9 +9,8 @@ interface CategoryProps {
   name?: string
   slug?: string
   image?: string
-  tagId?: string
   applicableTo?: ECategory
-  tag?: Tag
+  tags?: Tag[]
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -24,7 +23,7 @@ export class Category extends BaseEntity {
   private _image: string
   private _tagId: string
   private _applicableTo: ECategory
-  private _tag: Tag
+  private _tags: Tag[]
 
   constructor(props: CategoryProps, id?: string) {
     super()
@@ -34,9 +33,8 @@ export class Category extends BaseEntity {
     this._name = props.name ?? ""
     this._slug = props.slug ?? ""
     ;(this._image = props.image ?? ""),
-      (this._tagId = props.tagId ?? ""),
       (this._applicableTo = props.applicableTo ?? ECategory.USER)
-    this._tag = props.tag
+    this._tags = props.tags
     this._createdAt = props.createdAt || new Date()
     this._updatedAt = props.updatedAt || new Date()
     this._deletedAt = props.deletedAt
@@ -83,4 +81,13 @@ export class Category extends BaseEntity {
   set applicableTo(value: ECategory) {
     this._applicableTo = value
   }
+  get tags(): Tag[] {
+    return this._tags
+  }
+  addTag(tag: Tag) {
+    if (!this._tags.find((t) => t.id === tag.id)) {
+      this.tags.push(tag)
+    }
+  }
+  removeTag(tag: Tag) {}
 }
