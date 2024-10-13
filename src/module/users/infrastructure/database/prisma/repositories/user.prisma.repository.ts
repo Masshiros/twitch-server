@@ -391,13 +391,18 @@ export class PrismaUserRepository implements IUserRepository {
           id: true,
         },
       })
-      console.log(users)
+      if (!users) {
+        return null
+      }
       // return result
       const ids = users.map((user) => user.id)
       const queryUsers = await this.prismaService.user.findMany({
         where: { id: { in: ids } },
         orderBy: { createdAt: "desc" },
       })
+      if (!queryUsers) {
+        return null
+      }
       const results = queryUsers.map((e) => UserMapper.toDomain(e))
       return results ?? null
     } catch (error) {

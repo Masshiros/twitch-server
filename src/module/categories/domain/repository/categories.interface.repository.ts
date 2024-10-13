@@ -3,6 +3,7 @@ import { Tag } from "../entity/tags.entity"
 
 export abstract class ICategoriesRepository {
   // tag
+  getAllTags: () => Promise<Tag[] | null>
   addTag: (tag: Tag) => Promise<void>
   removeTag: (tag: Tag) => Promise<void>
   updateTag: (data: Tag) => Promise<void>
@@ -11,6 +12,17 @@ export abstract class ICategoriesRepository {
   getTagsByCategory: (category: Category) => Promise<Tag[] | null>
   assignTagsToCategory: (tags: Tag[], category: Category) => Promise<void>
   // category
+  getAllCategories: ({
+    limit,
+    offset,
+    orderBy,
+    order,
+  }: {
+    limit: number
+    offset: number
+    orderBy: string
+    order: "asc" | "desc"
+  }) => Promise<Category[] | null>
   addCategory: (category: Category) => Promise<void>
   removeCategory: (category: Category) => Promise<void>
   updateCategory: (data: Category) => Promise<void>

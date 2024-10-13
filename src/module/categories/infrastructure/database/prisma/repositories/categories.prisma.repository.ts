@@ -13,6 +13,34 @@ import { TagMapper } from "../mapper/tags.mapper"
 
 export class CategoriesRepository implements ICategoriesRepository {
   constructor(private readonly prismaService: PrismaService) {}
+  async getAllTags(): Promise<Tag[] | null> {
+    try {
+      const data = await this.prismaService.tag.findMany({
+        where: { deletedAt: null },
+        orderBy: { createdAt: "desc" },
+      })
+      if (!data) {
+        return null
+      }
+      const result = data.map((e) => {
+        const tag = TagMapper.toDomain(e)
+        return tag
+      })
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async addTag(tag: Tag): Promise<void> {
     try {
       const data = TagMapper.toPersistence(tag)
@@ -215,6 +243,55 @@ export class CategoriesRepository implements ICategoriesRepository {
         throw error
       }
 
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getAllCategories({
+    limit = 1,
+    offset = 0,
+    orderBy = "createdAt",
+    order = "desc",
+  }: {
+    limit: number
+    offset: number
+    orderBy: string
+    order: "asc" | "desc"
+  }): Promise<Category[] | null> {
+    try {
+      const categories = await this.prismaService.category.findMany({
+        where: { deletedAt: null },
+        skip: offset,
+        take: limit,
+        select: {
+          id: true,
+        },
+      })
+      if (!categories) {
+        return null
+      }
+      const ids = categories.map((cate) => cate.id)
+      const queryCate = await this.prismaService.category.findMany({
+        where: { id: { in: ids } },
+        orderBy: { [orderBy]: order },
+      })
+      if (!queryCate) {
+        return null
+      }
+      const result = await queryCate.map((e) => {
+        const category = CategoryMapper.toDomain(e)
+        return category
+      })
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
         message: error.message,
