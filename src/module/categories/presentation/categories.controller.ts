@@ -6,9 +6,11 @@ import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { CategoriesService } from "../application/categories.service"
 import { GetAllCategoriesQuery } from "../application/query/get-all-categories/get-all-categories.query"
+import { GetCategoriesByTagQuery } from "../application/query/get-categories-by-tag/get-categories-by-tag.query"
 import { GetCategoryByIdQuery } from "../application/query/get-category-by-id/get-category-by-id.query"
 import { GetCategoryBySlugQuery } from "../application/query/get-category-by-slug/get-category-by-slug.query"
 import { GetAllCategoriesRequestDto } from "./http/dto/request/get-all-categories.request.dto"
+import { GetCategoriesByTagRequestDto } from "./http/dto/request/get-categories-by-tag.request.dto"
 import { GetCategoryByIdRequestDto } from "./http/dto/request/get-category-by-id.request.dto"
 import { GetCategoryBySlugRequestDto } from "./http/dto/request/get-category-by-slug.request.dto"
 import { CategoryResponseDto } from "./http/dto/response/category.response.dto"
@@ -36,7 +38,7 @@ export class CategoriesController {
   }
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORY_BY_ID)
   @Public()
-  @Get("/:id")
+  @Get("/category/:id")
   async getCategoryById(
     @Param() param: GetCategoryByIdRequestDto,
   ): Promise<CategoryResponseDto | null> {
@@ -46,12 +48,22 @@ export class CategoriesController {
   }
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORY_BY_SLUG)
   @Public()
-  @Get("/:slug")
+  @Get("/category/:slug")
   async getCategoryBySlug(
     @Param() param: GetCategoryBySlugRequestDto,
   ): Promise<CategoryResponseDto | null> {
     const query = new GetCategoryBySlugQuery(param)
     const result = await this.service.getCategoryBySlug(query)
+    return result ?? null
+  }
+  @ResponseMessage(SuccessMessages.categories.GET_CATEGORIES_BY_TAG)
+  @Public()
+  @Get("/tags/:tagId")
+  async getCategoriesByTag(
+    @Param() param: GetCategoriesByTagRequestDto,
+  ): Promise<CategoryResponseDto[] | null> {
+    const query = new GetCategoriesByTagQuery(param)
+    const result = await this.service.getCategoriesByTag(query)
     return result ?? null
   }
 }
