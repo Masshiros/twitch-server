@@ -8,46 +8,36 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { CategoriesFactory } from "src/module/categories/domain/factory/categories.factory"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
-import { CategoriesRedisRepository } from "src/module/categories/infrastructure/database/redis/categories.redis.repository"
-import { CreateCategoryCommand } from "./create-category.command"
+import { UpdateTagCommand } from "./update-tag.command"
 
-@CommandHandler(CreateCategoryCommand)
-export class CreateCategoryHandler {
-  constructor(
-    private readonly categoryRepository: ICategoriesRepository,
-    private readonly categoryCacheRepository: CategoriesRedisRepository,
-  ) {}
-  async execute(command: CreateCategoryCommand): Promise<void> {
-    const { name, image, applicableTo } = command
+@CommandHandler(UpdateTagCommand)
+export class UpdateTagHandler {
+  constructor(private readonly categoryRepository: ICategoriesRepository) {}
+  async execute(command: UpdateTagCommand) {
+    const { tagId, name } = command
     try {
-      if (!name || name.length === 0) {
+      if (!tagId || tagId.length === 0) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Data from client can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
         })
       }
-      if (!image || image.length === 0) {
+      const tag = await this.categoryRepository.getTagById(tagId)
+      if (!tag) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          code: CommandErrorCode.NOT_FOUND,
+          message: "Tag not found",
           info: {
-            errorCode: CommandErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
+            errorCode: CommandErrorDetailCode.NOT_FOUND,
           },
         })
       }
-
-      const category = CategoriesFactory.createCategory({
-        name,
-        image,
-        applicableTo,
-      })
-      await Promise.all([
-        this.categoryRepository.addCategory(category),
-        this.categoryCacheRepository.invalidateCache(),
-      ])
+      const updatedTag = CategoriesFactory.createTag({ id: tag.id, name })
+      updatedTag.updatedAt = new Date()
+      await this.categoryRepository.updateTag(tag)
     } catch (err) {
       if (
         err instanceof DomainError ||

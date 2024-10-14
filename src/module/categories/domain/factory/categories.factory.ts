@@ -20,7 +20,7 @@ interface CreateTagProps {
   slug?: string
   image?: string
   applicableTo?: ETag
-  categories: Category[]
+  categories?: Category[]
 }
 export class CategoriesFactory {
   static createCategory(params: CreateCategoryProps): Category {

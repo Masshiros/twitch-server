@@ -4,6 +4,8 @@ import {
   CommandErrorCode,
   CommandErrorDetailCode,
 } from "libs/exception/application/command"
+import { DomainError } from "libs/exception/domain"
+import { InfrastructureError } from "libs/exception/infrastructure"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
@@ -19,42 +21,58 @@ export class DeleteUserCommandHandler {
     command: DeleteUserCommand,
     currentUser: { id: string; username: string },
   ): Promise<any> {
-    // validate current user's id equal the one need to delete's id
     const { id: targetUserId } = command
-    if (targetUserId !== currentUser.id) {
+    try {
+      // validate current user's id equal the one need to delete's id
+
+      if (targetUserId !== currentUser.id) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Unauthorized to delete user",
+          info: {
+            errorCode: CommandErrorDetailCode.UNAUTHORIZED,
+          },
+        })
+      }
+      // validate delete user is exist
+      const targetUser: UserAggregate | null =
+        await this.userRepository.findById(targetUserId)
+      if (!targetUser) {
+        throw new CommandError({
+          code: CommandErrorCode.NOT_FOUND,
+          message: "User not found",
+          info: {
+            errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
+          },
+        })
+      }
+      // validate current user is exist
+      const currentUserAggregate: UserAggregate | null =
+        await this.userRepository.findByUsername(currentUser.username)
+      if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Unauthorized",
+          info: {
+            errorCode: CommandErrorDetailCode.UNAUTHORIZED,
+          },
+        })
+      }
+      // TODO(role): Need to check who delete user later(ADMIN or USER)
+      await this.userRepository.delete(targetUser.id)
+    } catch (err) {
+      if (
+        err instanceof DomainError ||
+        err instanceof CommandError ||
+        err instanceof InfrastructureError
+      ) {
+        throw err
+      }
+
       throw new CommandError({
-        code: CommandErrorCode.BAD_REQUEST,
-        message: "Unauthorized to delete user",
-        info: {
-          errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-        },
+        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+        message: err.message,
       })
     }
-    // validate delete user is exist
-    const targetUser: UserAggregate | null =
-      await this.userRepository.findById(targetUserId)
-    if (!targetUser) {
-      throw new CommandError({
-        code: CommandErrorCode.NOT_FOUND,
-        message: "User not found",
-        info: {
-          errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
-        },
-      })
-    }
-    // validate current user is exist
-    const currentUserAggregate: UserAggregate | null =
-      await this.userRepository.findByUsername(currentUser.username)
-    if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
-      throw new CommandError({
-        code: CommandErrorCode.BAD_REQUEST,
-        message: "Unauthorized",
-        info: {
-          errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-        },
-      })
-    }
-    // TODO(role): Need to check who delete user later(ADMIN or USER)
-    await this.userRepository.delete(targetUser.id)
   }
 }

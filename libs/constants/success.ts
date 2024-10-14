@@ -38,4 +38,9 @@ export const SuccessMessages = {
     GET_CATEGORY_BY_SLUG: "Get category by slug successfully",
     GET_CATEGORIES_BY_TAG: "Get categories by tag successfully",
   },
+  tags: {
+    CREATE_TAG: "Create new tag successfully",
+    UPDATE_TAG: "Update tag successfully",
+    DELETE_TAG: "Delete tag successfully",
+  },
 }

@@ -17,17 +17,23 @@ import { CategoriesService } from "../application/categories.service"
 import { CreateCategoryCommand } from "../application/command/category/create-category/create-category.command"
 import { DeleteCategoryCommand } from "../application/command/category/delete-category/delete-category.command"
 import { UpdateCategoryCommand } from "../application/command/category/update-category/update-category.command"
+import { CreateTagCommand } from "../application/command/tag/create-tag/create-tag.command"
+import { DeleteTagCommand } from "../application/command/tag/delete-tag/delete-tag.command"
+import { UpdateTagCommand } from "../application/command/tag/update-tag/update-tag.command"
 import { GetAllCategoriesQuery } from "../application/query/category/get-all-categories/get-all-categories.query"
 import { GetCategoriesByTagQuery } from "../application/query/category/get-categories-by-tag/get-categories-by-tag.query"
 import { GetCategoryByIdQuery } from "../application/query/category/get-category-by-id/get-category-by-id.query"
 import { GetCategoryBySlugQuery } from "../application/query/category/get-category-by-slug/get-category-by-slug.query"
 import { CreateCategoryRequestDto } from "./http/dto/request/create-category.request.dto"
+import { CreateTagRequestDto } from "./http/dto/request/create-tag.request.dto"
 import { DeleteCategoryRequestDto } from "./http/dto/request/delete-category.request.dto"
+import { DeleteTagRequestDto } from "./http/dto/request/delete-tag.request.dto"
 import { GetAllCategoriesRequestDto } from "./http/dto/request/get-all-categories.request.dto"
 import { GetCategoriesByTagRequestDto } from "./http/dto/request/get-categories-by-tag.request.dto"
 import { GetCategoryByIdRequestDto } from "./http/dto/request/get-category-by-id.request.dto"
 import { GetCategoryBySlugRequestDto } from "./http/dto/request/get-category-by-slug.request.dto"
 import { UpdateCategoryRequestDto } from "./http/dto/request/update-category.request.dto"
+import { UpdateTagRequestDto } from "./http/dto/request/update-tag.request.dto"
 import { CategoryResponseDto } from "./http/dto/response/category.response.dto"
 
 @ApiTags("categories")
@@ -51,9 +57,14 @@ export class CategoriesController {
     const result = await this.service.getCategoriesWithPagination(query)
     return result ?? null
   }
+  @ApiOperationDecorator({
+    summary: "Get category",
+    description: "Get category by id",
+    type: CategoryResponseDto,
+  })
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORY_BY_ID)
   @Public()
-  @Get("/category/:id")
+  @Get("/:id")
   async getCategoryById(
     @Param() param: GetCategoryByIdRequestDto,
   ): Promise<CategoryResponseDto | null> {
@@ -61,9 +72,14 @@ export class CategoriesController {
     const result = await this.service.getCategoryById(query)
     return result ?? null
   }
+  @ApiOperationDecorator({
+    summary: "Get category",
+    description: "Get category by slug",
+    type: CategoryResponseDto,
+  })
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORY_BY_SLUG)
   @Public()
-  @Get("/category/:slug")
+  @Get("/slug/:slug")
   async getCategoryBySlug(
     @Param() param: GetCategoryBySlugRequestDto,
   ): Promise<CategoryResponseDto | null> {
@@ -71,6 +87,11 @@ export class CategoriesController {
     const result = await this.service.getCategoryBySlug(query)
     return result ?? null
   }
+  @ApiOperationDecorator({
+    summary: "Get categories",
+    description: "Get categories by tag",
+    type: CategoryResponseDto,
+  })
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORIES_BY_TAG)
   @Public()
   @Get("/tags/:tagId")
@@ -81,18 +102,33 @@ export class CategoriesController {
     const result = await this.service.getCategoriesByTag(query)
     return result ?? null
   }
+  @ApiOperationDecorator({
+    summary: "Create category",
+    description: "Create category",
+    auth: true,
+  })
   @ResponseMessage(SuccessMessages.categories.CREATE_CATEGORY)
   @Post("")
   async createCategory(@Body() body: CreateCategoryRequestDto) {
     const command = new CreateCategoryCommand(body)
     await this.service.createCategory(command)
   }
+  @ApiOperationDecorator({
+    summary: "Delete category",
+    description: "Delete category",
+    auth: true,
+  })
   @ResponseMessage(SuccessMessages.categories.DELETE_CATEGORY)
   @Delete("/:id")
   async deleteCategory(@Param() param: DeleteCategoryRequestDto) {
     const command = new DeleteCategoryCommand({ categoryId: param.id })
     await this.service.deleteCategory(command)
   }
+  @ApiOperationDecorator({
+    summary: "Update category",
+    description: "Update category",
+    auth: true,
+  })
   @ResponseMessage(SuccessMessages.categories.UPDATE_CATEGORY)
   @Patch("/:id")
   async updateCategory(
@@ -101,5 +137,38 @@ export class CategoriesController {
   ) {
     const command = new UpdateCategoryCommand({ categoryId: id, ...body })
     await this.service.updateCategory(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Create tag",
+    description: "Create tag",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.tags.CREATE_TAG)
+  @Post("/tags")
+  async createTag(@Body() body: CreateTagRequestDto) {
+    const command = new CreateTagCommand(body)
+    await this.service.createTag(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Delete tag",
+    description: "Delete tag",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.tags.DELETE_TAG)
+  @Delete("/tags/:id")
+  async deleteTag(@Param() param: DeleteTagRequestDto) {
+    const command = new DeleteTagCommand({ tagId: param.id })
+    await this.service.deleteTag(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Update tag",
+    description: "Update tag",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.tags.DELETE_TAG)
+  @Patch("/tags/:id")
+  async updateTag(@Param("id") id: string, @Body() body: UpdateTagRequestDto) {
+    const command = new UpdateTagCommand({ tagId: id, ...body })
+    await this.service.updateTag(command)
   }
 }

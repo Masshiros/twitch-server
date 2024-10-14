@@ -1,9 +1,10 @@
 import { CommandHandler } from "@nestjs/cqrs"
 import {
-  QueryError,
-  QueryErrorCode,
-  QueryErrorDetailCode,
-} from "libs/exception/application/query"
+  CommandError,
+  CommandErrorCode,
+  CommandErrorDetailCode,
+} from "libs/exception/application/command"
+import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { CategoriesRedisRepository } from "src/module/categories/infrastructure/database/redis/categories.redis.repository"
@@ -19,21 +20,21 @@ export class DeleteCategoryHandler {
     try {
       const { categoryId } = command
       if (!categoryId) {
-        throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
           message: "Id can not be empty",
           info: {
-            errorCode: QueryErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
+            errorCode: CommandErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
           },
         })
       }
       const category = await this.categoryRepository.getCategoryById(categoryId)
       if (!category) {
-        throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
           message: "Category not found",
           info: {
-            errorCode: QueryErrorDetailCode.NOT_FOUND,
+            errorCode: CommandErrorDetailCode.NOT_FOUND,
           },
         })
       }
@@ -43,12 +44,16 @@ export class DeleteCategoryHandler {
         this.categoryCacheRepository.getCategories,
       ])
     } catch (err) {
-      if (err instanceof QueryError || err instanceof InfrastructureError) {
+      if (
+        err instanceof DomainError ||
+        err instanceof CommandError ||
+        err instanceof InfrastructureError
+      ) {
         throw err
       }
 
-      throw new QueryError({
-        code: QueryErrorCode.INTERNAL_SERVER_ERROR,
+      throw new CommandError({
+        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
         message: err.message,
       })
     }
