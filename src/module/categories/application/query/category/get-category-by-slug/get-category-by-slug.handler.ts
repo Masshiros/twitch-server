@@ -6,7 +6,7 @@ import {
 } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
-import { CategoryResult } from "../../category.result"
+import { CategoryResult } from "../category.result"
 import { GetCategoryBySlugQuery } from "./get-category-by-slug.query"
 
 @QueryHandler(GetCategoryBySlugQuery)

@@ -25,18 +25,21 @@ import { GetAllCategoriesQuery } from "../application/query/category/get-all-cat
 import { GetCategoriesByTagQuery } from "../application/query/category/get-categories-by-tag/get-categories-by-tag.query"
 import { GetCategoryByIdQuery } from "../application/query/category/get-category-by-id/get-category-by-id.query"
 import { GetCategoryBySlugQuery } from "../application/query/category/get-category-by-slug/get-category-by-slug.query"
+import { GetAllTagsQuery } from "../application/query/tag/get-all-tags/get-all-tags.query"
 import { AssignTagsToCategoryRequestDto } from "./http/dto/request/assign-tags-to-category.request.dto"
 import { CreateCategoryRequestDto } from "./http/dto/request/create-category.request.dto"
 import { CreateTagRequestDto } from "./http/dto/request/create-tag.request.dto"
 import { DeleteCategoryRequestDto } from "./http/dto/request/delete-category.request.dto"
 import { DeleteTagRequestDto } from "./http/dto/request/delete-tag.request.dto"
 import { GetAllCategoriesRequestDto } from "./http/dto/request/get-all-categories.request.dto"
+import { GetAllTagsRequestDto } from "./http/dto/request/get-all-tags.request.dto"
 import { GetCategoriesByTagRequestDto } from "./http/dto/request/get-categories-by-tag.request.dto"
 import { GetCategoryByIdRequestDto } from "./http/dto/request/get-category-by-id.request.dto"
 import { GetCategoryBySlugRequestDto } from "./http/dto/request/get-category-by-slug.request.dto"
 import { UpdateCategoryRequestDto } from "./http/dto/request/update-category.request.dto"
 import { UpdateTagRequestDto } from "./http/dto/request/update-tag.request.dto"
 import { CategoryResponseDto } from "./http/dto/response/category.response.dto"
+import { TagResponseDto } from "./http/dto/response/tag.response.dto"
 
 @ApiTags("categories")
 @Controller("categories")
@@ -140,6 +143,20 @@ export class CategoriesController {
     const command = new UpdateCategoryCommand({ categoryId: id, ...body })
     await this.service.updateCategory(command)
   }
+  @ApiOperationDecorator({
+    summary: "Get all tags",
+    description: "Get all tags",
+    type: TagResponseDto,
+  })
+  @ResponseMessage(SuccessMessages.tags.GET_ALL_TAGS)
+  @Get("/tags")
+  async getAllTags(
+    @Query() data: GetAllTagsRequestDto,
+  ): Promise<TagResponseDto[] | null> {
+    const query = new GetAllTagsQuery(data)
+    return (await this.service.getAllTags(query)) ?? null
+  }
+
   @ApiOperationDecorator({
     summary: "Create tag",
     description: "Create tag",

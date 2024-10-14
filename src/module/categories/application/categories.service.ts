@@ -11,6 +11,7 @@ import { GetAllCategoriesQuery } from "./query/category/get-all-categories/get-a
 import { GetCategoriesByTagQuery } from "./query/category/get-categories-by-tag/get-categories-by-tag.query"
 import { GetCategoryByIdQuery } from "./query/category/get-category-by-id/get-category-by-id.query"
 import { GetCategoryBySlugQuery } from "./query/category/get-category-by-slug/get-category-by-slug.query"
+import { GetAllTagsQuery } from "./query/tag/get-all-tags/get-all-tags.query"
 
 @Injectable()
 export class CategoriesService {
@@ -28,6 +29,9 @@ export class CategoriesService {
     return await this.queryBus.execute(query)
   }
   async getCategoriesByTag(query: GetCategoriesByTagQuery) {
+    return await this.queryBus.execute(query)
+  }
+  async getAllTags(query: GetAllTagsQuery) {
     return await this.queryBus.execute(query)
   }
   async createCategory(command: CreateCategoryCommand) {

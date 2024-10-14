@@ -1,4 +1,4 @@
-import { Tag } from "../../domain/entity/tags.entity"
+import { Tag } from "src/module/categories/domain/entity/tags.entity"
 
 export class CategoryResult {
   id: string

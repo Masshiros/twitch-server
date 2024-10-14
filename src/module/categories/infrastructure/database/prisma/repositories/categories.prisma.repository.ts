@@ -13,16 +13,38 @@ import { TagMapper } from "../mapper/tags.mapper"
 
 export class CategoriesRepository implements ICategoriesRepository {
   constructor(private readonly prismaService: PrismaService) {}
-  async getAllTags(): Promise<Tag[] | null> {
+  async getAllTags({
+    limit = 1,
+    offset = 0,
+    orderBy = "createdAt",
+    order = "desc",
+  }: {
+    limit: number
+    offset: number
+    orderBy: string
+    order: "asc" | "desc"
+  }): Promise<Tag[] | null> {
     try {
-      const data = await this.prismaService.tag.findMany({
+      const tags = await this.prismaService.tag.findMany({
         where: { deletedAt: null },
-        orderBy: { createdAt: "desc" },
+        skip: offset,
+        take: limit,
+        select: {
+          id: true,
+        },
       })
-      if (!data) {
+      if (!tags) {
         return null
       }
-      const result = data.map((e) => {
+      const ids = tags.map((tag) => tag.id)
+      const queryTag = await this.prismaService.tag.findMany({
+        where: { id: { in: ids } },
+        orderBy: { [orderBy]: order },
+      })
+      if (!queryTag) {
+        return null
+      }
+      const result = queryTag.map((e) => {
         const tag = TagMapper.toDomain(e)
         return tag
       })
@@ -280,7 +302,7 @@ export class CategoriesRepository implements ICategoriesRepository {
       if (!queryCate) {
         return null
       }
-      const result = await queryCate.map((e) => {
+      const result = queryCate.map((e) => {
         const category = CategoryMapper.toDomain(e)
         return category
       })
