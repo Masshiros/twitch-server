@@ -4,7 +4,7 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { Category } from "src/module/categories/domain/entity/categories.entity"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { CategoriesRedisRepository } from "src/module/categories/infrastructure/database/redis/categories.redis.repository"
-import { CategoryResult } from "../category.result"
+import { CategoryResult } from "../../category.result"
 import { GetAllCategoriesQuery } from "./get-all-categories.query"
 
 @QueryHandler(GetAllCategoriesQuery)

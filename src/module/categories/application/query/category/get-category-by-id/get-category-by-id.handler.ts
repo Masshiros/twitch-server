@@ -6,25 +6,25 @@ import {
 } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
-import { CategoryResult } from "../category.result"
-import { GetCategoryBySlugQuery } from "./get-category-by-slug.query"
+import { CategoryResult } from "../../category.result"
+import { GetCategoryByIdQuery } from "./get-category-by-id.query"
 
-@QueryHandler(GetCategoryBySlugQuery)
-export class GetCategoryBySlugHandler {
+@QueryHandler(GetCategoryByIdQuery)
+export class GetCategoryByIdHandler {
   constructor(private readonly categoryRepository: ICategoriesRepository) {}
-  async execute(query: GetCategoryBySlugQuery): Promise<CategoryResult | null> {
-    const { slug } = query
+  async execute(query: GetCategoryByIdQuery): Promise<CategoryResult | null> {
+    const { id } = query
     try {
-      if (!slug) {
+      if (!id) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Id can not be empty",
           info: {
-            errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
+            errorCode: QueryErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
           },
         })
       }
-      const category = await this.categoryRepository.getCategoryBySlug(slug)
+      const category = await this.categoryRepository.getCategoryById(id)
       if (!category) {
         return null
       }

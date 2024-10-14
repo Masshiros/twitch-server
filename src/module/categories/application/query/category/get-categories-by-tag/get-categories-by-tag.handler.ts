@@ -7,7 +7,7 @@ import {
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { Category } from "src/module/categories/domain/entity/categories.entity"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
-import { CategoryResult } from "../category.result"
+import { CategoryResult } from "../../category.result"
 import { GetCategoriesByTagQuery } from "./get-categories-by-tag.query"
 
 @QueryHandler(GetCategoriesByTagQuery)

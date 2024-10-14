@@ -1,9 +1,12 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
-import { GetAllCategoriesQuery } from "./query/get-all-categories/get-all-categories.query"
-import { GetCategoriesByTagQuery } from "./query/get-categories-by-tag/get-categories-by-tag.query"
-import { GetCategoryByIdQuery } from "./query/get-category-by-id/get-category-by-id.query"
-import { GetCategoryBySlugQuery } from "./query/get-category-by-slug/get-category-by-slug.query"
+import { CreateCategoryCommand } from "./command/category/create-category/create-category.command"
+import { DeleteCategoryCommand } from "./command/category/delete-category/delete-category.command"
+import { UpdateCategoryCommand } from "./command/category/update-category/update-category.command"
+import { GetAllCategoriesQuery } from "./query/category/get-all-categories/get-all-categories.query"
+import { GetCategoriesByTagQuery } from "./query/category/get-categories-by-tag/get-categories-by-tag.query"
+import { GetCategoryByIdQuery } from "./query/category/get-category-by-id/get-category-by-id.query"
+import { GetCategoryBySlugQuery } from "./query/category/get-category-by-slug/get-category-by-slug.query"
 
 @Injectable()
 export class CategoriesService {
@@ -22,5 +25,14 @@ export class CategoriesService {
   }
   async getCategoriesByTag(query: GetCategoriesByTagQuery) {
     return await this.queryBus.execute(query)
+  }
+  async createCategory(command: CreateCategoryCommand) {
+    await this.commandBus.execute(command)
+  }
+  async deleteCategory(command: DeleteCategoryCommand) {
+    await this.commandBus.execute(command)
+  }
+  async updateCategory(command: UpdateCategoryCommand) {
+    await this.commandBus.execute(command)
   }
 }

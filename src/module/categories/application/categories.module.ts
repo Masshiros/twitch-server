@@ -4,12 +4,19 @@ import { CategoriesFactory } from "../domain/factory/categories.factory"
 import { CategoriesDatabaseModule } from "../infrastructure/database/categories.database.module"
 import { CategoriesController } from "../presentation/categories.controller"
 import { CategoriesService } from "./categories.service"
-import { GetAllCategoriesHandler } from "./query/get-all-categories/get-all-categories.handler"
-import { GetCategoriesByTagHandler } from "./query/get-categories-by-tag/get-categories-by-tag.handler"
-import { GetCategoryByIdHandler } from "./query/get-category-by-id/get-category-by-id.handler"
-import { GetCategoryBySlugHandler } from "./query/get-category-by-slug/get-category-by-slug.handler"
+import { CreateCategoryHandler } from "./command/category/create-category/create-category.handler"
+import { DeleteCategoryHandler } from "./command/category/delete-category/delete-category.handler"
+import { UpdateCategoryHandler } from "./command/category/update-category/update-category.handler"
+import { GetAllCategoriesHandler } from "./query/category/get-all-categories/get-all-categories.handler"
+import { GetCategoriesByTagHandler } from "./query/category/get-categories-by-tag/get-categories-by-tag.handler"
+import { GetCategoryByIdHandler } from "./query/category/get-category-by-id/get-category-by-id.handler"
+import { GetCategoryBySlugHandler } from "./query/category/get-category-by-slug/get-category-by-slug.handler"
 
-const commandHandlers = []
+const commandHandlers = [
+  CreateCategoryHandler,
+  DeleteCategoryHandler,
+  UpdateCategoryHandler,
+]
 const queryHandlers = [
   GetAllCategoriesHandler,
   GetCategoryByIdHandler,

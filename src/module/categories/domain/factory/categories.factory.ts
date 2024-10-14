@@ -7,15 +7,17 @@ import { ECategory } from "../enum/categories.enum"
 import { ETag } from "../enum/tags.enum"
 
 interface CreateCategoryProps {
+  id?: string
   name: string
-  slug: string
+  slug?: string
   image?: string
   applicableTo?: ECategory
   tags?: Tag[]
 }
 interface CreateTagProps {
+  id?: string
   name: string
-  slug: string
+  slug?: string
   image?: string
   applicableTo?: ETag
   categories: Category[]
@@ -31,8 +33,9 @@ export class CategoriesFactory {
         currentTotalView: 0,
         numberOfFollowers: 0,
         tags: params.tags ?? [],
+        createdAt: new Date(),
       },
-      randomUUID(),
+      params.id ?? randomUUID(),
     )
     return category
   }
@@ -44,7 +47,7 @@ export class CategoriesFactory {
         slug: generateSlug(params.name),
         applicableTo: params.applicableTo,
       },
-      randomUUID(),
+      params.id ?? randomUUID(),
     )
     return tag
   }

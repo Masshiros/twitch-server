@@ -12,7 +12,13 @@ export class BaseEntity {
   get updatedAt(): Date {
     return this._updatedAt
   }
+  set updatedAt(value: Date) {
+    this._updatedAt = value
+  }
   get deletedAt(): Date {
     return this._deletedAt
+  }
+  set deletedAt(value: Date) {
+    this._deletedAt = value
   }
 }

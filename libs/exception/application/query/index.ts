@@ -14,6 +14,7 @@ export const QueryErrorDetailCode = {
   DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY: "DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY",
   USER_ID_CAN_NOT_BE_EMPTY: "USER_ID_CAN_NOT_BE_EMPTY",
   USER_NOT_FOUND: "USER_NOT_FOUND",
+  NOT_FOUND: "NOT_FOUND",
 } as const
 export type QueryErrorDetailCode =
   (typeof QueryErrorDetailCode)[keyof typeof QueryErrorDetailCode]
