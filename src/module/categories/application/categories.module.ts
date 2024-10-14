@@ -7,6 +7,7 @@ import { CategoriesService } from "./categories.service"
 import { CreateCategoryHandler } from "./command/category/create-category/create-category.handler"
 import { DeleteCategoryHandler } from "./command/category/delete-category/delete-category.handler"
 import { UpdateCategoryHandler } from "./command/category/update-category/update-category.handler"
+import { AssignTagsToCategoryHandler } from "./command/tag/assign-tags-to-category/assign-tags-to-category.handler"
 import { CreateTagHandler } from "./command/tag/create-tag/create-tag.handler"
 import { DeleteTagHandler } from "./command/tag/delete-tag/delete-tag.handler"
 import { UpdateTagHandler } from "./command/tag/update-tag/update-tag.handler"
@@ -22,6 +23,7 @@ const commandHandlers = [
   CreateTagHandler,
   UpdateTagHandler,
   DeleteTagHandler,
+  AssignTagsToCategoryHandler,
 ]
 const queryHandlers = [
   GetAllCategoriesHandler,

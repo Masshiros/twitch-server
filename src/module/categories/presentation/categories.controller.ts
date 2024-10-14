@@ -17,6 +17,7 @@ import { CategoriesService } from "../application/categories.service"
 import { CreateCategoryCommand } from "../application/command/category/create-category/create-category.command"
 import { DeleteCategoryCommand } from "../application/command/category/delete-category/delete-category.command"
 import { UpdateCategoryCommand } from "../application/command/category/update-category/update-category.command"
+import { AssignTagsToCategoryCommand } from "../application/command/tag/assign-tags-to-category/assign-tags-to-category.command"
 import { CreateTagCommand } from "../application/command/tag/create-tag/create-tag.command"
 import { DeleteTagCommand } from "../application/command/tag/delete-tag/delete-tag.command"
 import { UpdateTagCommand } from "../application/command/tag/update-tag/update-tag.command"
@@ -24,6 +25,7 @@ import { GetAllCategoriesQuery } from "../application/query/category/get-all-cat
 import { GetCategoriesByTagQuery } from "../application/query/category/get-categories-by-tag/get-categories-by-tag.query"
 import { GetCategoryByIdQuery } from "../application/query/category/get-category-by-id/get-category-by-id.query"
 import { GetCategoryBySlugQuery } from "../application/query/category/get-category-by-slug/get-category-by-slug.query"
+import { AssignTagsToCategoryRequestDto } from "./http/dto/request/assign-tags-to-category.request.dto"
 import { CreateCategoryRequestDto } from "./http/dto/request/create-category.request.dto"
 import { CreateTagRequestDto } from "./http/dto/request/create-tag.request.dto"
 import { DeleteCategoryRequestDto } from "./http/dto/request/delete-category.request.dto"
@@ -170,5 +172,17 @@ export class CategoriesController {
   async updateTag(@Param("id") id: string, @Body() body: UpdateTagRequestDto) {
     const command = new UpdateTagCommand({ tagId: id, ...body })
     await this.service.updateTag(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Assign tags to category",
+    description: "Assign tags to category",
+    auth: true,
+  })
+  async assignTagsToCategory(@Body() body: AssignTagsToCategoryRequestDto) {
+    const command = new AssignTagsToCategoryCommand({
+      categoryId: body.categoryId,
+      tagsId: body.tagIds,
+    })
+    await this.service.assignTagsToCategory(command)
   }
 }

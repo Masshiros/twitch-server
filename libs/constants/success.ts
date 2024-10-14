@@ -42,5 +42,6 @@ export const SuccessMessages = {
     CREATE_TAG: "Create new tag successfully",
     UPDATE_TAG: "Update tag successfully",
     DELETE_TAG: "Delete tag successfully",
+    ASSIGN_TAGS_TO_CATEGORY: "Assign tags to category successfully",
   },
 }

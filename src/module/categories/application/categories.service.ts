@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { CreateCategoryCommand } from "./command/category/create-category/create-category.command"
 import { DeleteCategoryCommand } from "./command/category/delete-category/delete-category.command"
 import { UpdateCategoryCommand } from "./command/category/update-category/update-category.command"
+import { AssignTagsToCategoryCommand } from "./command/tag/assign-tags-to-category/assign-tags-to-category.command"
 import { CreateTagCommand } from "./command/tag/create-tag/create-tag.command"
 import { DeleteTagCommand } from "./command/tag/delete-tag/delete-tag.command"
 import { UpdateTagCommand } from "./command/tag/update-tag/update-tag.command"
@@ -45,6 +46,9 @@ export class CategoriesService {
     await this.commandBus.execute(command)
   }
   async updateTag(command: UpdateTagCommand) {
+    await this.commandBus.execute(command)
+  }
+  async assignTagsToCategory(command: AssignTagsToCategoryCommand) {
     await this.commandBus.execute(command)
   }
 }
