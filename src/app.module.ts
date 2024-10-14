@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config"
 import { APP_GUARD } from "@nestjs/core"
 import { validate } from "libs/config"
 import { AuthGuard } from "./guard/auth.guard"
+import { CategoriesModule } from "./module/categories/application/categories.module"
 import { FollowerModule } from "./module/followers/application/follower.module"
 import { UserModule } from "./module/users/application/user.module"
 import { UserDatabaseModule } from "./module/users/infrastructure/database/user.database.module"
@@ -13,6 +14,7 @@ import { UserDatabaseModule } from "./module/users/infrastructure/database/user.
     UserModule,
     UserDatabaseModule,
     FollowerModule,
+    CategoriesModule,
   ],
   providers: [
     {

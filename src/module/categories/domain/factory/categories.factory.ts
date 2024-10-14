@@ -20,7 +20,7 @@ interface CreateTagProps {
   applicableTo?: ETag
   categories: Category[]
 }
-export class CategoryFactory {
+export class CategoriesFactory {
   static createCategory(params: CreateCategoryProps): Category {
     const category = new Category(
       {

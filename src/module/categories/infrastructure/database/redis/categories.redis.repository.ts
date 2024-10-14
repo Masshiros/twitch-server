@@ -1,16 +1,24 @@
-import { Inject, Logger } from "@nestjs/common"
+import { Inject, Injectable, Logger } from "@nestjs/common"
 import Redis from "ioredis"
 import { IORedisKey } from "src/integration/cache/redis/redis.module"
 import { Category } from "src/module/categories/domain/entity/categories.entity"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 
+@Injectable()
 export class CategoriesRedisRepository {
   private readonly CATEGORY_KEY = "categories"
   private readonly logger = new Logger(CategoriesRedisRepository.name)
   constructor(@Inject(IORedisKey) private readonly redisClient: Redis) {}
-  async getCategories(): Promise<Category[] | null> {
+  async getCategories(
+    limit: number,
+    offset: number,
+    orderBy: string,
+    order: "asc" | "desc",
+  ): Promise<Category[] | null> {
     try {
-      const data = await this.redisClient.get(this.CATEGORY_KEY)
+      const cacheKey = `${this.CATEGORY_KEY}:limit=${limit}:offset=${offset}:orderBy=${orderBy}:order=${order}`
+
+      const data = await this.redisClient.get(cacheKey)
       if (!data) return null
       return JSON.parse(data)
     } catch (error) {
@@ -18,11 +26,15 @@ export class CategoriesRedisRepository {
       return null
     }
   }
-  async storeCategory(categories: Category[]): Promise<void> {
-    await this.redisClient.set(
-      `${this.CATEGORY_KEY}`,
-      JSON.stringify(categories),
-    )
+  async storeCategory(
+    categories: Category[],
+    limit: number,
+    offset: number,
+    orderBy: string,
+    order: "asc" | "desc",
+  ): Promise<void> {
+    const cacheKey = `${this.CATEGORY_KEY}:limit=${limit}:offset=${offset}:orderBy=${orderBy}:order=${order}`
+    await this.redisClient.set(`${cacheKey}`, JSON.stringify(categories))
   }
 
   async invalidateCache(): Promise<void> {

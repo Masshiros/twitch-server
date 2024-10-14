@@ -32,7 +32,7 @@ export class GetAllUsersQueryHandler {
 
       throw new QueryError({
         code: QueryErrorCode.INTERNAL_SERVER_ERROR,
-        message: "Internal Server Error",
+        message: err.message,
       })
     }
   }

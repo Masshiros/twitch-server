@@ -29,4 +29,9 @@ export const SuccessMessages = {
     GET_LIST_FOLLOWERS: "Get list followers successfully",
     GET_LIST_FOLLOWINGS: "Get list followings successfully",
   },
+  categories: {
+    GET_ALL_CATEGORIES: "Get all categories successfully",
+    GET_CATEGORY_BY_ID: "Get category by id successfully",
+    GET_CATEGORY_BY_SLUG: "Get category by slug successfully",
+  },
 }

@@ -12,6 +12,7 @@ import { CategoriesRedisRepository } from "./redis/categories.redis.repository"
       provide: ICategoriesRepository,
       useClass: CategoriesRepository,
     },
+    CategoriesRedisRepository,
   ],
   exports: [ICategoriesRepository, CategoriesRedisRepository],
 })
