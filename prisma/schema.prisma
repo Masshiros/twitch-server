@@ -38,6 +38,7 @@ model User {
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @default(now()) @updatedAt
   deletedAt                 DateTime?
+  userRoles                 UserRole[]
   externalLinks             ExternalLink[]
   devices                   Device[]
   tokens                    Token[]
@@ -50,6 +51,41 @@ model User {
   @@index([isActive])
   @@map("users")
   
+}
+model Role {
+  id              String @id @default(uuid())
+  name            String
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+  @@map("roles")
+}
+
+model Permission {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  rolePermissions RolePermission[]
+  @@map("permissions")
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User @relation(fields: [userId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+  @@map("userRoles")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+  @@map("rolePermissions")
 }
 model Follower {
   sourceUserId  String
