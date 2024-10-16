@@ -27,7 +27,7 @@ export class Category extends BaseEntity {
 
   constructor(props: CategoryProps, id?: string) {
     super()
-    this._id = id || randomUUID()
+    this._id = id ?? randomUUID()
     this._currentTotalView = props.currentTotalView ?? 0
     this._numberOfFollowers = props.numberOfFollowers ?? 0
     this._name = props.name ?? ""

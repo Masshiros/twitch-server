@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsNotEmpty, IsOptional, IsString } from "class-validator"
+import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator"
 
 export class AssignTagsToCategoryRequestDto {
   @ApiProperty({
@@ -17,6 +17,7 @@ export class AssignTagsToCategoryRequestDto {
     type: String,
   })
   @IsNotEmpty()
-  @IsString()
+  @IsArray()
+  @IsString({ each: true })
   tagIds: string[]
 }

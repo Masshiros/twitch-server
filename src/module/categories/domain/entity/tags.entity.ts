@@ -25,12 +25,15 @@ export class Tag extends BaseEntity {
   ) {
     super()
     this._id = id || randomUUID()
-    this.props.name = props.name ?? ""
-    this.props.slug = props.slug ?? ""
-    this.props.applicableTo = props.applicableTo ?? ETag.CATEGORY
-    this._createdAt = props.createdAt || new Date()
-    this._updatedAt = props.updatedAt || new Date()
-    this._deletedAt = props.deletedAt
+
+    this.props = {
+      name: props.name ?? "",
+      slug: props.slug ?? "",
+      applicableTo: props.applicableTo ?? ETag.CATEGORY,
+      createdAt: props.createdAt || new Date(),
+      updatedAt: props.updatedAt || new Date(),
+      deletedAt: props.deletedAt,
+    }
   }
   get slug(): string {
     return this.props.slug

@@ -41,6 +41,7 @@ export class CategoriesFactory {
   }
 
   static createTag(params: CreateTagProps): Tag {
+    console.log(params)
     const tag = new Tag(
       {
         name: params.name,
@@ -49,6 +50,7 @@ export class CategoriesFactory {
       },
       params.id ?? randomUUID(),
     )
+
     return tag
   }
 }

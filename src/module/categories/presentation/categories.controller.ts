@@ -149,7 +149,8 @@ export class CategoriesController {
     type: TagResponseDto,
   })
   @ResponseMessage(SuccessMessages.tags.GET_ALL_TAGS)
-  @Get("/tags")
+  @Public()
+  @Get("/all/tags")
   async getAllTags(
     @Query() data: GetAllTagsRequestDto,
   ): Promise<TagResponseDto[] | null> {
@@ -195,6 +196,8 @@ export class CategoriesController {
     description: "Assign tags to category",
     auth: true,
   })
+  @ResponseMessage(SuccessMessages.tags.ASSIGN_TAGS_TO_CATEGORY)
+  @Post("/tags/assign-to-category")
   async assignTagsToCategory(@Body() body: AssignTagsToCategoryRequestDto) {
     const command = new AssignTagsToCategoryCommand({
       categoryId: body.categoryId,

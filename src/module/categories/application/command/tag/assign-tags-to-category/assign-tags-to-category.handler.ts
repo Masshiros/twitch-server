@@ -37,10 +37,11 @@ export class AssignTagsToCategoryHandler {
       const tags = await Promise.all(
         tagsId.map(async (e) => {
           const tag = await this.categoryRepository.getTagById(e)
+
           if (!tag) {
             throw new CommandError({
               code: CommandErrorCode.BAD_REQUEST,
-              message: `Tag not found: ${tag.name}`,
+              message: `Tag with id: ${e} not found`,
               info: {
                 errorCode: CommandErrorDetailCode.NOT_FOUND,
               },

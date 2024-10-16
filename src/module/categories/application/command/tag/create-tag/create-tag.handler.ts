@@ -15,6 +15,7 @@ export class CreateTagHandler {
   constructor(private readonly categoryRepository: ICategoriesRepository) {}
   async execute(command: CreateTagCommand) {
     const { name, applicableTo } = command
+
     try {
       if (!name || name.length === 0) {
         throw new CommandError({

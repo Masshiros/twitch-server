@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common"
 import { Prisma } from "@prisma/client"
 import {
   InfrastructureError,
@@ -11,6 +12,7 @@ import { handlePrismaError } from "utils/prisma-error"
 import { CategoryMapper } from "../mapper/categories.mapper"
 import { TagMapper } from "../mapper/tags.mapper"
 
+@Injectable()
 export class CategoriesRepository implements ICategoriesRepository {
   constructor(private readonly prismaService: PrismaService) {}
   async getAllTags({
@@ -291,6 +293,7 @@ export class CategoriesRepository implements ICategoriesRepository {
           id: true,
         },
       })
+      console.log(categories)
       if (!categories) {
         return null
       }
@@ -454,6 +457,7 @@ export class CategoriesRepository implements ICategoriesRepository {
       const tagCategories = await this.prismaService.tagsCategories.findMany({
         where: { tagId: tag.id },
       })
+
       if (!tagCategories || tagCategories.length === 0) {
         return null
       }
@@ -462,7 +466,8 @@ export class CategoriesRepository implements ICategoriesRepository {
           const category = await this.prismaService.category.findUnique({
             where: { id: e.categoryId },
           })
-          if (!categories) {
+
+          if (!category) {
             return null
           }
           return category
@@ -471,6 +476,7 @@ export class CategoriesRepository implements ICategoriesRepository {
       if (!categories || categories.length === 0) {
         return null
       }
+
       const result = categories.map((category) =>
         CategoryMapper.toDomain(category),
       )
