@@ -12,6 +12,8 @@ import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/module/users/domain/aggregate"
 import { Device } from "src/module/users/domain/entity/devices.entity"
 import { LoginHistory } from "src/module/users/domain/entity/login-histories.entity"
+import { Permission } from "src/module/users/domain/entity/permissions.entity"
+import { Role } from "src/module/users/domain/entity/roles.entity"
 import { Token } from "src/module/users/domain/entity/tokens.entity"
 import { type IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { addTimeToNow } from "utils/date"
@@ -19,6 +21,8 @@ import { hashToken } from "utils/encrypt"
 import { handlePrismaError } from "utils/prisma-error"
 import { DeviceMapper } from "../mappers/device.mapper"
 import { LoginHistoryMapper } from "../mappers/login-history.mapper"
+import { PermissionMapper } from "../mappers/permission.mapper"
+import { RoleMapper } from "../mappers/role.mapper"
 import { TokenMapper } from "../mappers/token.prisma.mapper"
 import { UserMapper } from "../mappers/user.prisma.mapper"
 
@@ -691,6 +695,9 @@ export class PrismaUserRepository implements IUserRepository {
         where: { userId },
         orderBy: { loginAt: "desc" },
       })
+      if (!histories) {
+        return null
+      }
       const result = histories.map((e) => LoginHistoryMapper.toDomain(e))
       return result ?? null
     } catch (error) {
@@ -709,6 +716,178 @@ export class PrismaUserRepository implements IUserRepository {
   async deleteLoginHistory(id: string): Promise<void> {
     try {
       await this.prismaService.loginHistory.delete({ where: { id: id } })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async assignRoleToUser(role: Role, user: UserAggregate): Promise<void> {
+    try {
+      const existingUserRole = await this.prismaService.userRole.findFirst({
+        where: {
+          roleId: role.id,
+          userId: user.id,
+        },
+      })
+      if (existingUserRole) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.BAD_REQUEST,
+          message: "Already exist",
+        })
+      }
+      await this.prismaService.userRole.create({
+        data: {
+          roleId: role.id,
+          userId: user.id,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async assignPermissionToRole(
+    role: Role,
+    permission: Permission,
+  ): Promise<void> {
+    try {
+      const existingRolePermission =
+        await this.prismaService.rolePermission.findFirst({
+          where: {
+            roleId: role.id,
+            permissionId: permission.id,
+          },
+        })
+      if (existingRolePermission) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.BAD_REQUEST,
+          message: "Already exist",
+        })
+      }
+      await this.prismaService.rolePermission.create({
+        data: { roleId: role.id, permissionId: permission.id },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getUserRoles(user: UserAggregate): Promise<Role[] | null> {
+    try {
+      const userRoles = await this.prismaService.userRole.findMany({
+        where: {
+          userId: user.id,
+        },
+      })
+      const roles = await Promise.all(
+        userRoles.map(async (e) => {
+          const role = await this.prismaService.role.findUnique({
+            where: {
+              id: e.roleId,
+            },
+          })
+          if (!role) {
+            return null
+          }
+          return role
+        }),
+      )
+      const result = roles.map((role) => RoleMapper.toDomain(role))
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getRolePermissions(role: Role): Promise<Permission[] | null> {
+    try {
+      const rolePermission = await this.prismaService.rolePermission.findMany({
+        where: {
+          roleId: role.id,
+        },
+      })
+      const permissions = await Promise.all(
+        rolePermission.map(async (e) => {
+          const permission = await this.prismaService.permission.findFirst({
+            where: {
+              id: e.permissionId,
+            },
+          })
+          if (!permission) {
+            return null
+          }
+          return permission
+        }),
+      )
+      const result = permissions.map((permission) =>
+        PermissionMapper.toDomain(permission),
+      )
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getUserPermissions(user: UserAggregate): Promise<Permission[] | null> {
+    try {
+      const roles = await this.getUserRoles(user)
+      if (!roles) {
+        return null
+      }
+      const allPermissions: Permission[] = []
+      await Promise.all(
+        roles.map(async (e) => {
+          const permissions = await this.getRolePermissions(e)
+          if (!permissions) {
+            return null
+          }
+          permissions.forEach((e) => allPermissions.push(e))
+        }),
+      )
+      const uniquePermissions = Array.from(
+        new Set(allPermissions.map((permission) => permission.id)),
+      ).map((id) => allPermissions.find((permission) => permission.id === id))
+      return uniquePermissions ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

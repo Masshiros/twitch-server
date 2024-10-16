@@ -14,6 +14,8 @@ import { BaseAggregate } from "src/common/aggregate"
 import { type Device } from "../entity/devices.entity"
 import { ExternalLink } from "../entity/external-links.entity"
 import { type LoginHistory } from "../entity/login-histories.entity"
+import { Permission } from "../entity/permissions.entity"
+import { Role } from "../entity/roles.entity"
 import { type Token } from "../entity/tokens.entity"
 
 interface UserAggregateProps {
@@ -40,6 +42,8 @@ interface UserAggregateProps {
   tokens?: Token[]
   loginHistories?: LoginHistory[]
   externalLinks?: ExternalLink[]
+  roles?: Role[]
+  permissions?: Permission[]
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -128,6 +132,9 @@ export class UserAggregate extends BaseAggregate {
   @Expose()
   private _externalLinks: ExternalLink[]
 
+  private _roles: Role[]
+  private _permissions: Permission[]
+
   constructor(props: UserAggregateProps, id?: string) {
     super()
     this._id = id || randomUUID()
@@ -155,6 +162,8 @@ export class UserAggregate extends BaseAggregate {
     this._tokens = props.tokens || []
     this._loginHistories = props.loginHistories || []
     this._externalLinks = props.externalLinks || []
+    this._roles = props.roles || []
+    this._permissions = props.permissions || []
     this._createdAt = props.createdAt || new Date()
     this._updatedAt = props.updatedAt || new Date()
     this._deletedAt = props.deletedAt

@@ -3,6 +3,8 @@ import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "../../aggregate"
 import { Device } from "../../entity/devices.entity"
 import { LoginHistory } from "../../entity/login-histories.entity"
+import { Permission } from "../../entity/permissions.entity"
+import { Role } from "../../entity/roles.entity"
 
 export abstract class IUserRepository {
   // user
@@ -54,4 +56,10 @@ export abstract class IUserRepository {
   createLoginHistory: (value: LoginHistory) => Promise<void>
   getLoginHistories: (userId: string) => Promise<LoginHistory[] | null>
   deleteLoginHistory: (id: string) => Promise<void>
+  // roles
+  assignRoleToUser: (role: Role, user: UserAggregate) => Promise<void>
+  assignPermissionToRole: (role: Role, permission: Permission) => Promise<void>
+  getUserRoles: (user: UserAggregate) => Promise<Role[] | null>
+  getRolePermissions: (role: Role) => Promise<Permission[] | null>
+  getUserPermissions: (user: UserAggregate) => Promise<Permission[] | null>
 }
