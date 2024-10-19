@@ -1,6 +1,6 @@
 import { createHash } from "crypto"
 import bcrypt from "bcrypt"
-import config from "libs/config"
+import config from "../libs/config"
 
 export const hashPassword = async (password: string): Promise<string> => {
   const salt = await bcrypt.genSalt(config.HASH_SALT_LENGTH)

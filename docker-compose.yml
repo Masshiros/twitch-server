@@ -34,9 +34,6 @@ services:
     ports:
       - "6379:6379"
     restart: always
-    networks:
-      - app_network
- 
   redis-commander:
     image: rediscommander/redis-commander:latest
     environment:
@@ -45,8 +42,6 @@ services:
       - "8081:8081"
     depends_on:
         - redis
-    networks:
-      - app_network
 
 networks:
   postgres:

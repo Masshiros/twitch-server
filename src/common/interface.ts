@@ -1,7 +1,5 @@
-import { JwtSignOptions } from "@nestjs/jwt"
 import { ApiPropertyOptional } from "@nestjs/swagger"
-import { Type } from "class-transformer"
-import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator"
+import { IsBoolean, IsOptional } from "class-validator"
 import { JwtPayload } from "jsonwebtoken"
 import { tokenType } from "libs/constants/enum"
 
@@ -29,5 +27,7 @@ export interface TokenPayload extends JwtPayload {
   username?: string
   deviceId?: string
   userAgent?: string
+  role?: string[]
+  permission?: string[]
   tokenType: tokenType
 }
