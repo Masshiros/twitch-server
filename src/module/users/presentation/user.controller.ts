@@ -26,18 +26,23 @@ import { UpdateBioCommand } from "../application/command/user/update-bio/update-
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
 import { GetListDeviceQuery } from "../application/query/device/get-list-device/get-list-device.query"
 import { GetListLoginHistoriesQuery } from "../application/query/login-history/get-list-login-histories/get-list-login-histories.query"
+import { GetAllRolesQuery } from "../application/query/role/get-all-role/get-all-role.query"
+import { GetUserRoleQuery } from "../application/query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { UserService } from "../application/user.service"
 import { UserAggregate } from "../domain/aggregate"
 import { AssignPermissionsToRoleRequestDto } from "./http/dto/request/role/assign-permission-to-role.request.dto"
 import { AssignRoleToUserRequestDto } from "./http/dto/request/role/assign-role-to-user.request.dto"
+import { GetAllRolesRequestDto } from "./http/dto/request/role/get-all-roles.request.dto"
+import { GetUserRolesRequestDto } from "./http/dto/request/role/get-user-roles.request.dto"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
 import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activate.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
+import { RoleResponseDto } from "./http/dto/response/role/role.response.dto"
 import { GetAllUsersResponseDto } from "./http/dto/response/user/get-all-user.response.dto"
 import { GetDeviceResponseDto } from "./http/dto/response/user/get-device.response.dto"
 import { GetLoginHistoryResponseDto } from "./http/dto/response/user/get-login-history.response.dto"
@@ -180,6 +185,7 @@ export class UserController {
     description: "Get list login histories user has logged in",
     auth: true,
   })
+  @ResponseMessage(SuccessMessages.user.GET_LIST_HISTORIES)
   @Get("/list-login-histories")
   async getListLoginHistories(
     @CurrentUser() user: UserAggregate,
@@ -202,6 +208,7 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @ResponseMessage(SuccessMessages.roles.ASSIGN_ROLE_TO_USER)
   @Post("/role/assign-role-to-user")
   async assignRoleToUser(@Body() data: AssignRoleToUserRequestDto) {
     const command = new AssignRoleToUserCommand({
@@ -216,6 +223,7 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @ResponseMessage(SuccessMessages.roles.ASSIGN_PERMISSION_TO_ROLE)
   @Post("/role/assign-permissions-to-role")
   async assignPermissionsToRole(
     @Body() data: AssignPermissionsToRoleRequestDto,
@@ -225,5 +233,33 @@ export class UserController {
       permissionsId: data.permissionsId,
     })
     await this.userService.assignPermissionToRole(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Get all role",
+    description: "Get all roles existed in the system",
+    auth: true,
+  })
+  // @Permission([])
+  @ResponseMessage(SuccessMessages.roles.GET_ALL_ROLES)
+  @Get("/role")
+  async getAllRoles(
+    @Query() data: GetAllRolesRequestDto,
+  ): Promise<RoleResponseDto[] | null> {
+    const query = new GetAllRolesQuery(data)
+    return (await this.userService.getAllRoles(query)) ?? null
+  }
+  @ApiOperationDecorator({
+    summary: "Get user's role",
+    description: "Get all roles of specific user",
+    auth: true,
+  })
+  // @Permission([])
+  @ResponseMessage(SuccessMessages.roles.GET_USER_ROLES)
+  @Get("/role/user/:userId")
+  async getUserRoles(
+    @Param() param: GetUserRolesRequestDto,
+  ): Promise<RoleResponseDto[] | null> {
+    const query = new GetUserRoleQuery(param)
+    return (await this.userService.getUserRoles(query)) ?? null
   }
 }

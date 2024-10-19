@@ -57,6 +57,17 @@ export abstract class IUserRepository {
   getLoginHistories: (userId: string) => Promise<LoginHistory[] | null>
   deleteLoginHistory: (id: string) => Promise<void>
   // roles
+  getAllRolesWithPagination: ({
+    limit,
+    offset,
+    orderBy,
+    order,
+  }: {
+    limit: number
+    offset: number
+    orderBy: string
+    order: "asc" | "desc"
+  }) => Promise<Role[] | null>
   getRoleByName: (name: string) => Promise<Role | null>
   getRoleById: (id: string) => Promise<Role | null>
   assignRoleToUser: (role: Role, user: UserAggregate) => Promise<void>

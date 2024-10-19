@@ -729,6 +729,57 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async getAllRolesWithPagination({
+    limit,
+    offset = 0,
+    orderBy = "createdAt",
+    order = "desc",
+  }: {
+    limit: number
+    offset: number
+    orderBy: string
+    order: "asc" | "desc"
+  }): Promise<Role[] | null> {
+    try {
+      const finalOrderBy = orderBy ?? "createdAt"
+      const finalOrder = order ?? "desc"
+      const roles = await this.prismaService.role.findMany({
+        where: { deletedAt: null },
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
+        select: {
+          id: true,
+        },
+      })
+      if (!roles) {
+        return null
+      }
+      const ids = roles.map((role) => role.id)
+      const queryRole = await this.prismaService.role.findMany({
+        where: { id: { in: ids } },
+        orderBy: { [finalOrderBy]: finalOrder },
+      })
+      if (!queryRole) {
+        return null
+      }
+      const result = queryRole.map((e) => {
+        const role = RoleMapper.toDomain(e)
+        return role
+      })
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async getRoleByName(name: string): Promise<Role | null> {
     try {
       const role = await this.prismaService.role.findUnique({ where: { name } })

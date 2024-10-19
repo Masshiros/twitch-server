@@ -45,4 +45,10 @@ export const SuccessMessages = {
     DELETE_TAG: "Delete tag successfully",
     ASSIGN_TAGS_TO_CATEGORY: "Assign tags to category successfully",
   },
+  roles: {
+    ASSIGN_ROLE_TO_USER: "Assign roles to user successfully",
+    ASSIGN_PERMISSION_TO_ROLE: " Assign permissions to role successfully",
+    GET_ALL_ROLES: "Get all roles successfully",
+    GET_USER_ROLES: "Get user's roles successfully",
+  },
 }

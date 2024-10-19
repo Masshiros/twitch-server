@@ -27,6 +27,8 @@ import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.ha
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
 import { GetListDeviceQueryHandler } from "./query/device/get-list-device/get-list-device.handler"
 import { GetListLoginHistoriesQueryHandler } from "./query/login-history/get-list-login-histories/get-list-login-histories.handler"
+import { GetAllRolesHandler } from "./query/role/get-all-role/get-all-role.handler"
+import { GetUserRoleHandler } from "./query/role/get-user-role/get-user-role.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { UserService } from "./user.service"
@@ -55,6 +57,8 @@ const queryHandlers = [
   GetAllUsersQueryHandler,
   GetListDeviceQueryHandler,
   GetListLoginHistoriesQueryHandler,
+  GetAllRolesHandler,
+  GetUserRoleHandler,
 ]
 @Module({
   controllers: [AuthController, UserController],
