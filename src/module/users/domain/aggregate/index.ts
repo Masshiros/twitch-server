@@ -334,5 +334,8 @@ export class UserAggregate extends BaseAggregate {
   set tokens(value: Token | undefined) {
     this._tokens.push(value)
   }
+  get roles(): Role[] {
+    return this._roles
+  }
   // TODO: Update later
 }

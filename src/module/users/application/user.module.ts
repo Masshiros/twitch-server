@@ -12,6 +12,7 @@ import { ConfirmEmailCommandHandler } from "./command/auth/confirm-email/confirm
 import { ForgotPasswordCommandHandler } from "./command/auth/forgot-password/forgot-password.handler"
 import { LogoutFromAllDeviceCommandHandler } from "./command/auth/logout-from-all-device/logout-from-all-device.handler"
 import { LogoutFromOneDeviceCommandHandler } from "./command/auth/logout-from-one-device/logout-from-one-device.handler"
+import { RefreshTokenCommandHandler } from "./command/auth/refresh-token/refresh-token.handler"
 import { ResendVerifyEmailCommandHandler } from "./command/auth/resend-verify-email/resend-verify-email.handler"
 import { ResetPasswordCommandHandler } from "./command/auth/reset-password/reset-password.handler"
 import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
@@ -43,6 +44,7 @@ const commandHandlers = [
   ToggleActivateCommandHandler,
   LogoutFromAllDeviceCommandHandler,
   LogoutFromOneDeviceCommandHandler,
+  RefreshTokenCommandHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,

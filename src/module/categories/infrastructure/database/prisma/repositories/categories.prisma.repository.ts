@@ -68,6 +68,15 @@ export class CategoriesRepository implements ICategoriesRepository {
   async addTag(tag: Tag): Promise<void> {
     try {
       const data = TagMapper.toPersistence(tag)
+      const existTag = await this.prismaService.tag.findUnique({
+        where: { slug: data.slug },
+      })
+      if (existTag) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+          message: "Already exist this data",
+        })
+      }
       await this.prismaService.tag.create({ data: data })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -326,6 +335,13 @@ export class CategoriesRepository implements ICategoriesRepository {
   async addCategory(category: Category): Promise<void> {
     try {
       const data = CategoryMapper.toPersistence(category)
+      const existCategory = await this.getCategoryBySlug(data.slug)
+      if (existCategory) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+          message: "Already exist this data",
+        })
+      }
       await this.prismaService.category.create({ data: data })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

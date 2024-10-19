@@ -1,10 +1,11 @@
 import { randomUUID } from "crypto"
 import { hashPassword, hashToken } from "utils/encrypt"
-import { generateSlug } from "utils/string-format"
+import { generateSlug } from "../../../../../../utils/string-format"
 import { UserAggregate } from "../../aggregate"
 import { Device } from "../../entity/devices.entity"
 import { ExternalLink } from "../../entity/external-links.entity"
 import { LoginHistory } from "../../entity/login-histories.entity"
+import { Role } from "../../entity/roles.entity"
 import { Token } from "../../entity/tokens.entity"
 
 export type CreateUserAggregateParams = {
@@ -32,17 +33,20 @@ export type CreateUserAggregateParams = {
   tokens?: Token[]
   loginHistories?: LoginHistory[]
   externalLinks?: ExternalLink[]
+  roles?: Role[]
 }
 
 export class UserFactory {
   async createAggregate(
     params: CreateUserAggregateParams,
   ): Promise<UserAggregate> {
+    const name = params.name ?? ""
+    const slug = name ? generateSlug(name) : ""
     return new UserAggregate(
       {
-        name: params.name ?? "",
+        name,
         displayName: params.name ?? "",
-        slug: generateSlug(params.name) ?? "",
+        slug,
         email: params.email ?? "",
         password: (await hashPassword(params.password)) ?? "",
         phoneNumber: params.phoneNumber ?? "",
@@ -63,6 +67,7 @@ export class UserFactory {
         tokens: params.tokens ?? [],
         loginHistories: params.loginHistories ?? [],
         externalLinks: params.externalLinks ?? [],
+        roles: params.roles ?? [],
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,

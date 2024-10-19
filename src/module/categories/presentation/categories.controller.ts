@@ -9,8 +9,10 @@ import {
   Query,
 } from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
+import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
+import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { CategoriesService } from "../application/categories.service"
@@ -113,6 +115,7 @@ export class CategoriesController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.categories.CREATE_CATEGORY)
+  @Permission([Permissions.Categories.Create])
   @Post("")
   async createCategory(@Body() body: CreateCategoryRequestDto) {
     const command = new CreateCategoryCommand(body)

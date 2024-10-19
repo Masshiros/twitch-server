@@ -729,6 +729,26 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async getRoleByName(name: string): Promise<Role | null> {
+    try {
+      const role = await this.prismaService.role.findUnique({ where: { name } })
+      if (!role) {
+        return null
+      }
+      return RoleMapper.toDomain(role) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async assignRoleToUser(role: Role, user: UserAggregate): Promise<void> {
     try {
       const existingUserRole = await this.prismaService.userRole.findFirst({
@@ -737,12 +757,24 @@ export class PrismaUserRepository implements IUserRepository {
           userId: user.id,
         },
       })
+
       if (existingUserRole) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.BAD_REQUEST,
           message: "Already exist",
         })
       }
+      const existingUser = await this.prismaService.user.findFirst({
+        where: { id: user.id },
+      })
+
+      if (!existingUser) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.BAD_REQUEST,
+          message: "User does not exist",
+        })
+      }
+
       await this.prismaService.userRole.create({
         data: {
           roleId: role.id,
@@ -845,16 +877,13 @@ export class PrismaUserRepository implements IUserRepository {
               id: e.permissionId,
             },
           })
-          if (!permission) {
-            return null
-          }
-          return permission
+          return permission ? PermissionMapper.toDomain(permission) : null
         }),
       )
-      const result = permissions.map((permission) =>
-        PermissionMapper.toDomain(permission),
-      )
-      return result ?? null
+      const uniquePermissions = Array.from(
+        new Set(permissions.filter((p) => p !== null).map((p) => p!.id)),
+      ).map((id) => permissions.find((p) => p?.id === id))
+      return uniquePermissions ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

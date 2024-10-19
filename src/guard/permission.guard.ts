@@ -22,6 +22,13 @@ export class PermissionGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest()
     try {
+      const permissions = this.reflector.getAllAndOverride<string[]>(
+        PERMISSION_KEY,
+        [context.getHandler(), context.getClass()],
+      )
+      if (!permissions) {
+        return true
+      }
       if (!request.user) {
         throw new BadRequestException(
           "Unauthorized",
@@ -30,16 +37,11 @@ export class PermissionGuard implements CanActivate {
           }),
         )
       }
-      const permissions = this.reflector.getAllAndOverride<string[]>(
-        PERMISSION_KEY,
-        [context.getHandler(), context.getClass()],
-      )
-      if (!permissions) {
-        return true
-      }
+
       const userPermissions = await this.userRepository.getUserPermissions(
         request.user,
       )
+
       for (const permission of permissions) {
         const userPermission = userPermissions.find(
           (e) => e.name === permission,

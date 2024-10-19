@@ -114,7 +114,11 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         },
         deviceId,
       )
-
+      // role
+      const userRole = await this.userRepository.getUserRoles(userAggregate)
+      // permission
+      const userPermission =
+        await this.userRepository.getUserPermissions(userAggregate)
       // jwt
       const accessTokenPayload: TokenPayload = {
         sub: userAggregate.id,
@@ -122,8 +126,8 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         username: userAggregate.name,
         tokenType: tokenType.AccessToken,
         deviceId: device.id,
-        // add others later
-        // TODO(role): Add role
+        role: userRole.map((role) => role.name),
+        permission: userPermission.map((e) => e.name),
       }
       const refreshTokenPayload: TokenPayload = {
         sub: userAggregate.id,
@@ -131,8 +135,8 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         username: userAggregate.name,
         tokenType: tokenType.RefreshToken,
         deviceId: device.id,
-        // add others later
-        // TODO(role): Add role
+        role: userRole.map((role) => role.name),
+        permission: userPermission.map((e) => e.name),
       }
 
       const [accessToken, refreshToken] = await Promise.all([

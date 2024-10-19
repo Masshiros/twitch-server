@@ -3,8 +3,10 @@ import { CommandHandler, type ICommandHandler } from "@nestjs/cqrs"
 import config from "libs/config"
 import { emailConfig } from "libs/constants/emails"
 import { tokenType } from "libs/constants/enum"
+import { Roles } from "libs/constants/roles"
 import { TokenPayload } from "src/common/interface"
 import NodemailerService from "src/integration/email/nodemailer/nodemailer.service"
+import { Role } from "src/module/users/domain/entity/roles.entity"
 import { EmailTemplate } from "src/module/users/domain/value-object/email-template.vo"
 import {
   CommandError,
@@ -106,12 +108,14 @@ export class SignupWithEmailCommandHandler
 
       // send email confirmation
       const otp = Math.floor(100000 + Math.random() * 900000).toString()
+      const userRole = await this.userRepository.getRoleByName(Roles.User)
       const user: UserAggregate = await this.userFactory.createAggregate({
         email: email,
         password: password,
         name: name,
         dob: dob,
         emailVerifyToken: otp,
+        roles: [userRole],
       })
 
       // send email
@@ -121,6 +125,7 @@ export class SignupWithEmailCommandHandler
       )
 
       const formattedTemplate = EmailTemplate.withCode(template, otp)
+
       await Promise.all([
         this.emailService.sendMail({
           to: user.email,
@@ -129,6 +134,11 @@ export class SignupWithEmailCommandHandler
         }),
         this.userRepository.createUser(user),
       ])
+      await Promise.all(
+        user.roles.map((role) => {
+          this.userRepository.assignRoleToUser(role, user)
+        }),
+      )
     } catch (err) {
       console.error(err.stack)
       if (
