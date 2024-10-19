@@ -883,6 +883,28 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async getPermissionById(id: string): Promise<Permission | null> {
+    try {
+      const permission = await this.prismaService.permission.findUnique({
+        where: { id },
+      })
+      if (!permission) {
+        return null
+      }
+      return PermissionMapper.toDomain(permission) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async getRolePermissions(role: Role): Promise<Permission[] | null> {
     try {
       const rolePermission = await this.prismaService.rolePermission.findMany({

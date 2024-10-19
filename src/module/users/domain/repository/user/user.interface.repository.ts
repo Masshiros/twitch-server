@@ -62,6 +62,7 @@ export abstract class IUserRepository {
   assignRoleToUser: (role: Role, user: UserAggregate) => Promise<void>
   assignPermissionToRole: (role: Role, permission: Permission) => Promise<void>
   getUserRoles: (user: UserAggregate) => Promise<Role[] | null>
+  getPermissionById: (id: string) => Promise<Permission | null>
   getRolePermissions: (role: Role) => Promise<Permission[] | null>
   getUserPermissions: (user: UserAggregate) => Promise<Permission[] | null>
 }

@@ -18,6 +18,7 @@ import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
+import { AssignPermissionToRoleCommand } from "../application/command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "../application/command/role/assign-role-to-user/assign-role-to-user.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
@@ -29,6 +30,7 @@ import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { UserService } from "../application/user.service"
 import { UserAggregate } from "../domain/aggregate"
+import { AssignPermissionsToRoleRequestDto } from "./http/dto/request/role/assign-permission-to-role.request.dto"
 import { AssignRoleToUserRequestDto } from "./http/dto/request/role/assign-role-to-user.request.dto"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
@@ -207,5 +209,21 @@ export class UserController {
       roleId: data.roleId,
     })
     await this.userService.assignRoleToUser(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Assign permissions to user",
+    description: "Assign permissions to user in admin",
+    auth: true,
+  })
+  // @Permission([])
+  @Post("/role/assign-permissions-to-role")
+  async assignPermissionsToRole(
+    @Body() data: AssignPermissionsToRoleRequestDto,
+  ) {
+    const command = new AssignPermissionToRoleCommand({
+      roleId: data.roleId,
+      permissionsId: data.permissionsId,
+    })
+    await this.userService.assignPermissionToRole(command)
   }
 }

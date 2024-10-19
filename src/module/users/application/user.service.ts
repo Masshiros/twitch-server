@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { ConfirmEmailCommand } from "./command/auth/confirm-email/confirm-email.command"
 import { ToggleTwoFaCommand } from "./command/auth/toggle-two-fa/toggle-two-fa.command"
+import { AssignPermissionToRoleCommand } from "./command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assign-role-to-user.command"
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "./command/user/toggle-activate/toggle-activate.command"
@@ -43,6 +44,9 @@ export class UserService {
     return this.queryBus.execute(query)
   }
   assignRoleToUser(command: AssignRoleToUserCommand) {
+    return this.commandBus.execute(command)
+  }
+  assignPermissionToRole(command: AssignPermissionToRoleCommand) {
     return this.commandBus.execute(command)
   }
 }
