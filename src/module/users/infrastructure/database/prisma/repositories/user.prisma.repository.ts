@@ -934,6 +934,57 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async getAllPermissionsWithPagination({
+    limit,
+    offset = 0,
+    orderBy = "createdAt",
+    order = "desc",
+  }: {
+    limit: number
+    offset: number
+    orderBy: string
+    order: "asc" | "desc"
+  }): Promise<Permission[] | null> {
+    try {
+      const finalOrderBy = orderBy ?? "createdAt"
+      const finalOrder = order ?? "desc"
+      const permissions = await this.prismaService.permission.findMany({
+        where: { deletedAt: null },
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
+        select: {
+          id: true,
+        },
+      })
+      if (!permissions) {
+        return null
+      }
+      const ids = permissions.map((permission) => permission.id)
+      const queryPermission = await this.prismaService.permission.findMany({
+        where: { id: { in: ids } },
+        orderBy: { [finalOrderBy]: finalOrder },
+      })
+      if (!queryPermission) {
+        return null
+      }
+      const result = queryPermission.map((e) => {
+        const permission = PermissionMapper.toDomain(e)
+        return permission
+      })
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async getPermissionById(id: string): Promise<Permission | null> {
     try {
       const permission = await this.prismaService.permission.findUnique({

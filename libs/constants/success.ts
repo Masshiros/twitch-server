@@ -50,5 +50,7 @@ export const SuccessMessages = {
     ASSIGN_PERMISSION_TO_ROLE: " Assign permissions to role successfully",
     GET_ALL_ROLES: "Get all roles successfully",
     GET_USER_ROLES: "Get user's roles successfully",
+    GET_ALL_PERMISSIONS: "Get all permissions successfully",
+    GET_USER_PERMISSIONS: "Get user's permissions successfully",
   },
 }

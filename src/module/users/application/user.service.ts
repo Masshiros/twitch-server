@@ -10,7 +10,9 @@ import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
 import { UpdateUsernameCommand } from "./command/user/update-username/update-username.command"
 import { GetListDeviceQuery } from "./query/device/get-list-device/get-list-device.query"
 import { GetListLoginHistoriesQuery } from "./query/login-history/get-list-login-histories/get-list-login-histories.query"
+import { GetAllPermissionsQuery } from "./query/role/get-all-permissions/get-all-permissions.query"
 import { GetAllRolesQuery } from "./query/role/get-all-role/get-all-role.query"
+import { GetUserPermissionsQuery } from "./query/role/get-user-permissions/get-user-permissions.query"
 import { GetUserRoleQuery } from "./query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "./query/user/get-user/get-user.query"
@@ -55,6 +57,12 @@ export class UserService {
     return this.queryBus.execute(query)
   }
   getUserRoles(query: GetUserRoleQuery) {
+    return this.queryBus.execute(query)
+  }
+  getAllPermissions(query: GetAllPermissionsQuery) {
+    return this.queryBus.execute(query)
+  }
+  getUserPermissions(query: GetUserPermissionsQuery) {
     return this.queryBus.execute(query)
   }
 }

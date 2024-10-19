@@ -26,7 +26,9 @@ import { UpdateBioCommand } from "../application/command/user/update-bio/update-
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
 import { GetListDeviceQuery } from "../application/query/device/get-list-device/get-list-device.query"
 import { GetListLoginHistoriesQuery } from "../application/query/login-history/get-list-login-histories/get-list-login-histories.query"
+import { GetAllPermissionsQuery } from "../application/query/role/get-all-permissions/get-all-permissions.query"
 import { GetAllRolesQuery } from "../application/query/role/get-all-role/get-all-role.query"
+import { GetUserPermissionsQuery } from "../application/query/role/get-user-permissions/get-user-permissions.query"
 import { GetUserRoleQuery } from "../application/query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
@@ -34,7 +36,9 @@ import { UserService } from "../application/user.service"
 import { UserAggregate } from "../domain/aggregate"
 import { AssignPermissionsToRoleRequestDto } from "./http/dto/request/role/assign-permission-to-role.request.dto"
 import { AssignRoleToUserRequestDto } from "./http/dto/request/role/assign-role-to-user.request.dto"
+import { GetAllPermissionsRequestDto } from "./http/dto/request/role/get-all-permissions.request.dto"
 import { GetAllRolesRequestDto } from "./http/dto/request/role/get-all-roles.request.dto"
+import { GetUserPermissionsRequestDto } from "./http/dto/request/role/get-user-permissions.request.dto"
 import { GetUserRolesRequestDto } from "./http/dto/request/role/get-user-roles.request.dto"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
@@ -42,6 +46,7 @@ import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
 import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activate.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
+import { PermissionResponseDto } from "./http/dto/response/role/permission.response.dto"
 import { RoleResponseDto } from "./http/dto/response/role/role.response.dto"
 import { GetAllUsersResponseDto } from "./http/dto/response/user/get-all-user.response.dto"
 import { GetDeviceResponseDto } from "./http/dto/response/user/get-device.response.dto"
@@ -147,6 +152,7 @@ export class UserController {
 
     return result
   }
+
   @ApiOperationDecorator({
     summary: "Toggle activate user",
     description: "Activate or deactivate user",
@@ -158,6 +164,7 @@ export class UserController {
     const command = new ToggleActivateCommand(body)
     await this.userService.toggleActivate(command)
   }
+
   @ApiOperationDecorator({
     summary: "Get list devices of user",
     description: "Get list devices user has logged in",
@@ -180,6 +187,7 @@ export class UserController {
     )
     return result
   }
+
   @ApiOperationDecorator({
     summary: "Get list login histories of user",
     description: "Get list login histories user has logged in",
@@ -202,6 +210,7 @@ export class UserController {
     )
     return result
   }
+
   @ApiOperationDecorator({
     summary: "Assign roles to user",
     description: "Assign roles to user in admin",
@@ -217,6 +226,7 @@ export class UserController {
     })
     await this.userService.assignRoleToUser(command)
   }
+
   @ApiOperationDecorator({
     summary: "Assign permissions to user",
     description: "Assign permissions to user in admin",
@@ -234,6 +244,7 @@ export class UserController {
     })
     await this.userService.assignPermissionToRole(command)
   }
+
   @ApiOperationDecorator({
     summary: "Get all role",
     description: "Get all roles existed in the system",
@@ -246,8 +257,11 @@ export class UserController {
     @Query() data: GetAllRolesRequestDto,
   ): Promise<RoleResponseDto[] | null> {
     const query = new GetAllRolesQuery(data)
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
     return (await this.userService.getAllRoles(query)) ?? null
   }
+
   @ApiOperationDecorator({
     summary: "Get user's role",
     description: "Get all roles of specific user",
@@ -261,5 +275,37 @@ export class UserController {
   ): Promise<RoleResponseDto[] | null> {
     const query = new GetUserRoleQuery(param)
     return (await this.userService.getUserRoles(query)) ?? null
+  }
+
+  @ApiOperationDecorator({
+    summary: "Get all permission",
+    description: "Get all permissions existed in the system",
+    auth: true,
+  })
+  // @Permission([])
+  @ResponseMessage(SuccessMessages.roles.GET_ALL_PERMISSIONS)
+  @Get("/permission")
+  async getAllPermissions(
+    @Query() data: GetAllPermissionsRequestDto,
+  ): Promise<PermissionResponseDto[] | null> {
+    const query = new GetAllPermissionsQuery(data)
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return (await this.userService.getAllPermissions(query)) ?? null
+  }
+
+  @ApiOperationDecorator({
+    summary: "Get user's permission",
+    description: "Get all permissions of specific user",
+    auth: true,
+  })
+  // @Permission([])
+  @ResponseMessage(SuccessMessages.roles.GET_USER_PERMISSIONS)
+  @Get("/permission/user/:userId")
+  async getUserPermissions(
+    @Param() param: GetUserPermissionsRequestDto,
+  ): Promise<PermissionResponseDto[] | null> {
+    const query = new GetUserPermissionsQuery(param)
+    return (await this.userService.getUserPermissions(query)) ?? null
   }
 }
