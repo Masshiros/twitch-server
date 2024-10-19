@@ -60,7 +60,8 @@ export class CategoriesController {
     @Query() data: GetAllCategoriesRequestDto,
   ): Promise<CategoryResponseDto[] | null> {
     const query = new GetAllCategoriesQuery(data)
-    query.offset = (data.page - 1) * data.limit
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
     const result = await this.service.getCategoriesWithPagination(query)
     return result ?? null
   }

@@ -19,6 +19,7 @@ import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
 import { ToggleTwoFaCommandHandler } from "./command/auth/toggle-two-fa/toggle-two-fa.handler"
+import { AssignRoleToUserHandler } from "./command/role/assign-role-to-user/assign-role-to-user.handler"
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
@@ -45,6 +46,7 @@ const commandHandlers = [
   LogoutFromAllDeviceCommandHandler,
   LogoutFromOneDeviceCommandHandler,
   RefreshTokenCommandHandler,
+  AssignRoleToUserHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,

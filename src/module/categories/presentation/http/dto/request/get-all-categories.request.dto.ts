@@ -12,7 +12,7 @@ export class GetAllCategoriesRequestDto {
   @IsNumber()
   page: number
   @ApiPropertyOptional({
-    description: "The number of users to return",
+    description: "The number of categories to return",
     example: 1,
   })
   @IsOptional()

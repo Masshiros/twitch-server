@@ -283,7 +283,7 @@ export class CategoriesRepository implements ICategoriesRepository {
     }
   }
   async getAllCategories({
-    limit = 1,
+    limit,
     offset = 0,
     orderBy = "createdAt",
     order = "desc",
@@ -294,22 +294,23 @@ export class CategoriesRepository implements ICategoriesRepository {
     order: "asc" | "desc"
   }): Promise<Category[] | null> {
     try {
+      const finalOrderBy = orderBy ?? "createdAt"
+      const finalOrder = order ?? "desc"
       const categories = await this.prismaService.category.findMany({
         where: { deletedAt: null },
-        skip: offset,
-        take: limit,
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
         select: {
           id: true,
         },
       })
-      console.log(categories)
       if (!categories) {
         return null
       }
       const ids = categories.map((cate) => cate.id)
       const queryCate = await this.prismaService.category.findMany({
         where: { id: { in: ids } },
-        orderBy: { [orderBy]: order },
+        orderBy: { [finalOrderBy]: finalOrder },
       })
       if (!queryCate) {
         return null

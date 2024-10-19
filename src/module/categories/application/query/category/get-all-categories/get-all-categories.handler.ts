@@ -2,6 +2,7 @@ import { QueryHandler } from "@nestjs/cqrs"
 import { QueryError, QueryErrorCode } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { Category } from "src/module/categories/domain/entity/categories.entity"
+import { CategoriesFactory } from "src/module/categories/domain/factory/categories.factory"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { CategoriesRedisRepository } from "src/module/categories/infrastructure/database/redis/categories.redis.repository"
 import { CategoryResult } from "../category.result"
@@ -36,9 +37,24 @@ export class GetAllCategoriesHandler {
           tags: tags || [],
         }
       }
-      if (categoriesFromCache) {
+      if (categoriesFromCache && categoriesFromCache.length > 0) {
         const result = await Promise.all(
-          categoriesFromCache.map(mapCategoryWithTags),
+          categoriesFromCache.map(async (cachedCategory) => {
+            const category: Category = CategoriesFactory.createCategory({
+              id: cachedCategory.id,
+              name: cachedCategory.name,
+              slug: cachedCategory.slug,
+              currentTotalView: cachedCategory.currentTotalView,
+              image: cachedCategory.image,
+              createdAt: new Date(cachedCategory.createdAt),
+              updatedAt: new Date(cachedCategory.updatedAt),
+              deletedAt: cachedCategory.deletedAt
+                ? new Date(cachedCategory.deletedAt)
+                : null,
+            })
+
+            return mapCategoryWithTags(category)
+          }),
         )
         return result
       }
@@ -51,6 +67,13 @@ export class GetAllCategoriesHandler {
       if (!categories) {
         return null
       }
+      await this.categoriesRedisRepository.storeCategory(
+        categories,
+        limit,
+        offset,
+        orderBy,
+        order,
+      )
       const result = await Promise.all(categories.map(mapCategoryWithTags))
       return result ?? null
     } catch (err) {

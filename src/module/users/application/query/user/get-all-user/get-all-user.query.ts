@@ -9,8 +9,8 @@ type GetAllUsersQueryParams = {
 
 export class GetAllUsersQuery implements IQuery {
   readonly filters: UserFilters
-  readonly limit: number
-  readonly offset: number
+  limit: number
+  offset: number
 
   constructor(params: GetAllUsersQueryParams) {
     this.filters = params.filters

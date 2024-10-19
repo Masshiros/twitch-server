@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from "@nestjs/common"
 import Redis from "ioredis"
 import { IORedisKey } from "src/integration/cache/redis/redis.module"
 import { Category } from "src/module/categories/domain/entity/categories.entity"
+import { CategoriesFactory } from "src/module/categories/domain/factory/categories.factory"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 
 @Injectable()
@@ -20,7 +21,11 @@ export class CategoriesRedisRepository {
 
       const data = await this.redisClient.get(cacheKey)
       if (!data) return null
-      return JSON.parse(data)
+      const parsedData = JSON.parse(data)
+      const categories = parsedData.map((item: any) =>
+        this.rehydrateCategory(item),
+      )
+      return categories
     } catch (error) {
       this.logger.error("Failed to get categories from Redis", error)
       return null
@@ -40,5 +45,19 @@ export class CategoriesRedisRepository {
   async invalidateCache(): Promise<void> {
     await this.redisClient.del(this.CATEGORY_KEY)
     this.logger.log("Category cache invalidated")
+  }
+  private rehydrateCategory(data: any): Category {
+    return CategoriesFactory.createCategory({
+      id: data._id,
+      name: data._name,
+      slug: data._slug,
+      currentTotalView: data._currentTotalView,
+      image: data._image,
+      applicableTo: data._applicableTo,
+      createdAt: new Date(data._createdAt),
+      updatedAt: new Date(data._updatedAt),
+      deletedAt: data._deletedAt ? new Date(data._deletedAt) : null,
+      numberOfFollowers: data._numberOfFollowers,
+    })
   }
 }

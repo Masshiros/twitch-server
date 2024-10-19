@@ -11,7 +11,12 @@ interface CreateCategoryProps {
   name: string
   slug?: string
   image?: string
+  currentTotalView?: number
+  numberOfFollowers?: number
   applicableTo?: ECategory
+  createdAt?: Date
+  updatedAt?: Date
+  deletedAt?: Date
   tags?: Tag[]
 }
 interface CreateTagProps {
@@ -21,6 +26,9 @@ interface CreateTagProps {
   image?: string
   applicableTo?: ETag
   categories?: Category[]
+  createdAt?: Date
+  updatedAt?: Date
+  deletedAt?: Date
 }
 export class CategoriesFactory {
   static createCategory(params: CreateCategoryProps): Category {
@@ -30,10 +38,12 @@ export class CategoriesFactory {
         slug: generateSlug(params.name),
         image: params.image,
         applicableTo: params.applicableTo,
-        currentTotalView: 0,
-        numberOfFollowers: 0,
+        currentTotalView: params.currentTotalView ?? 0,
+        numberOfFollowers: params.numberOfFollowers ?? 0,
         tags: params.tags ?? [],
-        createdAt: new Date(),
+        createdAt: params.createdAt ?? new Date(),
+        updatedAt: params.createdAt ?? null,
+        deletedAt: params.deletedAt ?? null,
       },
       params.id ?? randomUUID(),
     )

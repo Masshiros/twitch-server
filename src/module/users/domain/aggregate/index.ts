@@ -337,5 +337,14 @@ export class UserAggregate extends BaseAggregate {
   get roles(): Role[] {
     return this._roles
   }
+  set roles(value: Role[] | undefined) {
+    this.roles = value
+  }
+  get permissions(): Permission[] {
+    return this._permissions
+  }
+  set permissions(value: Permission[] | undefined) {
+    this._permissions = value
+  }
   // TODO: Update later
 }

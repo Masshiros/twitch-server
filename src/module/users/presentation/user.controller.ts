@@ -15,8 +15,10 @@ import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { SuccessMessages } from "libs/constants/success"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
+import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
+import { AssignRoleToUserCommand } from "../application/command/role/assign-role-to-user/assign-role-to-user.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
@@ -27,6 +29,7 @@ import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { UserService } from "../application/user.service"
 import { UserAggregate } from "../domain/aggregate"
+import { AssignRoleToUserRequestDto } from "./http/dto/request/role/assign-role-to-user.request.dto"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
@@ -123,6 +126,8 @@ export class UserController {
     @Query() param: GetAllUsersRequestDto,
   ): Promise<GetAllUsersResponseDto | null> {
     const query = new GetAllUsersQuery(param)
+    query.limit = param.limit ?? 5
+    query.offset = param.page ? (param.page - 1) * param.limit : null
     const users = await this.userService.getAllUsers(query)
     if (!users.result) {
       return null
@@ -188,5 +193,19 @@ export class UserController {
       }),
     )
     return result
+  }
+  @ApiOperationDecorator({
+    summary: "Assign roles to user",
+    description: "Assign roles to user in admin",
+    auth: true,
+  })
+  // @Permission([])
+  @Post("/role/assign-role-to-user")
+  async assignRoleToUser(@Body() data: AssignRoleToUserRequestDto) {
+    const command = new AssignRoleToUserCommand({
+      userId: data.userId,
+      roleId: data.roleId,
+    })
+    await this.userService.assignRoleToUser(command)
   }
 }

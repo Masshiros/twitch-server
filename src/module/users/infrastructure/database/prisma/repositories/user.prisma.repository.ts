@@ -388,8 +388,8 @@ export class PrismaUserRepository implements IUserRepository {
 
       const users = await this.prismaService.user.findMany({
         where: { ...filters },
-        skip: offset,
-        take: limit,
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
 
         select: {
           id: true,
@@ -732,6 +732,26 @@ export class PrismaUserRepository implements IUserRepository {
   async getRoleByName(name: string): Promise<Role | null> {
     try {
       const role = await this.prismaService.role.findUnique({ where: { name } })
+      if (!role) {
+        return null
+      }
+      return RoleMapper.toDomain(role) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getRoleById(id: string): Promise<Role | null> {
+    try {
+      const role = await this.prismaService.role.findUnique({ where: { id } })
       if (!role) {
         return null
       }

@@ -14,13 +14,13 @@ export class GetAllUsersRequestDto {
   limit?: number
 
   @ApiPropertyOptional({
-    description: "The number of users to skip",
-    example: 0,
+    description: "Which page to display",
+    example: 1,
   })
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  offset?: number
+  page?: number
 
   @ApiPropertyOptional({
     description: "Filters to apply to the user list",

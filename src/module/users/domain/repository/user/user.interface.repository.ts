@@ -58,6 +58,7 @@ export abstract class IUserRepository {
   deleteLoginHistory: (id: string) => Promise<void>
   // roles
   getRoleByName: (name: string) => Promise<Role | null>
+  getRoleById: (id: string) => Promise<Role | null>
   assignRoleToUser: (role: Role, user: UserAggregate) => Promise<void>
   assignPermissionToRole: (role: Role, permission: Permission) => Promise<void>
   getUserRoles: (user: UserAggregate) => Promise<Role[] | null>
