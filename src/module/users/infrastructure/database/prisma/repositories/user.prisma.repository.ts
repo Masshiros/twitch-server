@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { JwtService, JwtSignOptions, JwtVerifyOptions } from "@nestjs/jwt"
-import { Prisma } from "@prisma/client"
+import { Prisma, User } from "@prisma/client"
 import bcrypt from "bcrypt"
 import config from "libs/config"
 import {
@@ -822,19 +822,6 @@ export class PrismaUserRepository implements IUserRepository {
   }
   async assignRoleToUser(role: Role, user: UserAggregate): Promise<void> {
     try {
-      const existingUserRole = await this.prismaService.userRole.findFirst({
-        where: {
-          roleId: role.id,
-          userId: user.id,
-        },
-      })
-
-      if (existingUserRole) {
-        throw new InfrastructureError({
-          code: InfrastructureErrorCode.BAD_REQUEST,
-          message: "Already exist",
-        })
-      }
       const existingUser = await this.prismaService.user.findFirst({
         where: { id: user.id },
       })
@@ -845,12 +832,24 @@ export class PrismaUserRepository implements IUserRepository {
           message: "User does not exist",
         })
       }
-
-      await this.prismaService.userRole.create({
-        data: {
-          roleId: role.id,
-          userId: user.id,
+      // const existingUserRole = await this.prismaService.userRole.findFirst({
+      //   where: {
+      //     roleId: role.id,
+      //     userId: user.id,
+      //   },
+      // })
+      await this.prismaService.userRole.upsert({
+        where: {
+          userId_roleId: {
+            userId: user.id,
+            roleId: role.id,
+          },
         },
+        create: {
+          userId: user.id,
+          roleId: role.id,
+        },
+        update: {},
       })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -865,26 +864,58 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async removeRoleFromUser(role: Role, user: UserAggregate): Promise<void> {
+    try {
+      await this.prismaService.userRole.deleteMany({
+        where: {
+          roleId: role.id,
+          userId: user.id,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async assignPermissionToRole(
     role: Role,
     permission: Permission,
   ): Promise<void> {
     try {
-      const existingRolePermission =
-        await this.prismaService.rolePermission.findFirst({
-          where: {
+      const existingRole = await this.prismaService.role.findUnique({
+        where: { id: role.id },
+      })
+      if (!existingRole) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.BAD_REQUEST,
+          message: "Role does not exist",
+        })
+      }
+      // const existingRolePermission =
+      //   await this.prismaService.rolePermission.findFirst({
+      //     where: {
+      //       roleId: role.id,
+      //       permissionId: permission.id,
+      //     },
+      //   })
+
+      await this.prismaService.rolePermission.upsert({
+        where: {
+          roleId_permissionId: {
             roleId: role.id,
             permissionId: permission.id,
           },
-        })
-      if (existingRolePermission) {
-        throw new InfrastructureError({
-          code: InfrastructureErrorCode.BAD_REQUEST,
-          message: "Already exist",
-        })
-      }
-      await this.prismaService.rolePermission.create({
-        data: { roleId: role.id, permissionId: permission.id },
+        },
+        create: {
+          roleId: role.id,
+          permissionId: permission.id,
+        },
+        update: {},
       })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -892,6 +923,27 @@ export class PrismaUserRepository implements IUserRepository {
       }
       if (error instanceof InfrastructureError) {
         throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async removePermissionFromRole(
+    role: Role,
+    permission: Permission,
+  ): Promise<void> {
+    try {
+      await this.prismaService.rolePermission.deleteMany({
+        where: {
+          roleId: role.id,
+          permissionId: permission.id,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
       }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,

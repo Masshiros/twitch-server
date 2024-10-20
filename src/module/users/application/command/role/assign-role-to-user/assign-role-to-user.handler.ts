@@ -6,6 +6,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { Role } from "src/module/users/domain/entity/roles.entity"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { AssignRoleToUserCommand } from "./assign-role-to-user.command"
 
@@ -34,27 +35,34 @@ export class AssignRoleToUserHandler {
           },
         })
       }
-      const userRole = await Promise.all(
-        roleId.map(async (e) => {
-          const role = await this.userRepository.getRoleById(e)
-          if (!role) {
-            throw new CommandError({
-              code: CommandErrorCode.BAD_REQUEST,
-              message: "Role not found",
-              info: {
-                errorCode: CommandErrorDetailCode.NOT_FOUND,
-              },
-            })
-          }
-          return role
-        }),
-      )
+      const existingRoles = await this.userRepository.getUserRoles(user)
+      const userRole: Role[] = []
+      for (const e of roleId) {
+        const role = await this.userRepository.getRoleById(e)
+
+        if (!role) {
+          throw new CommandError({
+            code: CommandErrorCode.BAD_REQUEST,
+            message: "Role not found",
+            info: {
+              errorCode: CommandErrorDetailCode.NOT_FOUND,
+            },
+          })
+        }
+        if (!existingRoles.find((r) => r.id === role.id)) {
+          userRole.push(role)
+        }
+      }
       user.roles = userRole
-      await Promise.all(
-        user.roles.map((role) =>
-          this.userRepository.assignRoleToUser(role, user),
-        ),
+      const rolesToRemove = existingRoles.filter(
+        (existingRole) => !roleId.includes(existingRole.id),
       )
+      for (const role of rolesToRemove) {
+        await this.userRepository.removeRoleFromUser(role, user)
+      }
+      for (const role of user.roles) {
+        await this.userRepository.assignRoleToUser(role, user)
+      }
     } catch (err) {
       if (
         err instanceof DomainError ||

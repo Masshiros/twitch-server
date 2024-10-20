@@ -6,6 +6,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { Permission } from "src/module/users/domain/entity/permissions.entity"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { AssignPermissionToRoleCommand } from "./assign-permission-to-role.command"
 
@@ -34,26 +35,34 @@ export class AssignPermissionToRoleHandler {
           },
         })
       }
-      const rolePermissions = await Promise.all(
-        permissionsId.map(async (e) => {
-          const permission = await this.userRepository.getPermissionById(e)
-          if (!permission) {
-            throw new CommandError({
-              code: CommandErrorCode.BAD_REQUEST,
-              message: "Permission not found",
-              info: {
-                errorCode: CommandErrorDetailCode.NOT_FOUND,
-              },
-            })
-          }
-          return permission
-        }),
+      const existingPermissions =
+        await this.userRepository.getRolePermissions(role)
+
+      const rolePermissions: Permission[] = []
+      for (const e of permissionsId) {
+        const permission = await this.userRepository.getPermissionById(e)
+        if (!permission) {
+          throw new CommandError({
+            code: CommandErrorCode.BAD_REQUEST,
+            message: "Permission not found",
+            info: {
+              errorCode: CommandErrorDetailCode.NOT_FOUND,
+            },
+          })
+        }
+        if (!existingPermissions.find((r) => r.id === permission.id)) {
+          rolePermissions.push(permission)
+        }
+      }
+      const permissionToRemove = existingPermissions.filter(
+        (e) => !permissionsId.includes(e.id),
       )
-      await Promise.all(
-        rolePermissions.map((permission) =>
-          this.userRepository.assignPermissionToRole(role, permission),
-        ),
-      )
+      for (const permission of permissionToRemove) {
+        await this.userRepository.removePermissionFromRole(role, permission)
+      }
+      for (const permission of rolePermissions) {
+        await this.userRepository.assignPermissionToRole(role, permission)
+      }
     } catch (err) {
       if (
         err instanceof DomainError ||
