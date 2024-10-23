@@ -47,6 +47,7 @@ model User {
   userCategories            UsersCategories[]   @relation("Users")
   followedBy                Follower[]          @relation("UserFollowing")  
   following                 Follower[]          @relation("UserFollowers") 
+  notificationsUsers NotificationUser[]
   @@index([isLive])
   @@index([isActive])
   @@map("users")
@@ -98,6 +99,35 @@ model RolePermission {
   @@id([roleId, permissionId])
   @@map("rolePermissions")
 }
+enum ENotification{
+  USER
+  LIVESTREAM
+  CHAT
+}
+model Notification {
+  id        String          @id @default(uuid())
+  title     String
+  message   String
+  slug      String
+  type      ENotification
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  notificationsUsers NotificationUser[]
+
+  @@map("notifications")
+}
+model NotificationUser {
+  userId         String
+  notificationId String
+  hasRead        Boolean       @default(false)
+  user           User          @relation(fields: [userId], references: [id])
+  notification   Notification  @relation(fields: [notificationId], references: [id])
+  createdAt      DateTime      @default(now())
+  @@id([userId, notificationId]) 
+  @@map("notificationsUser")
+}
+
 model Follower {
   sourceUserId  String
   destinationUserId String
