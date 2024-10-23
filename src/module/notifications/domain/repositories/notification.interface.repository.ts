@@ -11,6 +11,20 @@ export abstract class INotificationRepository {
   getAllNotificationWithPagination: (
     receiver: UserAggregate,
     notification: Notification,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit: number
+      offset: number
+      orderBy: string
+      order: "asc" | "desc"
+    },
   ) => Promise<Notification[] | null>
-  markAsRead: (notificationId: string) => Promise<void>
+  markAsRead: (
+    notification: Notification,
+    receiver: UserAggregate,
+  ) => Promise<void>
 }

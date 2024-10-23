@@ -3,7 +3,7 @@ import { BaseEntity } from "src/common/entity"
 import { ENotification } from "../enum/notification.enum"
 
 interface NotificationProps {
-  receiverId: string
+  senderId: string
   title: string
   message: string
   slug: string
@@ -13,6 +13,7 @@ interface NotificationProps {
   deletedAt?: Date
 }
 export class Notification extends BaseEntity {
+  private _senderId: string
   private _title: string
   private _message: string
   private _slug: string
@@ -21,6 +22,7 @@ export class Notification extends BaseEntity {
   constructor(props: NotificationProps, id?: string) {
     super()
     this._id = id || randomUUID()
+    this._senderId = props.senderId
     this._title = props.title ?? ""
     this._message = props.message ?? ""
     this._slug = props.slug ?? ""
@@ -28,6 +30,12 @@ export class Notification extends BaseEntity {
     this._createdAt = props.createdAt ?? new Date()
     this._updatedAt = props.updatedAt ?? null
     this._deletedAt = props.deletedAt ?? null
+  }
+  get senderId(): string {
+    return this._senderId
+  }
+  set senderId(value: string) {
+    this._senderId = value
   }
   get title(): string {
     return this._title

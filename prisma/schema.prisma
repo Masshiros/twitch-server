@@ -116,7 +116,7 @@ model Notification {
   type      ENotification
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-
+  deletedAt DateTime?
   sender      User            @relation("UserAsSender", fields: [senderId], references: [id])
   notificationsUsers NotificationUser[]
 

@@ -6,22 +6,19 @@ interface NotificationUserProps {
   notificationId: string
   hasRead: boolean
   createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
 }
-export class NotificationUser extends BaseEntity {
+export class NotificationUser {
   private _receiverId: string
   private _notificationId: string
   private _hasRead: boolean
-  constructor(props: NotificationUserProps, id?: string) {
-    super()
-    this._id = id || randomUUID()
+  private _createdAt: Date
+  private _updatedAt: Date
+  private _deletedAt: Date
+  constructor(props: NotificationUserProps) {
     this._receiverId = props.receiverId
     this._notificationId = props.notificationId
     this._hasRead = props.hasRead
     this._createdAt = props.createdAt || new Date()
-    this._updatedAt = props.updatedAt || null
-    this._deletedAt = props.deletedAt || null
   }
   get receiverId(): string {
     return this._receiverId
@@ -40,5 +37,8 @@ export class NotificationUser extends BaseEntity {
   }
   set hasRead(value: boolean) {
     this._hasRead = value
+  }
+  get createdAt(): Date {
+    return this._createdAt
   }
 }

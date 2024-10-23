@@ -1,5 +1,5 @@
 export enum ENotification {
-  USER = "user",
-  LIVESTREAM = "livestream",
-  CHAT = "chat",
+  USER = "USER",
+  LIVESTREAM = "LIVESTREAM",
+  CHAT = "CHAT",
 }
