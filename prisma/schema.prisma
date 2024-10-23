@@ -47,7 +47,10 @@ model User {
   userCategories            UsersCategories[]   @relation("Users")
   followedBy                Follower[]          @relation("UserFollowing")  
   following                 Follower[]          @relation("UserFollowers") 
-  notificationsUsers NotificationUser[]
+  sentNotifications    Notification[]      @relation("UserAsSender")
+  receivedNotifications NotificationUser[]
+
+  
   @@index([isLive])
   @@index([isActive])
   @@map("users")
@@ -106,6 +109,7 @@ enum ENotification{
 }
 model Notification {
   id        String          @id @default(uuid())
+  senderId String
   title     String
   message   String
   slug      String
@@ -113,18 +117,20 @@ model Notification {
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 
+  sender      User            @relation("UserAsSender", fields: [senderId], references: [id])
   notificationsUsers NotificationUser[]
 
   @@map("notifications")
 }
 model NotificationUser {
-  userId         String
+  receiverId         String
+  
   notificationId String
   hasRead        Boolean       @default(false)
-  user           User          @relation(fields: [userId], references: [id])
+  user           User          @relation(fields: [receiverId], references: [id])
   notification   Notification  @relation(fields: [notificationId], references: [id])
   createdAt      DateTime      @default(now())
-  @@id([userId, notificationId]) 
+  @@id([receiverId, notificationId]) 
   @@map("notificationsUser")
 }
 
