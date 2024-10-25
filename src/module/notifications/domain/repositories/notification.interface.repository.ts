@@ -10,7 +10,6 @@ export abstract class INotificationRepository {
   ) => Promise<void>
   getAllNotificationWithPagination: (
     receiver: UserAggregate,
-    notification: Notification,
     {
       limit,
       offset,

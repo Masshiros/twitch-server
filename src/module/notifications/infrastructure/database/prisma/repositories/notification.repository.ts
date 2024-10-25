@@ -107,7 +107,7 @@ export class NotifcationRepository implements INotificationRepository {
   }
   async getAllNotificationWithPagination(
     receiver: UserAggregate,
-    notification: Notification,
+
     {
       limit = 1,
       offset = 0,

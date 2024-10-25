@@ -6,6 +6,7 @@ import {
 import { NestFactory, Reflector } from "@nestjs/core"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import config from "libs/config"
+import { RedisIoAdapter } from "libs/config/redis.adapter"
 import { ErrorInterceptor } from "libs/interceptor/error.interceptor"
 import { LoggerInterceptor } from "libs/interceptor/logger.interceptor"
 import { TransformInterceptor } from "libs/interceptor/response.interceptor"
@@ -60,6 +61,10 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor(new Reflector()))
   app.useGlobalInterceptors(new ErrorInterceptor())
   app.useGlobalInterceptors(new LoggerInterceptor())
+  // redis adapter
+  const redisIoAdapter = new RedisIoAdapter(app)
+  await redisIoAdapter.connectToRedis()
+  app.useWebSocketAdapter(redisIoAdapter)
   await app.listen(config.APP_PORT || 3000)
 }
 
