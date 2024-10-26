@@ -14,7 +14,7 @@ import { NotificationMapper } from "../mapper/notification.mapper"
 import { NotificationUserMapper } from "../mapper/notificcation-user.mapper"
 
 @Injectable()
-export class NotifcationRepository implements INotificationRepository {
+export class NotificationRepository implements INotificationRepository {
   constructor(private readonly prismaService: PrismaService) {}
   async getNotificationById(
     notificationId: string,

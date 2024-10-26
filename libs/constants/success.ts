@@ -53,4 +53,7 @@ export const SuccessMessages = {
     GET_ALL_PERMISSIONS: "Get all permissions successfully",
     GET_USER_PERMISSIONS: "Get user's permissions successfully",
   },
+  notifications: {
+    MARK_AS_READ: "Mark as read successfully",
+  },
 }

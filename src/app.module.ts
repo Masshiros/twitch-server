@@ -6,6 +6,7 @@ import { AuthGuard } from "./guard/auth.guard"
 import { PermissionGuard } from "./guard/permission.guard"
 import { CategoriesModule } from "./module/categories/application/categories.module"
 import { FollowerModule } from "./module/followers/application/follower.module"
+import { NotificationsModule } from "./module/notifications/application/notifications.module"
 import { UserModule } from "./module/users/application/user.module"
 import { UserDatabaseModule } from "./module/users/infrastructure/database/user.database.module"
 
@@ -16,6 +17,7 @@ import { UserDatabaseModule } from "./module/users/infrastructure/database/user.
     UserDatabaseModule,
     FollowerModule,
     CategoriesModule,
+    NotificationsModule,
   ],
   providers: [
     {
