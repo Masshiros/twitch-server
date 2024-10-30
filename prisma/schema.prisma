@@ -49,7 +49,14 @@ model User {
   following                 Follower[]          @relation("UserFollowers") 
   sentNotifications    Notification[]      @relation("UserAsSender")
   receivedNotifications NotificationUser[]
-
+  ownedGroups               Group[]                 @relation("GroupOwner")
+  groupMemberships          GroupMember[]
+  userPosts                 UserPost[]             
+  groupPosts                GroupPost[]             
+  postReactions             PostReaction[]         
+  // commentReactions          CommentReaction[]       
+  // comments                  Comment[]      
+  viewPermissions           UserPostViewPermission[]         
   
   @@index([isLive])
   @@index([isActive])
@@ -270,3 +277,146 @@ model Token{
   deletedAt       DateTime?
   @@map("tokens")
 }
+// post
+// Enum Definitions
+enum EGroupVisibility {
+  PUBLIC
+  PRIVATE
+  HIDDEN
+}
+
+enum EGroupRole {
+  MEMBER
+  ADMIN
+}
+
+enum EUserPostVisibility {
+  PUBLIC
+  FRIENDS_ONLY
+  SPECIFIC
+  ONLY_ME
+}
+
+enum EReactionType {
+  LIKE
+  LOVE
+  HAHA
+  WOW
+  SAD
+  ANGRY
+}
+model Group {
+  id            String          @id @default(uuid())
+  ownerId       String          
+  owner         User             @relation("GroupOwner", fields: [ownerId], references: [id])
+  name          String
+  description   String
+  visibility    EGroupVisibility
+  joinLink      String?
+  createdAt     DateTime        @default(now())
+  members       GroupMember[]
+  posts         GroupPost[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  groupId       String          // FK for Group
+  userId        String          // FK for User
+  joinedAt      DateTime        @default(now())
+  role          EGroupRole
+  
+  group         Group           @relation(fields: [groupId], references: [id])
+  user          User            @relation(fields: [userId], references: [id])
+
+  @@id([groupId, userId])       // Composite key
+  @@map("groupMembers")
+}
+
+// User Post and Visibility Models
+model UserPost {
+  id               String            @id @default(uuid())
+  userId           String            // FK for User
+  content          String
+  totalViewCount   Int               @default(0)
+  visibility       EUserPostVisibility
+  createdAt        DateTime          @default(now())
+  
+  user             User              @relation(fields: [userId], references: [id])
+  viewPermissions  UserPostViewPermission[]
+   reactions        PostReaction[]    @relation("UserPostReactions")
+  // comments         Comment[]         @relation("UserPostComments")
+
+  @@map("userPosts")
+}
+
+model UserPostViewPermission {
+  postId           String           
+  viewerId         String            
+
+  post             UserPost          @relation(fields: [postId], references: [id])
+  viewer           User              @relation(fields: [viewerId], references: [id])
+
+  @@id([postId, viewerId])           
+  @@map("userPostViewPermissions")
+}
+
+// Group Post Models
+model GroupPost {
+  id               String            @id @default(uuid())
+  userId           String            // FK for User
+  groupId          String            // FK for Group
+  content          String
+  totalViewCount   Int               @default(0)
+  createdAt        DateTime          @default(now())
+  
+  user             User              @relation(fields: [userId], references: [id])
+  group            Group             @relation(fields: [groupId], references: [id])
+  // reactions        PostReaction[]    @relation("GroupPostReactions")
+  // comments         Comment[]         @relation("GroupPostComments")
+
+  @@map("groupPosts")
+}
+
+// Reaction and Comment Models
+model PostReaction {
+  userId           String            // FK for User
+  postId           String            // FK for either UserPost or GroupPost
+  type             EReactionType
+  
+  user             User              @relation(fields: [userId], references: [id])
+  post             UserPost?         @relation("UserPostReactions", fields: [postId], references: [id])
+
+  @@id([userId, postId])             // Composite key
+  @@map("postReactions")
+}
+
+// model Comment {
+//   id               String            @id @default(uuid())
+//   userId           String            
+//   postId           String          
+//   content          String
+//   replyToId        String?           
+
+//   user             User              @relation(fields: [userId], references: [id])
+//   post             UserPost?         @relation("UserPostComments", fields: [postId], references: [id])
+//   groupPost        GroupPost?        @relation("GroupPostComments", fields: [postId], references: [id])
+//   replyTo          Comment?          @relation("CommentReplies", fields: [replyToId], references: [id])
+//   replies          Comment[]         @relation("CommentReplies")
+
+//   reactions        CommentReaction[]
+
+//   @@map("comments")
+// }
+
+// model CommentReaction {
+//   userId           String            // FK for User
+//   commentId        String            // FK for Comment
+//   type             EReactionType
+  
+//   user             User              @relation(fields: [userId], references: [id])
+//   comment          Comment           @relation(fields: [commentId], references: [id])
+
+//   @@id([userId, commentId])          // Composite key
+//   @@map("commentReactions")
+// }
