@@ -56,7 +56,9 @@ model User {
   postReactions             PostReaction[]         
   // commentReactions          CommentReaction[]       
   // comments                  Comment[]      
-  viewPermissions           UserPostViewPermission[]         
+  viewPermissions           UserPostViewPermission[]  
+  hiddenUsers               HiddenUser[]         @relation("UserWhoHides")
+  hiddenByUsers             HiddenUser[]         @relation("HiddenUser")       
   
   @@index([isLive])
   @@index([isActive])
@@ -304,6 +306,16 @@ enum EReactionType {
   WOW
   SAD
   ANGRY
+}
+model HiddenUser {
+  userId       String  // The user who is hiding other users' posts
+  hiddenUserId String  // The user whose posts are hidden
+
+  user         User    @relation("UserWhoHides", fields: [userId], references: [id])
+  hiddenUser   User    @relation("HiddenUser", fields: [hiddenUserId], references: [id])
+
+  @@id([userId, hiddenUserId])  
+  @@map("hidden_users")
 }
 model Group {
   id            String          @id @default(uuid())

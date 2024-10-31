@@ -5,3 +5,11 @@ export enum tokenType {
   ResetPasswordToken = "ResetPasswordToken",
   DeviceToken = "DeviceToken",
 }
+export enum EReactionType {
+  LIKE = "LIKE",
+  LOVE = "LOVE",
+  HAHA = "HAHA",
+  WOW = "WOW",
+  SAD = "SAD",
+  ANGRY = "ANGRY",
+}
