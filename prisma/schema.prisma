@@ -51,8 +51,8 @@ model User {
   receivedNotifications NotificationUser[]
   ownedGroups               Group[]                 @relation("GroupOwner")
   groupMemberships          GroupMember[]
-  userPosts                 UserPost[]             
-  groupPosts                GroupPost[]             
+  userPosts                 Post[]             
+            
   postReactions             PostReaction[]         
   // commentReactions          CommentReaction[]       
   // comments                  Comment[]      
@@ -313,7 +313,9 @@ model HiddenUser {
 
   user         User    @relation("UserWhoHides", fields: [userId], references: [id])
   hiddenUser   User    @relation("HiddenUser", fields: [hiddenUserId], references: [id])
-
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
   @@id([userId, hiddenUserId])  
   @@map("hidden_users")
 }
@@ -326,8 +328,10 @@ model Group {
   visibility    EGroupVisibility
   joinLink      String?
   createdAt     DateTime        @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
   members       GroupMember[]
-  posts         GroupPost[]
+  posts         Post[]
 
   @@map("groups")
 }
@@ -337,7 +341,9 @@ model GroupMember {
   userId        String          // FK for User
   joinedAt      DateTime        @default(now())
   role          EGroupRole
-  
+  createdAt     DateTime        @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
   group         Group           @relation(fields: [groupId], references: [id])
   user          User            @relation(fields: [userId], references: [id])
 
@@ -346,49 +352,55 @@ model GroupMember {
 }
 
 // User Post and Visibility Models
-model UserPost {
+model Post {
   id               String            @id @default(uuid())
   userId           String            // FK for User
+  groupId          String? 
   content          String
   totalViewCount   Int               @default(0)
   visibility       EUserPostVisibility
   createdAt        DateTime          @default(now())
-  
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
   user             User              @relation(fields: [userId], references: [id])
+  group            Group?              @relation(fields: [groupId], references: [id])
   viewPermissions  UserPostViewPermission[]
    reactions        PostReaction[]    @relation("UserPostReactions")
   // comments         Comment[]         @relation("UserPostComments")
 
-  @@map("userPosts")
+  @@map("posts")
 }
 
 model UserPostViewPermission {
   postId           String           
   viewerId         String            
 
-  post             UserPost          @relation(fields: [postId], references: [id])
-  viewer           User              @relation(fields: [viewerId], references: [id])
-
+  post             Post          @relation(fields: [postId], references: [id],onDelete: Cascade)
+  viewer           User              @relation(fields: [viewerId], references: [id],onDelete: Cascade)
+  createdAt        DateTime          @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
   @@id([postId, viewerId])           
   @@map("userPostViewPermissions")
 }
 
 // Group Post Models
-model GroupPost {
-  id               String            @id @default(uuid())
-  userId           String            // FK for User
-  groupId          String            // FK for Group
-  content          String
-  totalViewCount   Int               @default(0)
-  createdAt        DateTime          @default(now())
-  
-  user             User              @relation(fields: [userId], references: [id])
-  group            Group             @relation(fields: [groupId], references: [id])
-  // reactions        PostReaction[]    @relation("GroupPostReactions")
-  // comments         Comment[]         @relation("GroupPostComments")
+// model GroupPost {
+//   id               String            @id @default(uuid())
+//   userId           String            // FK for User
+//   groupId          String            // FK for Group
+//   content          String
+//   totalViewCount   Int               @default(0)
+//   createdAt        DateTime          @default(now())
+//   updatedAt       DateTime  @default(now()) @updatedAt
+//   deletedAt       DateTime?
+//   user             User              @relation(fields: [userId], references: [id])
+//   group            Group             @relation(fields: [groupId], references: [id])
+//   // reactions        PostReaction[]    @relation("GroupPostReactions")
+//   // comments         Comment[]         @relation("GroupPostComments")
 
-  @@map("groupPosts")
-}
+//   @@map("groupPosts")
+// }
 
 // Reaction and Comment Models
 model PostReaction {
@@ -396,9 +408,11 @@ model PostReaction {
   postId           String            // FK for either UserPost or GroupPost
   type             EReactionType
   
-  user             User              @relation(fields: [userId], references: [id])
-  post             UserPost?         @relation("UserPostReactions", fields: [postId], references: [id])
-
+  user             User              @relation(fields: [userId], references: [id],onDelete: Cascade)
+  post             Post?         @relation("UserPostReactions", fields: [postId], references: [id],onDelete: Cascade)
+  createdAt        DateTime          @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
   @@id([userId, postId])             // Composite key
   @@map("postReactions")
 }

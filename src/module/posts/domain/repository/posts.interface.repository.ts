@@ -7,10 +7,23 @@ import { EUserPostVisibility } from "../enum/posts.enum"
 export abstract class IPostsRepository {
   createPost: (post: Post) => Promise<void>
   findPostById: (postId: string) => Promise<Post | null>
-  updatePost: (postId: string, postData: Partial<Post>) => Promise<Post>
-  deletePost: (postId: string) => Promise<void>
+  updatePost: (data: Post) => Promise<void>
+  deletePost: (post: Post) => Promise<void>
   // user feed
-  getUserFeed: (userId: string) => Promise<Post[]>
+  getUserPost: (
+    userId: string,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit: number
+      offset: number
+      orderBy: string
+      order: "asc" | "desc"
+    },
+  ) => Promise<Post[]>
   getPostsByVisibility: (
     userId: string,
     visibility: EUserPostVisibility,
@@ -18,13 +31,9 @@ export abstract class IPostsRepository {
   // hide post
   hidePostsFromUser: (userId: string, hiddenUserId: string) => Promise<void>
   unhidePostsFromUser: (userId: string, hiddenUserId: string) => Promise<void>
-  isPostHiddenFromUser: (userId: string, postId: string) => Promise<boolean>
+  isPostHiddenFromUser: (user: UserAggregate, post: Post) => Promise<boolean>
   // reaction
-  addReactionToPost: (
-    post: Post,
-    user: UserAggregate,
-    reaction: PostReactions,
-  ) => Promise<void>
-  removeReactionFromPost: (post: Post, user: UserAggregate) => Promise<void>
+  addOrUpdateReactionToPost: (reaction: PostReactions) => Promise<void>
+  removeReactionFromPost: (reaction: PostReactions) => Promise<void>
   getPostReactions: (post: Post) => Promise<PostReactions[]>
 }
