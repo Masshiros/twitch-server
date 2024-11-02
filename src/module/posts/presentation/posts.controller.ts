@@ -8,8 +8,10 @@ import { Permission } from "libs/decorator/permission.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { ReactToPostCommand } from "../application/command/react-to-post/react-to-post.command"
+import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { PostsService } from "../application/posts.service"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
+import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 
 @ApiTags("posts")
 @Controller("posts")
@@ -28,5 +30,22 @@ export class PostsController {
   ): Promise<void> {
     const command = new ReactToPostCommand({ ...data, userId: user.id })
     await this.service.reactToPost(command)
+  }
+
+  @ApiOperationDecorator({
+    summary: "(Toggle) hide posts from user",
+    description:
+      "All posts of this user will be hidden or unhidden from new feed of current user",
+  })
+  @Post("hide-post-from-user")
+  async toggleHidePostFromUser(
+    @Body() data: ToggleHidePostsFromUserRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    const command = new ToggleHidePostsFromUserCommand({
+      ...data,
+      userId: user.id,
+    })
+    await this.service.toggleHidePostFromUser(command)
   }
 }

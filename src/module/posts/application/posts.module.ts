@@ -4,9 +4,10 @@ import { UserDatabaseModule } from "src/module/users/infrastructure/database/use
 import { PostsDatabaseModule } from "../infrastructure/database/posts.database.module"
 import { PostsController } from "../presentation/posts.controller"
 import { ReactToPostHandler } from "./command/react-to-post/react-to-post.handler"
+import { ToggleHidePostsFromUserHandler } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.handler"
 import { PostsService } from "./posts.service"
 
-const commandHandlers = [ReactToPostHandler]
+const commandHandlers = [ReactToPostHandler, ToggleHidePostsFromUserHandler]
 const queryHandlers = []
 @Module({
   controllers: [PostsController],

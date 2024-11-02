@@ -29,6 +29,10 @@ export abstract class IPostsRepository {
     visibility: EUserPostVisibility,
   ) => Promise<Post[]>
   // hide post
+  isUserHidden: (
+    user: UserAggregate,
+    hiddenUser: UserAggregate,
+  ) => Promise<boolean>
   hidePostsFromUser: (userId: string, hiddenUserId: string) => Promise<void>
   unhidePostsFromUser: (userId: string, hiddenUserId: string) => Promise<void>
   isPostHiddenFromUser: (user: UserAggregate, post: Post) => Promise<boolean>

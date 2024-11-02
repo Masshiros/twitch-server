@@ -269,6 +269,36 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
+  async isUserHidden(
+    user: UserAggregate,
+    hiddenUser: UserAggregate,
+  ): Promise<boolean> {
+    try {
+      const existingHiddenUser = await this.prismaService.hiddenUser.findUnique(
+        {
+          where: {
+            userId_hiddenUserId: {
+              userId: user.id,
+              hiddenUserId: hiddenUser.id,
+            },
+          },
+        },
+      )
+      return !!existingHiddenUser
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async hidePostsFromUser(userId: string, hiddenUserId: string): Promise<void> {
     try {
       const existingHiddenUser = await this.prismaService.hiddenUser.findUnique(
