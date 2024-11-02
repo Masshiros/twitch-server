@@ -52,6 +52,12 @@ export class EnvironmentVariables {
   REDIS_HOST: string
   @IsNotEmpty()
   REDIS_PORT: number
+  @IsNotEmpty()
+  CLOUDINARY_CLOUD_NAME: string
+  @IsNotEmpty()
+  CLOUDINARY_API_KEY: string
+  @IsNotEmpty()
+  CLOUDINARY_API_SECRET: string
 }
 export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
@@ -93,5 +99,8 @@ const config = {
   TWILIO_VERIFICATION_SERVICE_SID: process.env.TWILIO_VERIFICATION_SERVICE_SID,
   REDIS_HOST: process.env.REDIS_HOST,
   REDIS_PORT: +process.env.REDIS_PORT,
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 }
 export default config
