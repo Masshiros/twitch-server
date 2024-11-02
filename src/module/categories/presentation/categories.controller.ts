@@ -128,6 +128,7 @@ export class CategoriesController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.categories.DELETE_CATEGORY)
+  @Permission([Permissions.Categories.Delete])
   @Delete("/:id")
   async deleteCategory(@Param() param: DeleteCategoryRequestDto) {
     const command = new DeleteCategoryCommand({ categoryId: param.id })
@@ -139,6 +140,7 @@ export class CategoriesController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.categories.UPDATE_CATEGORY)
+  @Permission([Permissions.Categories.Update])
   @Patch("/:id")
   async updateCategory(
     @Param("id") id: string,
@@ -168,6 +170,7 @@ export class CategoriesController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.tags.CREATE_TAG)
+  @Permission([Permissions.Tags.Create])
   @Post("/tags")
   async createTag(@Body() body: CreateTagRequestDto) {
     const command = new CreateTagCommand(body)
@@ -179,6 +182,7 @@ export class CategoriesController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.tags.DELETE_TAG)
+  @Permission([Permissions.Tags.Delete])
   @Delete("/tags/:id")
   async deleteTag(@Param() param: DeleteTagRequestDto) {
     const command = new DeleteTagCommand({ tagId: param.id })
@@ -189,7 +193,8 @@ export class CategoriesController {
     description: "Update tag",
     auth: true,
   })
-  @ResponseMessage(SuccessMessages.tags.DELETE_TAG)
+  @ResponseMessage(SuccessMessages.tags.UPDATE_TAG)
+  @Permission([Permissions.Tags.Update])
   @Patch("/tags/:id")
   async updateTag(@Param("id") id: string, @Body() body: UpdateTagRequestDto) {
     const command = new UpdateTagCommand({ tagId: id, ...body })
@@ -201,6 +206,7 @@ export class CategoriesController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.tags.ASSIGN_TAGS_TO_CATEGORY)
+  @Permission([Permissions.Categories.Update, Permissions.Tags.Update])
   @Post("/tags/assign-to-category")
   async assignTagsToCategory(@Body() body: AssignTagsToCategoryRequestDto) {
     const command = new AssignTagsToCategoryCommand({

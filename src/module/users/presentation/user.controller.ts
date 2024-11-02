@@ -12,6 +12,7 @@ import {
 import { ApiTags } from "@nestjs/swagger"
 import { plainToInstance } from "class-transformer"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
+import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
@@ -63,6 +64,7 @@ export class UserController {
     description: "Delete a user",
     auth: true,
   })
+  @Permission([Permissions.Users.Delete])
   @ResponseMessage(SuccessMessages.user.DELETE_USER)
   @Delete("/:id")
   async deleteUser(@Param() param: DeleteUserRequestDto) {
@@ -76,6 +78,7 @@ export class UserController {
     type: null,
     auth: true,
   })
+  @Permission([Permissions.Users.Update])
   @ResponseMessage(SuccessMessages.user.UPDATE_BIO)
   @Patch("/:id")
   async updateBio(
@@ -94,6 +97,7 @@ export class UserController {
     type: null,
     auth: true,
   })
+  @Permission([Permissions.Users.Update])
   @ResponseMessage(SuccessMessages.user.UPDATE_USERNAME)
   @Patch("/username/:id")
   async updateUsername(
@@ -158,6 +162,7 @@ export class UserController {
     description: "Activate or deactivate user",
     type: ToggleActivateRequestDto,
   })
+  @Permission([Permissions.Users.Create])
   @ResponseMessage(SuccessMessages.user.TOGGLE_ACTIVATE)
   @Post("/toggle-activate")
   async toggleActivate(@Body() body: ToggleActivateRequestDto) {
@@ -170,6 +175,7 @@ export class UserController {
     description: "Get list devices user has logged in",
     auth: true,
   })
+  @Permission([Permissions.Devices.Read])
   @ResponseMessage(SuccessMessages.user.GET_LIST_DEVICES)
   @Get("/list-devices")
   async getListDevices(
@@ -193,6 +199,7 @@ export class UserController {
     description: "Get list login histories user has logged in",
     auth: true,
   })
+  @Permission([Permissions.LoginHistories.Read])
   @ResponseMessage(SuccessMessages.user.GET_LIST_HISTORIES)
   @Get("/list-login-histories")
   async getListLoginHistories(
@@ -217,6 +224,7 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @Permission([Permissions.Roles.Update, Permissions.Users.Create])
   @ResponseMessage(SuccessMessages.roles.ASSIGN_ROLE_TO_USER)
   @Post("/role/assign-role-to-user")
   async assignRoleToUser(@Body() data: AssignRoleToUserRequestDto) {
@@ -233,6 +241,12 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @Permission([
+    Permissions.Roles.Create,
+    Permissions.Permissions.Create,
+    Permissions.Roles.Update,
+    Permissions.Permissions.Update,
+  ])
   @ResponseMessage(SuccessMessages.roles.ASSIGN_PERMISSION_TO_ROLE)
   @Post("/role/assign-permissions-to-role")
   async assignPermissionsToRole(
@@ -251,6 +265,7 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @Permission([Permissions.Roles.Read])
   @ResponseMessage(SuccessMessages.roles.GET_ALL_ROLES)
   @Get("/role")
   async getAllRoles(
@@ -268,6 +283,7 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @Permission([Permissions.Roles.Read])
   @ResponseMessage(SuccessMessages.roles.GET_USER_ROLES)
   @Get("/role/user/:userId")
   async getUserRoles(
@@ -283,6 +299,7 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @Permission([Permissions.Permissions.Read])
   @ResponseMessage(SuccessMessages.roles.GET_ALL_PERMISSIONS)
   @Get("/permission")
   async getAllPermissions(
@@ -300,6 +317,7 @@ export class UserController {
     auth: true,
   })
   // @Permission([])
+  @Permission([Permissions.Permissions.Read])
   @ResponseMessage(SuccessMessages.roles.GET_USER_PERMISSIONS)
   @Get("/permission/user/:userId")
   async getUserPermissions(
