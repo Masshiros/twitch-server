@@ -65,6 +65,7 @@ export class FollowCommandHandler {
         destinationUserId,
       })
       await this.followRepository.addFollower(follow)
+      // TODO(notify): Notify to user who has been followed
     } catch (err) {
       if (
         err instanceof DomainError ||

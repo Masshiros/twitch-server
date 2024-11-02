@@ -18,7 +18,7 @@ import { PostMapper } from "../mapper/posts.prisma.mapper"
 export class PostsRepository implements IPostsRepository {
   constructor(private readonly prismaService: PrismaService) {}
   // user post
-  async createPost(post: Post): Promise<void> {
+  async createPost(post: Post, taggedUserIds: string[]): Promise<void> {
     try {
       const data = PostMapper.toPersistence(post)
       const existPost = await this.prismaService.post.findUnique({
@@ -30,7 +30,17 @@ export class PostsRepository implements IPostsRepository {
           message: "Already exist this data",
         })
       }
-      await this.prismaService.post.create({ data })
+      await this.prismaService.$transaction(async (prisma) => {
+        await this.prismaService.post.create({ data })
+        if (taggedUserIds && taggedUserIds.length > 0) {
+          const taggedUsersData = taggedUserIds.map((taggedUserId) => ({
+            postId: post.id,
+            taggedUserId,
+          }))
+
+          await prisma.postTaggedUser.createMany({ data: taggedUsersData })
+        }
+      })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

@@ -5,7 +5,7 @@ import { Post } from "../entity/posts.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
 
 export abstract class IPostsRepository {
-  createPost: (post: Post) => Promise<void>
+  createPost: (post: Post, taggedUserIds: string[]) => Promise<void>
   findPostById: (postId: string) => Promise<Post | null>
   updatePost: (data: Post) => Promise<void>
   deletePost: (post: Post) => Promise<void>

@@ -41,7 +41,7 @@ export class DeleteCategoryHandler {
       category.deletedAt = new Date()
       await Promise.all([
         this.categoryRepository.updateCategory(category),
-        this.categoryCacheRepository.getCategories,
+        this.categoryCacheRepository.invalidateCache(),
       ])
     } catch (err) {
       if (
