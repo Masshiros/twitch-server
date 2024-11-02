@@ -4,8 +4,36 @@ import { Roles } from "../libs/constants/roles"
 import { hashPassword } from "../utils/encrypt"
 
 const prisma = new PrismaClient()
+async function resetDatabase() {
+  console.log("Truncating all tables...")
 
+  const tables = await prisma.$queryRaw<Array<{ table_name: string }>>`
+  SELECT table_name 
+  FROM information_schema.tables 
+  WHERE table_schema = 'twitch'
+    AND table_type = 'BASE TABLE'
+    AND table_name NOT IN ('_prisma_migrations');
+`
+
+  // Disable foreign key constraints temporarily
+  await prisma.$executeRaw`SET session_replication_role = 'replica';`
+
+  for (const { table_name } of tables) {
+    try {
+      await prisma.$executeRawUnsafe(`TRUNCATE TABLE "${table_name}" CASCADE;`)
+      console.log(`Truncated table: ${table_name}`)
+    } catch (error) {
+      console.error(`Failed to truncate table: ${table_name}`, error)
+    }
+  }
+
+  // Re-enable foreign key constraints
+  await prisma.$executeRaw`SET session_replication_role = 'origin';`
+
+  console.log("All tables truncated.")
+}
 async function main() {
+  await resetDatabase()
   console.log("Start seeding ...")
 
   const roleNames = Object.values(Roles)
@@ -35,6 +63,19 @@ async function main() {
   const rolePermissionsMap = {
     [Roles.User]: [
       Permissions.Users.Read,
+      Permissions.Users.Update,
+      Permissions.Devices.Read,
+      Permissions.LoginHistories.Read,
+      Permissions.Followers.Create,
+      Permissions.Followers.Delete,
+      Permissions.Posts.Create,
+      Permissions.Posts.Delete,
+      Permissions.Posts.Update,
+      Permissions.Posts.Read,
+      Permissions.Reactions.Read,
+      Permissions.Reactions.Update,
+      Permissions.Reactions.Delete,
+      Permissions.Reactions.Create,
       Permissions.Followers.Read,
       Permissions.Categories.Read,
       Permissions.ExternalLinks.Update,

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,91 +6,88 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-// MODELS
 
 model User {
-  id                        String    @id @default(uuid())   
-  name                      String    @unique
-  displayName               String
-  slug                      String
-  email                     String    @unique
-  password                  String
-  phoneNumber               String
-  dob                       DateTime
-  emailVerifyToken          String    @default("")
-  phoneVerifyToken          String    @default("")
-  forgotPasswordToken       String    @default("")
-  otpToken                  String    @default("")
-  isLive                    Boolean   @default(false)  
-  isActive                  Boolean   @default(true)
-  is2FA                     Boolean   @default(false)
-  view                      Int       @default(0)
-  bio                       String?
-  avatar                    String?
-  thumbnail                 String?
-  lastUsernameChangeAt      DateTime? 
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @default(now()) @updatedAt
-  deletedAt                 DateTime?
-  userRoles                 UserRole[]
-  externalLinks             ExternalLink[]
-  devices                   Device[]
-  tokens                    Token[]
-  loginHistories            LoginHistory[]
-  CategoryFollowers         CategoryFollowers[] @relation("Users")
-  userCategories            UsersCategories[]   @relation("Users")
-  followedBy                Follower[]          @relation("UserFollowing")  
-  following                 Follower[]          @relation("UserFollowers") 
-  sentNotifications    Notification[]      @relation("UserAsSender")
+  id                    String                   @id @default(uuid())
+  name                  String                   @unique
+  displayName           String
+  slug                  String
+  email                 String                   @unique
+  password              String
+  phoneNumber           String
+  dob                   DateTime
+  emailVerifyToken      String                   @default("")
+  phoneVerifyToken      String                   @default("")
+  forgotPasswordToken   String                   @default("")
+  otpToken              String                   @default("")
+  isLive                Boolean                  @default(false)
+  isActive              Boolean                  @default(true)
+  is2FA                 Boolean                  @default(false)
+  view                  Int                      @default(0)
+  bio                   String?
+  avatar                String?
+  thumbnail             String?
+  lastUsernameChangeAt  DateTime?
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @default(now()) @updatedAt
+  deletedAt             DateTime?
+  CategoryFollowers     CategoryFollowers[]      @relation("Users")
+  devices               Device[]
+  externalLinks         ExternalLink[]
+  followedBy            Follower[]               @relation("UserFollowing")
+  following             Follower[]               @relation("UserFollowers")
+  groupMemberships      GroupMember[]
+  ownedGroups           Group[]                  @relation("GroupOwner")
+  hiddenByUsers         HiddenUser[]             @relation("HiddenUser")
+  hiddenUsers           HiddenUser[]             @relation("UserWhoHides")
+  loginHistories        LoginHistory[]
+  sentNotifications     Notification[]           @relation("UserAsSender")
   receivedNotifications NotificationUser[]
-  ownedGroups               Group[]                 @relation("GroupOwner")
-  groupMemberships          GroupMember[]
-  userPosts                 Post[]             
-            
-  postReactions             PostReaction[]         
-  // commentReactions          CommentReaction[]       
-  // comments                  Comment[]      
-  viewPermissions           UserPostViewPermission[]  
-  hiddenUsers               HiddenUser[]         @relation("UserWhoHides")
-  hiddenByUsers             HiddenUser[]         @relation("HiddenUser")  
-  // post tag
-  taggedUsers               PostTaggedUser[]        
-  
+  postReactions         PostReaction[]
+  userPosts             Post[]
+  taggedUsers           PostTaggedUser[]
+  tokens                Token[]
+  userCategories        UsersCategories[]        @relation("Users")
+  viewPermissions       UserPostViewPermission[]
+  userRoles             UserRole[]
+
   @@index([isLive])
   @@index([isActive])
   @@map("users")
-  
 }
+
 model Role {
-  id              String @id @default(uuid())
-  name            String  @unique
+  id              String           @id @default(uuid())
+  name            String           @unique
+  createdAt       DateTime         @default(now())
+  deletedAt       DateTime?
+  updatedAt       DateTime         @default(now()) @updatedAt
   rolePermissions RolePermission[]
   userRoles       UserRole[]
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @default(now()) @updatedAt
-  deletedAt                 DateTime?
+
   @@map("roles")
 }
 
 model Permission {
-  id          String @id @default(uuid())
-  name        String @unique
-  description String
+  id              String           @id @default(uuid())
+  name            String           @unique
+  description     String
+  createdAt       DateTime         @default(now())
+  deletedAt       DateTime?
+  updatedAt       DateTime         @default(now()) @updatedAt
   rolePermissions RolePermission[]
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @default(now()) @updatedAt
-  deletedAt                 DateTime?
+
   @@map("permissions")
 }
 
 model UserRole {
-  userId String
-  roleId String
-  user   User @relation(fields: [userId], references: [id])
-  role   Role @relation(fields: [roleId], references: [id])
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @default(now()) @updatedAt
-  deletedAt                 DateTime?
+  userId    String
+  roleId    String
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+  updatedAt DateTime  @default(now()) @updatedAt
+  role      Role      @relation(fields: [roleId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 
   @@id([userId, roleId])
   @@map("userRoles")
@@ -105,184 +96,299 @@ model UserRole {
 model RolePermission {
   roleId       String
   permissionId String
-  role         Role @relation(fields: [roleId], references: [id])
+  createdAt    DateTime   @default(now())
+  deletedAt    DateTime?
+  updatedAt    DateTime   @default(now()) @updatedAt
   permission   Permission @relation(fields: [permissionId], references: [id])
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @default(now()) @updatedAt
-  deletedAt                 DateTime?
+  role         Role       @relation(fields: [roleId], references: [id])
+
   @@id([roleId, permissionId])
   @@map("rolePermissions")
 }
-enum ENotification{
-  USER
-  LIVESTREAM
-  CHAT
-}
+
 model Notification {
-  id        String          @id @default(uuid())
-  senderId String
-  title     String
-  message   String
-  slug      String
-  type      ENotification
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  deletedAt DateTime?
-  sender      User            @relation("UserAsSender", fields: [senderId], references: [id])
+  id                 String             @id @default(uuid())
+  title              String
+  message            String
+  slug               String
+  type               ENotification
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  senderId           String
+  deletedAt          DateTime?
+  sender             User               @relation("UserAsSender", fields: [senderId], references: [id])
   notificationsUsers NotificationUser[]
 
   @@map("notifications")
 }
+
 model NotificationUser {
-  receiverId         String
-  
   notificationId String
-  hasRead        Boolean       @default(false)
-  user           User          @relation(fields: [receiverId], references: [id])
-  notification   Notification  @relation(fields: [notificationId], references: [id])
-  createdAt      DateTime      @default(now())
-  @@id([receiverId, notificationId]) 
+  hasRead        Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  receiverId     String
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  user           User         @relation(fields: [receiverId], references: [id])
+
+  @@id([receiverId, notificationId])
   @@map("notificationsUser")
 }
 
 model Follower {
-  sourceUserId  String
+  followDate        DateTime @default(now())
   destinationUserId String
-  followDate  DateTime @default(now())
-
-  sourceUser        User @relation("UserFollowers", fields: [sourceUserId], references: [id])
-  destinationUser   User @relation("UserFollowing", fields: [destinationUserId], references: [id])
+  sourceUserId      String
+  destinationUser   User     @relation("UserFollowing", fields: [destinationUserId], references: [id])
+  sourceUser        User     @relation("UserFollowers", fields: [sourceUserId], references: [id])
 
   @@id([sourceUserId, destinationUserId])
-  @@map("followers") 
+  @@map("followers")
 }
 
-model ExternalLink{
-  id                String    @id @default(uuid())
-  title             String    
-  url               String
-  userId            String
-  user              User      @relation(fields: [userId],references: [id])
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @default(now()) @updatedAt
-  deletedAt         DateTime?
+model ExternalLink {
+  id        String    @id @default(uuid())
+  title     String
+  url       String
+  userId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+
   @@map("externalLinks")
 }
-enum ECategory {
-  USER
-  LIVESTREAM
-}
-enum ETag{
-  CATEGORY
-  LIVESTREAM
-}
+
 model Category {
-  id              String    @id @default(uuid())
-  currentTotalView Int      @default(0)
-  numberOfFollowers Int     @default(0)
-  name            String    
-  slug            String    @unique()
-  image           String?
-  applicableTo    ECategory
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  userCategories            UsersCategories[] @relation("Categories")
-  categoryFollowers         CategoryFollowers[] @relation("Categories")
-  tagsCategories  TagsCategories[]  @relation("Categories")
+  id                String              @id @default(uuid())
+  currentTotalView  Int                 @default(0)
+  name              String
+  slug              String              @unique
+  image             String?
+  applicableTo      ECategory
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @default(now()) @updatedAt
+  deletedAt         DateTime?
+  numberOfFollowers Int                 @default(0)
+  categoryFollowers CategoryFollowers[] @relation("Categories")
+  tagsCategories    TagsCategories[]    @relation("Categories")
+  userCategories    UsersCategories[]   @relation("Categories")
+
   @@map("categories")
 }
-model Tag{
-  id              String @id @default(uuid())
-  name            String
-  slug            String    @unique()
-  applicableTo    ETag
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  tagsCategories  TagsCategories[]  @relation("Tags")
+
+model Tag {
+  id             String           @id @default(uuid())
+  name           String
+  slug           String           @unique
+  applicableTo   ETag
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now()) @updatedAt
+  deletedAt      DateTime?
+  tagsCategories TagsCategories[] @relation("Tags")
+
   @@map("tags")
 }
-model TagsCategories{
-  tagId           String 
-  categoryId      String
-  tag             Tag       @relation("Tags", fields: [tagId],references: [id])
-  category        Category  @relation("Categories",fields: [categoryId],references: [id])
-  @@id([tagId,categoryId])
+
+model TagsCategories {
+  tagId      String
+  categoryId String
+  category   Category @relation("Categories", fields: [categoryId], references: [id])
+  tag        Tag      @relation("Tags", fields: [tagId], references: [id])
+
+  @@id([tagId, categoryId])
   @@map("tagCategories")
 }
+
 model UsersCategories {
   userId     String
   categoryId String
-  user       User      @relation("Users",fields: [userId], references: [id])
-  category   Category  @relation("Categories",fields: [categoryId], references: [id])
-
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @default(now()) @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  category   Category @relation("Categories", fields: [categoryId], references: [id])
+  user       User     @relation("Users", fields: [userId], references: [id])
 
   @@id([userId, categoryId])
   @@map("userCategories")
 }
-model CategoryFollowers{
+
+model CategoryFollowers {
   userId     String
   categoryId String
-  user       User      @relation("Users",fields: [userId], references: [id])
-  category   Category  @relation("Categories",fields: [categoryId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  category   Category @relation("Categories", fields: [categoryId], references: [id])
+  user       User     @relation("Users", fields: [userId], references: [id])
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @default(now()) @updatedAt
   @@id([userId, categoryId])
   @@map("categoryFollowers")
 }
 
 model Device {
-  id              String       @id @default(uuid())
-  userId          String       
-  type            String
-  name            String
-  lastUsed        DateTime
-  userAgent       String     
-  ipAddress       String
+  id             String         @id @default(uuid())
+  userId         String
+  type           String
+  name           String
+  lastUsed       DateTime
+  userAgent      String
+  ipAddress      String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now()) @updatedAt
+  deletedAt      DateTime?
+  user           User           @relation(fields: [userId], references: [id])
+  loginHistories LoginHistory[]
+  token          Token?
 
-  token           Token? 
-  loginHistories  LoginHistory[]
-  // Relations
-  user            User      @relation(fields: [userId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
   @@map("devices")
 }
+
 model LoginHistory {
-  id              String   @id @default(uuid())
-  userId          String  
-  deviceId        String   
-  loginAt         DateTime
-  loginStatus     Boolean
-  reason          String?
-  user            User   @relation(fields: [userId], references: [id])
-  device          Device @relation(fields: [deviceId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
+  id          String    @id @default(uuid())
+  userId      String
+  deviceId    String
+  loginAt     DateTime
+  loginStatus Boolean
+  reason      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+  device      Device    @relation(fields: [deviceId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
   @@map("loginHistories")
 }
-model Token{
-  id              String    @id @default(uuid())
-  userId          String
-  deviceId        String    @unique
-  token           String
-  expiresAt       DateTime
 
-  user            User    @relation(fields: [userId], references: [id])
-  device          Device  @relation(fields: [deviceId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
+model Token {
+  id        String    @id @default(uuid())
+  userId    String
+  deviceId  String    @unique
+  token     String
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  device    Device    @relation(fields: [deviceId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
   @@map("tokens")
 }
-// post
-// Enum Definitions
+
+model HiddenUser {
+  userId       String
+  hiddenUserId String
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+  updatedAt    DateTime  @default(now()) @updatedAt
+  hiddenUser   User      @relation("HiddenUser", fields: [hiddenUserId], references: [id])
+  user         User      @relation("UserWhoHides", fields: [userId], references: [id])
+
+  @@id([userId, hiddenUserId])
+  @@map("hidden_users")
+}
+
+model Group {
+  id          String           @id @default(uuid())
+  ownerId     String
+  name        String
+  description String
+  visibility  EGroupVisibility
+  joinLink    String?
+  createdAt   DateTime         @default(now())
+  deletedAt   DateTime?
+  updatedAt   DateTime         @default(now()) @updatedAt
+  members     GroupMember[]
+  owner       User             @relation("GroupOwner", fields: [ownerId], references: [id])
+  posts       Post[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  groupId   String
+  userId    String
+  joinedAt  DateTime   @default(now())
+  role      EGroupRole
+  createdAt DateTime   @default(now())
+  deletedAt DateTime?
+  updatedAt DateTime   @default(now()) @updatedAt
+  group     Group      @relation(fields: [groupId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
+
+  @@id([groupId, userId])
+  @@map("groupMembers")
+}
+
+model Post {
+  id              String                   @id @default(uuid())
+  userId          String
+  groupId         String?
+  content         String
+  totalViewCount  Int                      @default(0)
+  visibility      EUserPostVisibility
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @default(now()) @updatedAt
+  deletedAt       DateTime?
+  reactions       PostReaction[]           @relation("UserPostReactions")
+  group           Group?                   @relation(fields: [groupId], references: [id])
+  user            User                     @relation(fields: [userId], references: [id])
+  taggedUsers     PostTaggedUser[]
+  viewPermissions UserPostViewPermission[]
+
+  @@map("posts")
+}
+
+model PostTaggedUser {
+  postId       String
+  taggedUserId String
+  post         Post   @relation(fields: [postId], references: [id])
+  taggedUser   User   @relation(fields: [taggedUserId], references: [id])
+
+  @@id([postId, taggedUserId])
+  @@map("posttaggedUsers")
+}
+
+model UserPostViewPermission {
+  postId    String
+  viewerId  String
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+  updatedAt DateTime  @default(now()) @updatedAt
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  viewer    User      @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+
+  @@id([postId, viewerId])
+  @@map("userPostViewPermissions")
+}
+
+model PostReaction {
+  userId    String
+  postId    String
+  type      EReactionType
+  createdAt DateTime      @default(now())
+  deletedAt DateTime?
+  updatedAt DateTime      @default(now()) @updatedAt
+  post      Post          @relation("UserPostReactions", fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@map("postReactions")
+}
+
+enum ENotification {
+  USER
+  LIVESTREAM
+  CHAT
+}
+
+enum ECategory {
+  USER
+  LIVESTREAM
+}
+
+enum ETag {
+  CATEGORY
+  LIVESTREAM
+}
+
 enum EGroupVisibility {
   PUBLIC
   PRIVATE
@@ -309,152 +415,3 @@ enum EReactionType {
   SAD
   ANGRY
 }
-model HiddenUser {
-  userId       String  // The user who is hiding other users' posts
-  hiddenUserId String  // The user whose posts are hidden
-
-  user         User    @relation("UserWhoHides", fields: [userId], references: [id])
-  hiddenUser   User    @relation("HiddenUser", fields: [hiddenUserId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  @@id([userId, hiddenUserId])  
-  @@map("hidden_users")
-}
-model Group {
-  id            String          @id @default(uuid())
-  ownerId       String          
-  owner         User             @relation("GroupOwner", fields: [ownerId], references: [id])
-  name          String
-  description   String
-  visibility    EGroupVisibility
-  joinLink      String?
-  createdAt     DateTime        @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  members       GroupMember[]
-  posts         Post[]
-
-  @@map("groups")
-}
-
-model GroupMember {
-  groupId       String          // FK for Group
-  userId        String          // FK for User
-  joinedAt      DateTime        @default(now())
-  role          EGroupRole
-  createdAt     DateTime        @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  group         Group           @relation(fields: [groupId], references: [id])
-  user          User            @relation(fields: [userId], references: [id])
-
-  @@id([groupId, userId])       // Composite key
-  @@map("groupMembers")
-}
-
-// User Post and Visibility Models
-model Post {
-  id               String            @id @default(uuid())
-  userId           String            // FK for User
-  groupId          String? 
-  content          String
-  totalViewCount   Int               @default(0)
-  visibility       EUserPostVisibility
-  createdAt        DateTime          @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  user             User              @relation(fields: [userId], references: [id])
-  group            Group?              @relation(fields: [groupId], references: [id])
-  viewPermissions  UserPostViewPermission[]
-  reactions        PostReaction[]    @relation("UserPostReactions")
-  taggedUsers      PostTaggedUser[]   
-  // comments         Comment[]         @relation("UserPostComments")
-
-  @@map("posts")
-}
-model PostTaggedUser {
-  postId           String         // FK for the Post
-  taggedUserId     String         // FK for the User who was tagged
-
-  post             Post           @relation(fields: [postId], references: [id])
-  taggedUser       User           @relation(fields: [taggedUserId], references: [id])
-
-  @@id([postId, taggedUserId])    // Composite key to prevent duplicate tags on the same post
-  @@map("posttaggedUsers")
-}
-model UserPostViewPermission {
-  postId           String           
-  viewerId         String            
-
-  post             Post          @relation(fields: [postId], references: [id],onDelete: Cascade)
-  viewer           User              @relation(fields: [viewerId], references: [id],onDelete: Cascade)
-  createdAt        DateTime          @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  @@id([postId, viewerId])           
-  @@map("userPostViewPermissions")
-}
-
-// Group Post Models
-// model GroupPost {
-//   id               String            @id @default(uuid())
-//   userId           String            // FK for User
-//   groupId          String            // FK for Group
-//   content          String
-//   totalViewCount   Int               @default(0)
-//   createdAt        DateTime          @default(now())
-//   updatedAt       DateTime  @default(now()) @updatedAt
-//   deletedAt       DateTime?
-//   user             User              @relation(fields: [userId], references: [id])
-//   group            Group             @relation(fields: [groupId], references: [id])
-//   // reactions        PostReaction[]    @relation("GroupPostReactions")
-//   // comments         Comment[]         @relation("GroupPostComments")
-
-//   @@map("groupPosts")
-// }
-
-// Reaction and Comment Models
-model PostReaction {
-  userId           String            // FK for User
-  postId           String            // FK for either UserPost or GroupPost
-  type             EReactionType
-  
-  user             User              @relation(fields: [userId], references: [id],onDelete: Cascade)
-  post             Post?         @relation("UserPostReactions", fields: [postId], references: [id],onDelete: Cascade)
-  createdAt        DateTime          @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  deletedAt       DateTime?
-  @@id([userId, postId])             // Composite key
-  @@map("postReactions")
-}
-
-// model Comment {
-//   id               String            @id @default(uuid())
-//   userId           String            
-//   postId           String          
-//   content          String
-//   replyToId        String?           
-
-//   user             User              @relation(fields: [userId], references: [id])
-//   post             UserPost?         @relation("UserPostComments", fields: [postId], references: [id])
-//   groupPost        GroupPost?        @relation("GroupPostComments", fields: [postId], references: [id])
-//   replyTo          Comment?          @relation("CommentReplies", fields: [replyToId], references: [id])
-//   replies          Comment[]         @relation("CommentReplies")
-
-//   reactions        CommentReaction[]
-
-//   @@map("comments")
-// }
-
-// model CommentReaction {
-//   userId           String            // FK for User
-//   commentId        String            // FK for Comment
-//   type             EReactionType
-  
-//   user             User              @relation(fields: [userId], references: [id])
-//   comment          Comment           @relation(fields: [commentId], references: [id])
-
-//   @@id([userId, commentId])          // Composite key
-//   @@map("commentReactions")
-// }
