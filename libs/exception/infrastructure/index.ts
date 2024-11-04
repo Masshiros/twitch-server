@@ -8,7 +8,9 @@ export const InfrastructureErrorCode = {
 export type InfrastructureErrorCode =
   (typeof InfrastructureErrorCode)[keyof typeof InfrastructureErrorCode]
 
-export const InfrastructureErrorDetailCode = {} as const
+export const InfrastructureErrorDetailCode = {
+  UPLOAD_IMAGE_FAIL: "UPLOAD_IMAGE_FAIL",
+} as const
 export type InfrastructureErrorDetailCode =
   (typeof InfrastructureErrorDetailCode)[keyof typeof InfrastructureErrorDetailCode]
 

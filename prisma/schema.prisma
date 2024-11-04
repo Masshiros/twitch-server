@@ -25,7 +25,6 @@ model User {
   is2FA                 Boolean                  @default(false)
   view                  Int                      @default(0)
   bio                   String?
-  avatar                String?
   thumbnail             String?
   lastUsernameChangeAt  DateTime?
   createdAt             DateTime                 @default(now())
@@ -54,6 +53,21 @@ model User {
   @@index([isLive])
   @@index([isActive])
   @@map("users")
+}
+enum EImage{
+  USER
+  POST
+}
+model Image{
+  id             String @id @default(uuid())
+  url            String 
+  publicId       String @unique
+  applicableType EImage
+  applicableId   String
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @default(now()) @updatedAt
+  deletedAt             DateTime?
+  @@map("images")
 }
 
 model Role {

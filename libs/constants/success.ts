@@ -22,6 +22,7 @@ export const SuccessMessages = {
     TOGGLE_ACTIVATE: "Toggle activation of user successfully",
     GET_LIST_DEVICES: "Get list devices successfully",
     GET_LIST_HISTORIES: "Get login history successfully",
+    ADD_PROFILE_PICTURE: "Add profile picture successfully",
   },
   followers: {
     FOLLOW_USER: "Follow user successfully",

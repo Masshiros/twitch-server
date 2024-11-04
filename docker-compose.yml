@@ -30,16 +30,16 @@ services:
     networks:
       - postgres
   redis:
-    image: "redis:alpine"
+    image: "redis:latest"
     ports:
       - "6379:6379"
-    restart: always
+    restart: unless-stopped
   redis-commander:
     image: rediscommander/redis-commander:latest
     environment:
       - REDIS_HOSTS=local:redis:6379
     ports:
-      - "8081:8081"
+      - "8088:8081"
     depends_on:
         - redis
 

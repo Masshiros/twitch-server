@@ -1,7 +1,10 @@
+import { isArray } from "util"
 import { applyDecorators } from "@nestjs/common"
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -19,6 +22,8 @@ interface ApiOperationDecoratorOptions {
   params?: { name: string; description: string; example?: any }[]
   queries?: { name: string; description: string; example?: any }[]
   auth?: boolean
+  fileFieldName?: string
+  isArrayOfFile?: boolean
 }
 export function ApiOperationDecorator({
   type,
@@ -27,6 +32,8 @@ export function ApiOperationDecorator({
   params,
   queries,
   auth = false,
+  fileFieldName,
+  isArrayOfFile = false,
 }: ApiOperationDecoratorOptions) {
   const decorators = [
     ApiOperation({ summary }),
@@ -71,6 +78,34 @@ export function ApiOperationDecorator({
       )
     })
   }
-
+  if (fileFieldName) {
+    decorators.push(
+      ApiConsumes("multipart/form-data"),
+      ApiBody({
+        schema: isArrayOfFile
+          ? {
+              type: "object",
+              properties: {
+                [fileFieldName]: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                    format: "binary",
+                  },
+                },
+              },
+            }
+          : {
+              type: "object",
+              properties: {
+                [fileFieldName]: {
+                  type: "string",
+                  format: "binary",
+                },
+              },
+            },
+      }),
+    )
+  }
   return applyDecorators(...decorators)
 }

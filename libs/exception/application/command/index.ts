@@ -44,6 +44,7 @@ export const CommandErrorDetailCode = {
   DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY: "DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY",
   DATA_REFER_TO_THIS_RECORD: "DATA_REFER_TO_THIS_RECORD",
   SOMETHING_WRONG_HAPPEN: "SOMETHING_WRONG_HAPPEN",
+  UPLOAD_IMAGE_FAIL: "UPLOAD_IMAGE_FAIL",
 } as const
 export type CommandErrorDetailCode =
   (typeof CommandErrorDetailCode)[keyof typeof CommandErrorDetailCode]
