@@ -34,7 +34,7 @@ export class ImageMapper {
   }
 
   // Map Prisma applicableType enum to Domain applicableType enum
-  private static mapPrismaToDomainEnum(
+  static mapPrismaToDomainEnum(
     prismaEnum: PrismaApplicableType,
   ): DomainApplicableType {
     switch (prismaEnum) {
@@ -50,7 +50,7 @@ export class ImageMapper {
   }
 
   // Map Domain applicableType enum to Prisma applicableType enum
-  private static mapDomainToPrismaEnum(
+  static mapDomainToPrismaEnum(
     domainEnum: DomainApplicableType,
   ): PrismaApplicableType {
     switch (domainEnum) {

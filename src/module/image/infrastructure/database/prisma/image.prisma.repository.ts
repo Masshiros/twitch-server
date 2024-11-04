@@ -5,6 +5,7 @@ import {
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
 import { PrismaService } from "prisma/prisma.service"
+import { EImage } from "src/module/image/domain/enum/image.enum"
 import { IImageRepository } from "src/module/image/domain/repository/image.interface.repository"
 import { handlePrismaError } from "utils/prisma-error"
 import { Image } from "../../../domain/entity/image.entity"
@@ -16,13 +17,14 @@ export class ImageRepository implements IImageRepository {
   async save(image: Image): Promise<void> {
     try {
       const data = ImageMapper.toPersistence(image)
+
       const existImage = await this.prismaService.image.findUnique({
         where: { id: data.id },
       })
       if (existImage) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-          message: "Already exist this data",
+          message: "Already exist this image",
         })
       }
       await this.prismaService.image.create({ data })

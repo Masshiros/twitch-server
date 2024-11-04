@@ -47,7 +47,8 @@ export class ImageUploadProcessor extends WorkerHost {
     try {
       const { file, folder, applicableId, applicableType } = job.data
       const result = await this.cloudinaryService.uploadImage(file, folder)
-      if (!result) {
+      console.log(result)
+      if (!result || result === null) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
           message: "Error while uploading image to server",

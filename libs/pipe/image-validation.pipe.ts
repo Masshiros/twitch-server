@@ -1,30 +1,86 @@
-import { BadRequestException, Injectable, PipeTransform } from "@nestjs/common"
-import { Express } from "express"
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from "@nestjs/common"
+import sharp from "sharp" // sharp helps in image manipulation and analysis
+
+interface FileValidationOptions {
+  allowedTypes?: string[]
+  maxSize?: number
+  minWidth?: number
+  minHeight?: number
+  maxWidth?: number
+  maxHeight?: number
+  aspectRatio?: number // Aspect ratio as width/height, e.g., 16/9 for 16:9
+}
 
 @Injectable()
 export class FileValidationPipe implements PipeTransform {
-  constructor(
-    private readonly maxSize: number = 5 * 1024 * 1024, // 5MB default
-    private readonly allowedTypes: string[] = [
-      "image/jpeg",
-      "image/png",
-      "image/jpg",
-    ],
-  ) {}
+  constructor(private readonly options: FileValidationOptions = {}) {}
 
-  transform(file: Express.Multer.File) {
+  async transform(file: Express.Multer.File, metadata: ArgumentMetadata) {
     if (!file) {
-      throw new BadRequestException("File is required")
+      throw new BadRequestException("File is required!")
     }
 
-    if (!this.allowedTypes.includes(file.mimetype)) {
-      throw new BadRequestException(`Unsupported file type ${file.mimetype}`)
-    }
+    const {
+      allowedTypes = [],
+      maxSize = 1024 * 1024 * 5, // Default to 5MB
+      minWidth,
+      minHeight,
+      maxWidth,
+      maxHeight,
+      aspectRatio,
+    } = this.options
 
-    if (file.size > this.maxSize) {
+    // Validate file type
+    if (allowedTypes.length > 0 && !allowedTypes.includes(file.mimetype)) {
       throw new BadRequestException(
-        `File size exceeds maximum limit of ${this.maxSize / 1024 / 1024}MB`,
+        `Invalid file type. Allowed types: ${allowedTypes.join(", ")}`,
       )
+    }
+
+    // Validate file size
+    if (file.size > maxSize) {
+      throw new BadRequestException(
+        `File size exceeds the limit of ${maxSize / (1024 * 1024)}MB`,
+      )
+    }
+
+    // Further checks if the file is an image (optional)
+    if (file.mimetype.startsWith("image/")) {
+      const { width, height } = await sharp(Buffer.from(file.buffer)).metadata()
+
+      // Check image dimensions
+      if (minWidth && width < minWidth) {
+        throw new BadRequestException(
+          `Image width must be at least ${minWidth}px`,
+        )
+      }
+      if (minHeight && height < minHeight) {
+        throw new BadRequestException(
+          `Image height must be at least ${minHeight}px`,
+        )
+      }
+      if (maxWidth && width > maxWidth) {
+        throw new BadRequestException(
+          `Image width must not exceed ${maxWidth}px`,
+        )
+      }
+      if (maxHeight && height > maxHeight) {
+        throw new BadRequestException(
+          `Image height must not exceed ${maxHeight}px`,
+        )
+      }
+
+      // Validate aspect ratio
+      if (aspectRatio && width / height !== aspectRatio) {
+        throw new BadRequestException(
+          `Image aspect ratio must be ${aspectRatio}`,
+        )
+      }
     }
 
     return file

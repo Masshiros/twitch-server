@@ -10,6 +10,7 @@ import {
   Response,
   UploadedFile,
   UseInterceptors,
+  UsePipes,
 } from "@nestjs/common"
 import { FileInterceptor } from "@nestjs/platform-express"
 import { ApiTags } from "@nestjs/swagger"
@@ -22,6 +23,7 @@ import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
+import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
 import { AssignPermissionToRoleCommand } from "../application/command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "../application/command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "../application/command/user/add-profile-picture/add-profile-picture.command"
@@ -126,7 +128,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor("picture"))
   @Post("profile-picture/update")
   async addProfilePicture(
-    @UploadedFile() picture: Express.Multer.File,
+    @UploadedFile(new FileValidationPipe()) picture: Express.Multer.File,
     @CurrentUser() user: UserAggregate,
   ) {
     const command = new AddProfilePictureCommand({ userId: user.id, picture })
