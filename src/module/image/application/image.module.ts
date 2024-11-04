@@ -8,6 +8,7 @@ import { ImageService } from "./image.service"
 
 @Module({
   imports: [
+    ImageDatabaseModule,
     BullModule.registerFlowProducer({
       name: Bull.flow.image,
       prefix: "TWITCH",
@@ -18,6 +19,10 @@ import { ImageService } from "./image.service"
     }),
     BullModule.registerQueue({
       name: Bull.queue.image.optimize,
+      prefix: "TWITCH",
+    }),
+    BullModule.registerQueue({
+      name: Bull.queue.image.remove,
       prefix: "TWITCH",
     }),
     ImageProcessorModule,

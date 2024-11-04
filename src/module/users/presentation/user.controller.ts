@@ -30,6 +30,7 @@ import { AddProfilePictureCommand } from "../application/command/user/add-profil
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
+import { UpdateProfilePictureCommand } from "../application/command/user/update-profile-picture/update-profile-picture.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
 import { GetListDeviceQuery } from "../application/query/device/get-list-device/get-list-device.query"
 import { GetListLoginHistoriesQuery } from "../application/query/login-history/get-list-login-histories/get-list-login-histories.query"
@@ -115,7 +116,7 @@ export class UserController {
     await this.userService.updateUsername(command)
   }
 
-  // PATCH: Add profile picture
+  // POST: Add profile picture
   @ApiOperationDecorator({
     summary: "Add profile picture",
     description: "Add profile picture of the user",
@@ -126,13 +127,36 @@ export class UserController {
   @Permission([Permissions.Users.Update])
   @ResponseMessage(SuccessMessages.user.ADD_PROFILE_PICTURE)
   @UseInterceptors(FileInterceptor("picture"))
-  @Post("profile-picture/update")
+  @Post("profile-picture/add")
   async addProfilePicture(
     @UploadedFile(new FileValidationPipe()) picture: Express.Multer.File,
     @CurrentUser() user: UserAggregate,
   ) {
     const command = new AddProfilePictureCommand({ userId: user.id, picture })
     await this.userService.addProfilePicture(command)
+  }
+
+  // PATCH: Update profile picture
+  @ApiOperationDecorator({
+    summary: "Update profile picture",
+    description: "Update profile picture of the user",
+    type: null,
+    auth: true,
+    fileFieldName: "picture",
+  })
+  @Permission([Permissions.Users.Update])
+  @ResponseMessage(SuccessMessages.user.UPDATE_PROFILE_PICTURE)
+  @UseInterceptors(FileInterceptor("picture"))
+  @Patch("profile-picture/update")
+  async updateProfilePicture(
+    @UploadedFile(new FileValidationPipe()) picture: Express.Multer.File,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new UpdateProfilePictureCommand({
+      userId: user.id,
+      picture,
+    })
+    await this.userService.updateProfilePicture(command)
   }
 
   // GET: Get User by ID

@@ -26,6 +26,7 @@ import { AddProfilePictureHandler } from "./command/user/add-profile-picture/add
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
+import { UpdateProfilePictureHandler } from "./command/user/update-profile-picture/update-profile-picture.handler"
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
 import { GetListDeviceQueryHandler } from "./query/device/get-list-device/get-list-device.handler"
 import { GetListLoginHistoriesQueryHandler } from "./query/login-history/get-list-login-histories/get-list-login-histories.handler"
@@ -44,6 +45,7 @@ const commandHandlers = [
   UpdateBioCommandHandler,
   UpdateUsernameCommandHandler,
   AddProfilePictureHandler,
+  UpdateProfilePictureHandler,
   SignInCommandHandler,
   ToggleTwoFaCommandHandler,
   ConfirmEmailCommandHandler,

@@ -14,7 +14,9 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { Image } from "../domain/entity/image.entity"
 import { EImage } from "../domain/enum/image.enum"
+import { IImageRepository } from "../domain/repository/image.interface.repository"
 
 @Injectable()
 export class ImageService {
@@ -25,6 +27,9 @@ export class ImageService {
     private readonly imageUpdateFlow: FlowProducer,
     @InjectQueue(Bull.queue.image.upload)
     private readonly imageUploadQueue: Queue,
+    @InjectQueue(Bull.queue.image.remove)
+    private readonly imageRemoveQueue: Queue,
+    private readonly imageRepository: IImageRepository,
   ) {}
 
   async uploadImage(
@@ -70,6 +75,59 @@ export class ImageService {
       this.imageUpdateFlow.on("error", (error) => {
         this.logger.error("Error in image flow", error)
       })
+    } catch (err) {
+      console.log("err", err)
+      if (
+        err instanceof DomainError ||
+        err instanceof CommandError ||
+        err instanceof InfrastructureError
+      ) {
+        throw err
+      }
+
+      throw new CommandError({
+        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      })
+    }
+  }
+  async getImageByApplicableId(applicableId: string): Promise<Image[] | null> {
+    try {
+      const images = await this.imageRepository.getImageByType(applicableId)
+      return images ?? null
+    } catch (err) {
+      if (
+        err instanceof DomainError ||
+        err instanceof CommandError ||
+        err instanceof InfrastructureError
+      ) {
+        throw err
+      }
+
+      throw new CommandError({
+        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      })
+    }
+  }
+  async removeImage(image: Image) {
+    try {
+      const [job, failedUploadJobs] = await Promise.all([
+        this.imageRemoveQueue.add(Bull.job.image.remove, {
+          image,
+        }),
+        this.imageRemoveQueue.getFailed(),
+      ])
+      if ((await job.getState()) === "failed") {
+        if (failedUploadJobs || failedUploadJobs.length !== 0) {
+          failedUploadJobs.map((failedJob) => {
+            throw new CommandError({
+              code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+              message: failedJob.failedReason,
+            })
+          })
+        }
+      }
     } catch (err) {
       console.log("err", err)
       if (

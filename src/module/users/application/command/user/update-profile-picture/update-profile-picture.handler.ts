@@ -10,17 +10,18 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { ImageService } from "src/module/image/application/image.service"
 import { EImage } from "src/module/image/domain/enum/image.enum"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { AddProfilePictureCommand } from "./add-profile-picture.command"
+import { UpdateProfilePictureCommand } from "./update-profile-picture.command"
 
-@CommandHandler(AddProfilePictureCommand)
-export class AddProfilePictureHandler {
+@CommandHandler(UpdateProfilePictureCommand)
+export class UpdateProfilePictureHandler {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
   ) {}
-  async execute(command: AddProfilePictureCommand): Promise<void> {
+  async execute(command: UpdateProfilePictureCommand): Promise<void> {
     const { userId, picture } = command
     try {
+    } catch (error) {
       if (!userId || userId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
@@ -49,13 +50,14 @@ export class AddProfilePictureHandler {
           },
         })
       }
+      const images = await this.imageService.getImageByApplicableId(userId)
+      await Promise.all(images.map((i) => this.imageService.removeImage(i)))
       await this.imageService.uploadImage(
         picture,
         Folder.image.user,
         userId,
         EImage.USER,
       )
-    } catch (error) {
       if (
         error instanceof DomainError ||
         error instanceof CommandError ||

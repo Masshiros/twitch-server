@@ -36,4 +36,21 @@ export class CloudinaryService {
       toStream(buffer).pipe(upload)
     })
   }
+  async deleteImage(publicId: string): Promise<{ result: string }> {
+    if (!publicId) {
+      throw new Error("Invalid public ID: No ID provided for deletion.")
+    }
+
+    try {
+      const result = await cloudinary.uploader.destroy(publicId, {
+        resource_type: "image",
+      })
+      if (result.result !== "ok") {
+        throw new Error(`Cloudinary deletion failed: ${result.result}`)
+      }
+      return result
+    } catch (error) {
+      throw new Error(`Cloudinary deletion failed: ${error.message}`)
+    }
+  }
 }

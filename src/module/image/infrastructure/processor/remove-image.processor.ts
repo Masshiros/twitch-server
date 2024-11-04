@@ -2,17 +2,17 @@ import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq"
 import { Logger } from "@nestjs/common"
 import { Job } from "bullmq"
 import { Bull } from "libs/constants/bull"
+import { CommandErrorCode } from "libs/exception/application/command"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
-  InfrastructureErrorDetailCode,
 } from "libs/exception/infrastructure"
 import { CloudinaryService } from "src/integration/file/cloudinary/cloudinary.service"
-import { ImageFactory } from "../../domain/factory/image.factory"
 import { IImageRepository } from "../../domain/repository/image.interface.repository"
+import { ImageUploadProcessor } from "./upload-image.processor"
 
-@Processor(Bull.queue.image.upload)
-export class ImageUploadProcessor extends WorkerHost {
+@Processor(Bull.queue.image.remove)
+export class ImageRemoveProcessor extends WorkerHost {
   private logger = new Logger(ImageUploadProcessor.name)
   constructor(
     private readonly cloudinaryService: CloudinaryService,
@@ -42,32 +42,18 @@ export class ImageUploadProcessor extends WorkerHost {
       message: error.message,
     })
   }
-
-  async process(job: Job, token?: string): Promise<any> {
-    let result
+  async process(job: Job): Promise<any> {
     try {
-      const { file, folder, applicableId, applicableType } = job.data
-      result = await this.cloudinaryService.uploadImage(file, folder)
-      console.log(result)
-      if (!result || result === null) {
+      const { image } = job.data
+      const result = await this.cloudinaryService.deleteImage(image.publicId)
+      if (result.result !== "ok") {
         throw new InfrastructureError({
-          code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-          message: "Error while uploading image to server",
-          info: {
-            errorCode: InfrastructureErrorDetailCode.UPLOAD_IMAGE_FAIL,
-          },
+          code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+          message: `Failed to delete image on Cloudinary for publicId: ${image.publicId}`,
         })
       }
-      const image = ImageFactory.createImage({
-        url: result.secure_url,
-        publicId: result.public_id,
-        applicableId,
-        applicableType,
-      })
-      // Save the image in the repository
-      await this.imageRepository.save(image)
+      await this.imageRepository.delete(image)
     } catch (error) {
-      await this.cloudinaryService.deleteImage(result.public_id)
       if (error instanceof InfrastructureError) {
         throw error
       }

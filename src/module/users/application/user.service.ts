@@ -8,6 +8,7 @@ import { AddProfilePictureCommand } from "./command/user/add-profile-picture/add
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "./command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
+import { UpdateProfilePictureCommand } from "./command/user/update-profile-picture/update-profile-picture.command"
 import { UpdateUsernameCommand } from "./command/user/update-username/update-username.command"
 import { GetListDeviceQuery } from "./query/device/get-list-device/get-list-device.query"
 import { GetListLoginHistoriesQuery } from "./query/login-history/get-list-login-histories/get-list-login-histories.query"
@@ -34,6 +35,9 @@ export class UserService {
     return this.commandBus.execute(updateUsernameCommand)
   }
   addProfilePicture(command: AddProfilePictureCommand) {
+    return this.commandBus.execute(command)
+  }
+  updateProfilePicture(command: UpdateProfilePictureCommand) {
     return this.commandBus.execute(command)
   }
   getUser(getUserQuery: GetUserQuery) {
