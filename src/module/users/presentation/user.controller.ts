@@ -8,7 +8,10 @@ import {
   Post,
   Query,
   Response,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common"
+import { FileInterceptor } from "@nestjs/platform-express"
 import { ApiTags } from "@nestjs/swagger"
 import { plainToInstance } from "class-transformer"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
@@ -21,6 +24,7 @@ import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { AssignPermissionToRoleCommand } from "../application/command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "../application/command/role/assign-role-to-user/assign-role-to-user.command"
+import { AddProfilePictureCommand } from "../application/command/user/add-profile-picture/add-profile-picture.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
@@ -80,13 +84,13 @@ export class UserController {
   })
   @Permission([Permissions.Users.Update])
   @ResponseMessage(SuccessMessages.user.UPDATE_BIO)
-  @Patch("/:id")
+  @Patch("/update-bio")
   async updateBio(
-    @Param() param: { id: string },
+    @CurrentUser() user: UserAggregate,
     @Body() body: UpdateBioRequestDto,
   ) {
     const command = new UpdateBioCommand(body)
-    command.id = param.id
+    command.id = user.id
     await this.userService.updateBio(command)
   }
 
@@ -99,14 +103,34 @@ export class UserController {
   })
   @Permission([Permissions.Users.Update])
   @ResponseMessage(SuccessMessages.user.UPDATE_USERNAME)
-  @Patch("/username/:id")
+  @Patch("/update-username")
   async updateUsername(
-    @Param() param: { id: string },
+    @CurrentUser() user: UserAggregate,
     @Body() body: UpdateUsernameRequestDto,
   ) {
     const command = new UpdateUsernameCommand(body)
-    command.id = param.id
+    command.id = user.id
     await this.userService.updateUsername(command)
+  }
+
+  // PATCH: Add profile picture
+  @ApiOperationDecorator({
+    summary: "Add profile picture",
+    description: "Add profile picture of the user",
+    type: null,
+    auth: true,
+    fileFieldName: "picture",
+  })
+  @Permission([Permissions.Users.Update])
+  @ResponseMessage(SuccessMessages.user.ADD_PROFILE_PICTURE)
+  @UseInterceptors(FileInterceptor("picture"))
+  @Post("profile-picture/update")
+  async addProfilePicture(
+    @UploadedFile() picture: Express.Multer.File,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new AddProfilePictureCommand({ userId: user.id, picture })
+    await this.userService.addProfilePicture(command)
   }
 
   // GET: Get User by ID

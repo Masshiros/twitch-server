@@ -3,6 +3,7 @@ import { CqrsModule } from "@nestjs/cqrs"
 import { DatabaseModule } from "prisma/database.module"
 import { NodeMailerModule } from "src/integration/email/nodemailer/nodemailer.module"
 import { TwilioModule } from "src/integration/twilio/twilio.module"
+import { ImageModule } from "src/module/image/application/image.module"
 import { UserFactory } from "../domain/factory/user/index"
 import { UserDatabaseModule } from "../infrastructure/database/user.database.module"
 import { AuthController } from "../presentation/auth.controller"
@@ -21,6 +22,7 @@ import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/
 import { ToggleTwoFaCommandHandler } from "./command/auth/toggle-two-fa/toggle-two-fa.handler"
 import { AssignPermissionToRoleHandler } from "./command/role/assign-permission-to-role/assign-permission-to-role.handler"
 import { AssignRoleToUserHandler } from "./command/role/assign-role-to-user/assign-role-to-user.handler"
+import { AddProfilePictureHandler } from "./command/user/add-profile-picture/add-profile-picture.handler"
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
@@ -41,6 +43,7 @@ const commandHandlers = [
   DeleteUserCommandHandler,
   UpdateBioCommandHandler,
   UpdateUsernameCommandHandler,
+  AddProfilePictureHandler,
   SignInCommandHandler,
   ToggleTwoFaCommandHandler,
   ConfirmEmailCommandHandler,
@@ -73,6 +76,12 @@ const queryHandlers = [
     ...commandHandlers,
     ...queryHandlers,
   ],
-  imports: [CqrsModule, UserDatabaseModule, NodeMailerModule, TwilioModule],
+  imports: [
+    CqrsModule,
+    UserDatabaseModule,
+    NodeMailerModule,
+    TwilioModule,
+    ImageModule,
+  ],
 })
 export class UserModule {}

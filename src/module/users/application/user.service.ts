@@ -4,6 +4,7 @@ import { ConfirmEmailCommand } from "./command/auth/confirm-email/confirm-email.
 import { ToggleTwoFaCommand } from "./command/auth/toggle-two-fa/toggle-two-fa.command"
 import { AssignPermissionToRoleCommand } from "./command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assign-role-to-user.command"
+import { AddProfilePictureCommand } from "./command/user/add-profile-picture/add-profile-picture.command"
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "./command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
@@ -31,6 +32,9 @@ export class UserService {
   }
   updateUsername(updateUsernameCommand: UpdateUsernameCommand) {
     return this.commandBus.execute(updateUsernameCommand)
+  }
+  addProfilePicture(command: AddProfilePictureCommand) {
+    return this.commandBus.execute(command)
   }
   getUser(getUserQuery: GetUserQuery) {
     return this.queryBus.execute(getUserQuery)
