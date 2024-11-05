@@ -176,10 +176,28 @@ export class UserController {
     @Param() param: GetUserRequestDto,
   ): Promise<GetUserResponseDto | null> {
     const query = new GetUserQuery(param)
-    const user = await this.userService.getUser(query)
-    const result = plainToInstance(GetUserResponseDto, user.result, {
-      excludeExtraneousValues: true,
-    })
+    const userResult = await this.userService.getUser(query)
+    if (!userResult) {
+      return null
+    }
+
+    const result: GetUserResponseDto = {
+      id: userResult.user.id,
+      email: userResult.user.email,
+      phone: userResult.user.phone,
+      username: userResult.user.username,
+      displayName: userResult.user.displayName,
+      bio: userResult.user.bio,
+      thumbnail: userResult.user.thumbnail,
+      isLive: userResult.user.isLive,
+      image: userResult.image
+        ? {
+            url: userResult.image.url,
+            publicId: userResult.image.publicId,
+          }
+        : undefined,
+    }
+
     return result
   }
 
@@ -202,11 +220,25 @@ export class UserController {
     if (!users.result) {
       return null
     }
-    const result = users.result.map((user) =>
-      plainToInstance(GetUserResponseDto, user, {
-        excludeExtraneousValues: true,
-      }),
-    )
+    const result = users.result.map((u) => {
+      const user = {
+        id: u.user.id,
+        email: u.user.email,
+        phone: u.user.phone,
+        username: u.user.username,
+        displayName: u.user.displayName,
+        bio: u.user.bio,
+        thumbnail: u.user.thumbnail,
+        isLive: u.user.isLive,
+        image: u.image
+          ? {
+              url: u.image.url,
+              publicId: u.image.publicId,
+            }
+          : undefined,
+      }
+      return user
+    })
 
     return result
   }

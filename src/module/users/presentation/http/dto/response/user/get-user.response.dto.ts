@@ -1,5 +1,12 @@
-import { Expose } from "class-transformer"
+import { Expose, Type } from "class-transformer"
 
+export class ImageResponseDto {
+  @Expose()
+  url: string
+
+  @Expose()
+  publicId: string
+}
 export class GetUserResponseDto {
   @Expose()
   id: string
@@ -14,7 +21,8 @@ export class GetUserResponseDto {
   displayName: string
 
   @Expose()
-  avatar?: string
+  @Type(() => ImageResponseDto)
+  image?: ImageResponseDto
 
   @Expose()
   bio?: string

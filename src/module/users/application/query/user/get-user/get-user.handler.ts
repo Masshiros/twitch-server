@@ -1,11 +1,11 @@
 import { QueryHandler } from "@nestjs/cqrs"
-import { plainToInstance } from "class-transformer"
 import {
   QueryError,
   QueryErrorCode,
   QueryErrorDetailCode,
 } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { ImageService } from "src/module/image/application/image.service"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
@@ -17,6 +17,7 @@ export class GetUserQueryHandler {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly userFactory: UserFactory,
+    private readonly imageService: ImageService,
   ) {}
   async execute(
     query: GetUserQuery,
@@ -59,8 +60,19 @@ export class GetUserQueryHandler {
           },
         })
       }
-
-      return { result: targetUserAggregate }
+      // get user image
+      const images: any[] | null =
+        await this.imageService.getImageByApplicableId(targetUserAggregate.id)
+      if (images.length > 0) {
+        return {
+          user: targetUserAggregate,
+          image: {
+            url: images[0].url || "",
+            publicId: images[0].publicId || "",
+          },
+        }
+      }
+      return { user: targetUserAggregate, image: { url: "", publicId: "" } }
     } catch (err) {
       console.error(err.stack)
       if (err instanceof QueryError || err instanceof InfrastructureError) {
