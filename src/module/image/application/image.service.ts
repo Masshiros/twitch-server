@@ -31,7 +31,64 @@ export class ImageService {
     private readonly imageRemoveQueue: Queue,
     private readonly imageRepository: IImageRepository,
   ) {}
+  async uploadMultiImages(
+    files: Express.Multer.File[],
+    folder: string,
+    applicableId: string,
+    applicableType: EImage,
+  ) {
+    try {
+      const uploadJobs = files.map((file) => {
+        return this.imageUpdateFlow.add({
+          name: Bull.job.image.upload,
+          queueName: Bull.queue.image.upload,
+          data: {
+            file,
+            folder,
+            applicableId,
+            applicableType,
+          },
+          children: [
+            {
+              name: Bull.job.image.optimize,
+              queueName: Bull.queue.image.optimize,
+              data: { file, folder },
+            },
+          ],
+        })
+      })
+      const rootJobs = await Promise.all(uploadJobs)
+      const failedJobs = await Promise.all(
+        rootJobs.map(async (rootJob) => {
+          const state = await rootJob.job.getState()
+          return state === "failed" ? rootJob.job : null
+        }),
+      )
+      failedJobs.filter(Boolean).forEach((failedJob) => {
+        throw new CommandError({
+          code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+          message: failedJob.failedReason,
+        })
+      })
+      this.imageUpdateFlow.on("error", (error) => {
+        this.logger.error("Error in image flow", error)
+      })
+    } catch (err) {
+      console.log("err", err)
+      if (
+        err instanceof DomainError ||
+        err instanceof CommandError ||
+        err instanceof InfrastructureError
+      ) {
+        throw err
+      }
 
+      throw new CommandError({
+        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      })
+    }
+  }
   async uploadImage(
     file: Express.Multer.File,
     folder: string,
@@ -96,6 +153,55 @@ export class ImageService {
       const images = await this.imageRepository.getImageByType(applicableId)
       return images ?? null
     } catch (err) {
+      if (
+        err instanceof DomainError ||
+        err instanceof CommandError ||
+        err instanceof InfrastructureError
+      ) {
+        throw err
+      }
+
+      throw new CommandError({
+        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      })
+    }
+  }
+  async removeMultipleImages(images: Image[]) {
+    const failedJobs: { image: Image; reason: string }[] = []
+    try {
+      const jobs = await Promise.all(
+        images.map((image) =>
+          this.imageRemoveQueue.add(Bull.job.image.remove, {
+            image,
+          }),
+        ),
+      )
+      for (const [index, job] of jobs.entries()) {
+        const jobState = await job.getState()
+        if (jobState === "failed") {
+          const failedReason = job.failedReason || "Unknown error"
+          failedJobs.push({ image: images[index], reason: failedReason })
+        }
+      }
+      if (failedJobs.length > 0) {
+        failedJobs.forEach((failedJob) => {
+          console.error(
+            `Failed to remove image with ID: ${failedJob.image.id}. Reason: ${failedJob.reason}`,
+          )
+        })
+
+        throw new CommandError({
+          code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+          message: "Failed to remove one or more images",
+          info: failedJobs.map((failedJob) => ({
+            imageId: failedJob.image.id,
+            reason: failedJob.reason,
+          })),
+        })
+      }
+    } catch (err) {
+      console.log("err", err)
       if (
         err instanceof DomainError ||
         err instanceof CommandError ||

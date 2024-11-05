@@ -48,11 +48,13 @@ import { GetAllPermissionsRequestDto } from "./http/dto/request/role/get-all-per
 import { GetAllRolesRequestDto } from "./http/dto/request/role/get-all-roles.request.dto"
 import { GetUserPermissionsRequestDto } from "./http/dto/request/role/get-user-permissions.request.dto"
 import { GetUserRolesRequestDto } from "./http/dto/request/role/get-user-roles.request.dto"
+import { AddProfilePictureRequestDto } from "./http/dto/request/user/add-profile-picture.request.dto"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
 import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activate.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
+import { UpdateProfilePictureRequestDto } from "./http/dto/request/user/update-profile-picture.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
 import { PermissionResponseDto } from "./http/dto/response/role/permission.response.dto"
 import { RoleResponseDto } from "./http/dto/response/role/role.response.dto"
@@ -129,6 +131,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor("picture"))
   @Post("profile-picture/add")
   async addProfilePicture(
+    @Body() dto: AddProfilePictureRequestDto,
     @UploadedFile(new FileValidationPipe()) picture: Express.Multer.File,
     @CurrentUser() user: UserAggregate,
   ) {
@@ -149,6 +152,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor("picture"))
   @Patch("profile-picture/update")
   async updateProfilePicture(
+    @Body() dto: UpdateProfilePictureRequestDto,
     @UploadedFile(new FileValidationPipe()) picture: Express.Multer.File,
     @CurrentUser() user: UserAggregate,
   ) {

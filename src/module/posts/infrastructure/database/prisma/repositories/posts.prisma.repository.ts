@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common"
-import { Prisma } from "@prisma/client"
+import { Prisma, User } from "@prisma/client"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
@@ -18,13 +18,13 @@ import { PostMapper } from "../mapper/posts.prisma.mapper"
 export class PostsRepository implements IPostsRepository {
   constructor(private readonly prismaService: PrismaService) {}
   // user post
-  async createPost(post: Post, taggedUserIds: string[]): Promise<void> {
+  async createPost(post: Post, taggedUserIds?: string[] | null): Promise<void> {
     try {
       const data = PostMapper.toPersistence(post)
       const existPost = await this.prismaService.post.findUnique({
         where: { id: data.id },
       })
-      if (!existPost) {
+      if (existPost) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
           message: "Already exist this data",
@@ -88,7 +88,7 @@ export class PostsRepository implements IPostsRepository {
       if (!foundPost) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.NOT_FOUND,
-          message: "Postnot found",
+          message: "Post not found",
         })
       }
       foundPost = PostMapper.toPersistence(data)
@@ -118,6 +118,16 @@ export class PostsRepository implements IPostsRepository {
   }
   async deletePost(post: Post): Promise<void> {
     try {
+      const id = post.id
+      const foundPost = await this.prismaService.post.findUnique({
+        where: { id },
+      })
+      if (!foundPost) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.NOT_FOUND,
+          message: "Post not found",
+        })
+      }
       await this.prismaService.post.update({
         where: { id: post.id },
         data: { deletedAt: new Date() },
@@ -471,6 +481,99 @@ export class PostsRepository implements IPostsRepository {
       }
       const result = reactions.map((r) => PostReactionMapper.toDomain(r))
       return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async addTagUser(user: UserAggregate, post: Post): Promise<void> {
+    try {
+      await this.prismaService.postTaggedUser.create({
+        data: {
+          postId: post.id,
+          taggedUserId: user.id,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async addTagUsers(users: UserAggregate[], post: Post): Promise<void> {
+    try {
+      const taggedUsersData = users.map((user) => ({
+        postId: post.id,
+        taggedUserId: user.id,
+      }))
+
+      await this.prismaService.postTaggedUser.createMany({
+        data: taggedUsersData,
+        skipDuplicates: true, // Ensures no duplicate entries are created if some users are already tagged
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+
+  async removeTagUser(user: UserAggregate, post: Post): Promise<void> {
+    try {
+      await this.prismaService.postTaggedUser.delete({
+        where: {
+          postId_taggedUserId: {
+            postId: post.id,
+            taggedUserId: user.id,
+          },
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async removeAllTagUser(post: Post): Promise<void> {
+    try {
+      await this.prismaService.postTaggedUser.deleteMany({
+        where: {
+          postId: post.id,
+        },
+      })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

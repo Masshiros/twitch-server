@@ -33,7 +33,6 @@ export function ApiOperationDecorator({
   queries,
   auth = false,
   fileFieldName,
-  isArrayOfFile = false,
 }: ApiOperationDecoratorOptions) {
   const decorators = [
     ApiOperation({ summary }),
@@ -79,33 +78,7 @@ export function ApiOperationDecorator({
     })
   }
   if (fileFieldName) {
-    decorators.push(
-      ApiConsumes("multipart/form-data"),
-      ApiBody({
-        schema: isArrayOfFile
-          ? {
-              type: "object",
-              properties: {
-                [fileFieldName]: {
-                  type: "array",
-                  items: {
-                    type: "string",
-                    format: "binary",
-                  },
-                },
-              },
-            }
-          : {
-              type: "object",
-              properties: {
-                [fileFieldName]: {
-                  type: "string",
-                  format: "binary",
-                },
-              },
-            },
-      }),
-    )
+    decorators.push(ApiConsumes("multipart/form-data"))
   }
   return applyDecorators(...decorators)
 }

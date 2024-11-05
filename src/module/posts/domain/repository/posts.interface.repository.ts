@@ -5,7 +5,7 @@ import { Post } from "../entity/posts.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
 
 export abstract class IPostsRepository {
-  createPost: (post: Post, taggedUserIds: string[]) => Promise<void>
+  createPost: (post: Post, taggedUserIds?: string[] | null) => Promise<void>
   findPostById: (postId: string) => Promise<Post | null>
   updatePost: (data: Post) => Promise<void>
   deletePost: (post: Post) => Promise<void>
@@ -40,4 +40,9 @@ export abstract class IPostsRepository {
   addOrUpdateReactionToPost: (reaction: PostReactions) => Promise<void>
   removeReactionFromPost: (reaction: PostReactions) => Promise<void>
   getPostReactions: (post: Post) => Promise<PostReactions[]>
+  // tag user
+  addTagUser: (user: UserAggregate, post: Post) => Promise<void>
+  addTagUsers: (users: UserAggregate[], post: Post) => Promise<void>
+  removeTagUser: (user: UserAggregate, post: Post) => Promise<void>
+  removeAllTagUser: (post: Post) => Promise<void>
 }
