@@ -9,6 +9,7 @@ export class ImageMapper {
   // Convert Prisma Image entity to Domain Image entity
   static toDomain(prismaImage: PrismaImage): Image {
     return new Image({
+      id: prismaImage.id,
       url: prismaImage.url,
       publicId: prismaImage.publicId,
       applicableId: prismaImage.applicableId,

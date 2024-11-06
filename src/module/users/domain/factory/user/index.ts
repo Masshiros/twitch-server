@@ -26,7 +26,6 @@ export type CreateUserAggregateParams = {
   is2FA?: boolean
   view?: number
   bio?: string
-  avatar?: string
   lastUsernameChangeAt?: Date
   thumbnail?: string
   devices?: Device[]
@@ -60,7 +59,6 @@ export class UserFactory {
         is2FA: params.is2FA ?? false,
         view: params.view ?? 0,
         bio: params.bio ?? "",
-        avatar: params.avatar ?? "",
         lastUsernameChangeAt: params.lastUsernameChangeAt ?? new Date(),
         thumbnail: params.thumbnail ?? "",
         devices: params.devices ?? [],

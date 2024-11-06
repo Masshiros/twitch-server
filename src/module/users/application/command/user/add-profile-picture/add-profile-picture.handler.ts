@@ -49,6 +49,18 @@ export class AddProfilePictureHandler {
           },
         })
       }
+
+      // handle user image
+      const userImage = await this.imageService.getImageByApplicableId(userId)
+      // userImage.forEach((i) => console.log(i.publicId))
+      if (userImage.length > 0) {
+        await Promise.all(
+          userImage.map((i) => {
+            // console.log(i.id)
+            this.imageService.removeImage(i)
+          }),
+        )
+      }
       await this.imageService.uploadImage(
         picture,
         Folder.image.user,

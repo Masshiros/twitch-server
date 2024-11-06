@@ -1,5 +1,12 @@
-import { Expose } from "class-transformer"
+import { Expose, Type } from "class-transformer"
 
+export class ImageResponseDto {
+  @Expose()
+  url: string
+
+  @Expose()
+  publicId: string
+}
 export class GetFollowerResponseDto {
   @Expose()
   id: string
@@ -10,7 +17,8 @@ export class GetFollowerResponseDto {
   @Expose()
   slug: string
   @Expose()
-  avatar: string
+  @Type(() => ImageResponseDto)
+  avatar: ImageResponseDto
   @Expose()
   isLive: boolean
   @Expose()

@@ -140,28 +140,28 @@ export class UserController {
   }
 
   // PATCH: Update profile picture
-  @ApiOperationDecorator({
-    summary: "Update profile picture",
-    description: "Update profile picture of the user",
-    type: null,
-    auth: true,
-    fileFieldName: "picture",
-  })
-  @Permission([Permissions.Users.Update])
-  @ResponseMessage(SuccessMessages.user.UPDATE_PROFILE_PICTURE)
-  @UseInterceptors(FileInterceptor("picture"))
-  @Patch("profile-picture/update")
-  async updateProfilePicture(
-    @Body() dto: UpdateProfilePictureRequestDto,
-    @UploadedFile(new FileValidationPipe()) picture: Express.Multer.File,
-    @CurrentUser() user: UserAggregate,
-  ) {
-    const command = new UpdateProfilePictureCommand({
-      userId: user.id,
-      picture,
-    })
-    await this.userService.updateProfilePicture(command)
-  }
+  // @ApiOperationDecorator({
+  //   summary: "Update profile picture",
+  //   description: "Update profile picture of the user",
+  //   type: null,
+  //   auth: true,
+  //   fileFieldName: "picture",
+  // })
+  // @Permission([Permissions.Users.Update])
+  // @ResponseMessage(SuccessMessages.user.UPDATE_PROFILE_PICTURE)
+  // @UseInterceptors(FileInterceptor("picture"))
+  // @Patch("profile-picture/update")
+  // async updateProfilePicture(
+  //   @Body() dto: UpdateProfilePictureRequestDto,
+  //   @UploadedFile(new FileValidationPipe()) picture: Express.Multer.File,
+  //   @CurrentUser() user: UserAggregate,
+  // ) {
+  //   const command = new UpdateProfilePictureCommand({
+  //     userId: user.id,
+  //     picture,
+  //   })
+  //   await this.userService.updateProfilePicture(command)
+  // }
 
   // GET: Get User by ID
   @ApiOperationDecorator({

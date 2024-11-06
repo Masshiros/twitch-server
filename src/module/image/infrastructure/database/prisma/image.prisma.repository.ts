@@ -44,10 +44,32 @@ export class ImageRepository implements IImageRepository {
   }
   async delete(image: Image): Promise<void> {
     try {
-      await this.prismaService.image.update({
+      await this.prismaService.image.delete({
         where: { id: image.id },
-        data: { deletedAt: new Date() },
       })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getImageById(imageId: string): Promise<Image> {
+    try {
+      const image = await this.prismaService.image.findUnique({
+        where: { id: imageId },
+      })
+      if (!image) {
+        return null
+      }
+      return ImageMapper.toDomain(image) ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

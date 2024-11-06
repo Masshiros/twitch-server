@@ -94,7 +94,6 @@ export class ImageService {
     folder: string,
     applicableId: string,
     applicableType: EImage,
-    userId?: string,
   ) {
     try {
       const [rootJob, failedUploadJobs] = await Promise.all([
@@ -151,6 +150,7 @@ export class ImageService {
   async getImageByApplicableId(applicableId: string): Promise<Image[] | null> {
     try {
       const images = await this.imageRepository.getImageByType(applicableId)
+      images.forEach((i) => console.log(i.publicId))
       return images ?? null
     } catch (err) {
       if (
@@ -218,9 +218,19 @@ export class ImageService {
   }
   async removeImage(image: Image) {
     try {
+      // console.log(image.id)
+      const plainImageData = {
+        id: image.id,
+        url: image.url,
+        publicId: image.publicId, // Ensure this property is included
+        applicableId: image.applicableId,
+        applicableType: image.applicableType,
+        // Add any other properties you need
+      }
+
       const [job, failedUploadJobs] = await Promise.all([
         this.imageRemoveQueue.add(Bull.job.image.remove, {
-          image,
+          imageData: plainImageData,
         }),
         this.imageRemoveQueue.getFailed(),
       ])

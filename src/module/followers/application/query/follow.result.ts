@@ -3,7 +3,7 @@ export class FollowResult {
   name: string
   displayName: string
   slug: string
-  avatar: string
+  avatar: { url: string; publicId: string }
   isLive: boolean
   followDate: Date
 }

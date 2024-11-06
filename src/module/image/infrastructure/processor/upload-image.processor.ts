@@ -7,6 +7,7 @@ import {
   InfrastructureErrorCode,
   InfrastructureErrorDetailCode,
 } from "libs/exception/infrastructure"
+import { PrismaService } from "prisma/prisma.service"
 import { CloudinaryService } from "src/integration/file/cloudinary/cloudinary.service"
 import { ImageFactory } from "../../domain/factory/image.factory"
 import { IImageRepository } from "../../domain/repository/image.interface.repository"
@@ -17,6 +18,7 @@ export class ImageUploadProcessor extends WorkerHost {
   constructor(
     private readonly cloudinaryService: CloudinaryService,
     private readonly imageRepository: IImageRepository,
+    private readonly prismaService: PrismaService,
   ) {
     super()
   }
@@ -47,7 +49,10 @@ export class ImageUploadProcessor extends WorkerHost {
     let result
     try {
       const { file, folder, applicableId, applicableType } = job.data
-      result = await this.cloudinaryService.uploadImage(file, folder)
+      result = await this.cloudinaryService.uploadImage(
+        file,
+        `${folder}/${applicableId}`,
+      )
       console.log(result)
       if (!result || result === null) {
         throw new InfrastructureError({

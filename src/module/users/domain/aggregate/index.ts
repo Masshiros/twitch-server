@@ -35,7 +35,7 @@ interface UserAggregateProps {
   is2FA?: boolean
   view?: number
   bio?: string
-  avatar?: string
+
   lastUsernameChangeAt?: Date
   thumbnail?: string
   devices?: Device[]
@@ -109,11 +109,6 @@ export class UserAggregate extends BaseAggregate {
   @Expose()
   private _bio?: string
 
-  @IsString()
-  @IsOptional()
-  @Expose()
-  private _avatar?: string
-
   @Type(() => Date)
   @IsOptional()
   @Expose()
@@ -154,7 +149,6 @@ export class UserAggregate extends BaseAggregate {
     this._is2FA = props.is2FA ?? false
     this._view = props.view ?? 0
     this._bio = props.bio
-    this._avatar = props.avatar
     this._lastUsernameChangeAt = props.lastUsernameChangeAt
     this._thumbnail = props.thumbnail
 
@@ -288,14 +282,6 @@ export class UserAggregate extends BaseAggregate {
 
   set bio(value: string | undefined) {
     this._bio = value
-  }
-
-  get avatar(): string | undefined {
-    return this._avatar
-  }
-
-  set avatar(value: string | undefined) {
-    this._avatar = value
   }
   get lastUsernameChangeAt(): Date {
     return this._lastUsernameChangeAt

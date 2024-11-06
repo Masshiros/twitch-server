@@ -30,6 +30,8 @@ model User {
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @default(now()) @updatedAt
   deletedAt             DateTime?
+  
+  
   CategoryFollowers     CategoryFollowers[]      @relation("Users")
   devices               Device[]
   externalLinks         ExternalLink[]
@@ -67,6 +69,7 @@ model Image{
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @default(now()) @updatedAt
   deletedAt             DateTime?
+ 
   @@map("images")
 }
 

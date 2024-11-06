@@ -8,6 +8,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { Follower } from "src/module/followers/domain/entity/followers.entity"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
+import { ImageService } from "src/module/image/application/image.service"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { FollowResult } from "../follow.result"
 import { GetListFollowingsQuery } from "./get-list-followings.query"
@@ -17,6 +18,7 @@ export class GetListFollowingsQueryHandler {
   constructor(
     private readonly followerRepostiory: IFollowersRepository,
     private readonly userRepository: IUserRepository,
+    private readonly imageService: ImageService,
   ) {}
   async execute(query: GetListFollowingsQuery): Promise<FollowResult[] | null> {
     const { userId } = query
@@ -48,13 +50,34 @@ export class GetListFollowingsQueryHandler {
           const user = await this.userRepository.findById(
             follower.destinationUserId,
           )
+          const userImage = await this.imageService.getImageByApplicableId(
+            user.id,
+          )
+
           if (user) {
+            if (userImage) {
+              return {
+                id: user.id,
+                name: user.name,
+                displayName: user.displayName,
+                slug: user.slug,
+                avatar: {
+                  url: userImage[0].url,
+                  publicId: userImage[0].publicId,
+                },
+                isLive: user.isLive,
+                followDate: follower.followDate,
+              }
+            }
             return {
               id: user.id,
               name: user.name,
               displayName: user.displayName,
               slug: user.slug,
-              avatar: user.avatar,
+              avatar: {
+                url: "",
+                publicId: "",
+              },
               isLive: user.isLive,
               followDate: follower.followDate,
             }
