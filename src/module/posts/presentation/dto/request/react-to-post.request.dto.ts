@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsNotEmpty, IsString } from "class-validator"
+import { IsEnum, IsNotEmpty, IsString } from "class-validator"
 import { EReactionType } from "libs/constants/enum"
 
 export class ReactToPostRequestDto {
@@ -16,5 +16,6 @@ export class ReactToPostRequestDto {
     enum: EReactionType,
     example: EReactionType.LIKE,
   })
+  @IsEnum(EReactionType)
   reactionType: EReactionType
 }

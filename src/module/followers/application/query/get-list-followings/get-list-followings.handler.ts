@@ -12,6 +12,7 @@ import { ImageService } from "src/module/image/application/image.service"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { FollowResult } from "../follow.result"
 import { GetListFollowingsQuery } from "./get-list-followings.query"
+import { QueryError, QueryErrorCode, QueryErrorDetailCode } from "libs/exception/application/query"
 
 @QueryHandler(GetListFollowingsQuery)
 export class GetListFollowingsQueryHandler {
@@ -25,21 +26,21 @@ export class GetListFollowingsQueryHandler {
 
     try {
       if (!userId) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+        throw new QueryError({
+          code: QueryErrorCode.BAD_REQUEST,
           message: "User id can not be empty",
           info: {
-            errorCode: CommandErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
+            errorCode: QueryErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
           },
         })
       }
       const user = await this.userRepository.findById(userId)
       if (!user) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+        throw new QueryError({
+          code: QueryErrorCode.BAD_REQUEST,
           message: "Follower not found",
           info: {
-            errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
+            errorCode: QueryErrorDetailCode.USER_NOT_FOUND,
           },
         })
       }
@@ -89,14 +90,14 @@ export class GetListFollowingsQueryHandler {
     } catch (err) {
       if (
         err instanceof DomainError ||
-        err instanceof CommandError ||
+        err instanceof QueryError ||
         err instanceof InfrastructureError
       ) {
         throw err
       }
 
-      throw new CommandError({
-        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+      throw new QueryError({
+        code: QueryErrorCode.INTERNAL_SERVER_ERROR,
         message: err.message,
       })
     }

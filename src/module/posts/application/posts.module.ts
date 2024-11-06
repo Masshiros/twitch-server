@@ -10,6 +10,7 @@ import { EditUserPostHandler } from "./command/edit-user-post/edit-user-post.han
 import { ReactToPostHandler } from "./command/react-to-post/react-to-post.handler"
 import { ToggleHidePostsFromUserHandler } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.handler"
 import { PostsService } from "./posts.service"
+import { GetAllReactionsHandler } from "./query/get-all-reactions/get-all-reactions.handler"
 
 const commandHandlers = [
   ReactToPostHandler,
@@ -18,7 +19,7 @@ const commandHandlers = [
   DeleteUserPostHandler,
   EditUserPostHandler,
 ]
-const queryHandlers = []
+const queryHandlers = [GetAllReactionsHandler]
 @Module({
   controllers: [PostsController],
   providers: [PostsService, ...commandHandlers, ...queryHandlers],

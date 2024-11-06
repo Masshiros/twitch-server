@@ -1,9 +1,9 @@
 import { QueryHandler } from "@nestjs/cqrs"
 import {
-  CommandError,
-  CommandErrorCode,
-  CommandErrorDetailCode,
-} from "libs/exception/application/command"
+  QueryError,
+  QueryErrorCode,
+  QueryErrorDetailCode,
+} from "libs/exception/application/query"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { Follower } from "src/module/followers/domain/entity/followers.entity"
@@ -25,21 +25,21 @@ export class GetListFollowersQueryHandler {
 
     try {
       if (!userId) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+        throw new QueryError({
+          code: QueryErrorCode.BAD_REQUEST,
           message: "User id can not be empty",
           info: {
-            errorCode: CommandErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
+            errorCode: QueryErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
           },
         })
       }
       const user = await this.userRepository.findById(userId)
       if (!user) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+        throw new QueryError({
+          code: QueryErrorCode.BAD_REQUEST,
           message: "Follower not found",
           info: {
-            errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
+            errorCode: QueryErrorDetailCode.USER_NOT_FOUND,
           },
         })
       }
@@ -87,14 +87,14 @@ export class GetListFollowersQueryHandler {
     } catch (err) {
       if (
         err instanceof DomainError ||
-        err instanceof CommandError ||
+        err instanceof QueryError ||
         err instanceof InfrastructureError
       ) {
         throw err
       }
 
-      throw new CommandError({
-        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+      throw new QueryError({
+        code: QueryErrorCode.INTERNAL_SERVER_ERROR,
         message: err.message,
       })
     }

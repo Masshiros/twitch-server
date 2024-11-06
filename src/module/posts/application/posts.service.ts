@@ -5,6 +5,7 @@ import { DeleteUserPostCommand } from "./command/delete-user-post/delete-user-po
 import { EditUserPostCommand } from "./command/edit-user-post/edit-user-post.command"
 import { ReactToPostCommand } from "./command/react-to-post/react-to-post.command"
 import { ToggleHidePostsFromUserCommand } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
+import { GetAllReactionsQuery } from "./query/get-all-reactions/get-all-reactions.query"
 
 @Injectable()
 export class PostsService {
@@ -26,5 +27,8 @@ export class PostsService {
   }
   async editUserPost(command: EditUserPostCommand) {
     return this.commandBus.execute(command)
+  }
+  async getAllReactions(query: GetAllReactionsQuery) {
+    return this.queryBus.execute(query)
   }
 }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -25,51 +26,19 @@ import { EditUserPostCommand } from "../application/command/edit-user-post/edit-
 import { ReactToPostCommand } from "../application/command/react-to-post/react-to-post.command"
 import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { PostsService } from "../application/posts.service"
+import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
 import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
 import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
+import { GetAllReactionsRequestDto } from "./dto/request/get-all-reactions.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
+import { GetAllReactionsResponseDto } from "./dto/response/get-all-reactions.response.dto"
 
 @ApiTags("posts")
 @Controller("posts")
 export class PostsController {
   constructor(private readonly service: PostsService) {}
-  @ApiOperationDecorator({
-    summary: "React to post",
-    description: "React to a specific post",
-    auth: true,
-  })
-  @Permission([Permissions.Reactions.Create, Permissions.Reactions.Update])
-  @ResponseMessage(SuccessMessages.posts.REACT_TO_POST)
-  @Post("react-to-post")
-  async reactToPost(
-    @Body() data: ReactToPostRequestDto,
-    @CurrentUser() user: UserAggregate,
-  ): Promise<void> {
-    const command = new ReactToPostCommand({ ...data, userId: user.id })
-    await this.service.reactToPost(command)
-  }
-
-  @ApiOperationDecorator({
-    summary: "(Toggle) hide posts from user",
-    description:
-      "All posts of this user will be hidden or unhidden from new feed of current user",
-    auth: true,
-  })
-  @Permission([Permissions.Posts.Create, Permissions.Posts.Update])
-  @ResponseMessage(SuccessMessages.posts.REACT_TO_POST)
-  @Post("hide-post-from-user")
-  async toggleHidePostFromUser(
-    @Body() data: ToggleHidePostsFromUserRequestDto,
-    @CurrentUser() user: UserAggregate,
-  ): Promise<void> {
-    const command = new ToggleHidePostsFromUserCommand({
-      ...data,
-      userId: user.id,
-    })
-    await this.service.toggleHidePostFromUser(command)
-  }
   // POST: Create a post
   @ApiOperationDecorator({
     summary: "Create a post",
@@ -139,5 +108,56 @@ export class PostsController {
     })
 
     await this.service.editUserPost(command)
+  }
+  //POST: React to Post
+  @ApiOperationDecorator({
+    summary: "React to post",
+    description: "React to a specific post",
+    auth: true,
+  })
+  @Permission([Permissions.Reactions.Create, Permissions.Reactions.Update])
+  @ResponseMessage(SuccessMessages.posts.REACT_TO_POST)
+  @Post("react-to-post")
+  async reactToPost(
+    @Body() data: ReactToPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    const command = new ReactToPostCommand({ ...data, userId: user.id })
+    await this.service.reactToPost(command)
+  }
+  //Get: Get all post reactions
+  @ApiOperationDecorator({
+    summary: "Get all reactions",
+    description: "Get all reactions of specific post",
+    auth: true,
+  })
+  @Permission([Permissions.Reactions.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_ALL_REACTIONS)
+  @Get("/:postId/reactions")
+  async getAllReactions(
+    @Param() param: GetAllReactionsRequestDto,
+  ): Promise<GetAllReactionsResponseDto> {
+    const query = new GetAllReactionsQuery(param)
+    return await this.service.getAllReactions(query)
+  }
+  // Post: Toggle hide posts from user
+  @ApiOperationDecorator({
+    summary: "(Toggle) hide posts from user",
+    description:
+      "All posts of this user will be hidden or unhidden from new feed of current user",
+    auth: true,
+  })
+  @Permission([Permissions.Posts.Create, Permissions.Posts.Update])
+  @ResponseMessage(SuccessMessages.posts.REACT_TO_POST)
+  @Post("hide-post-from-user")
+  async toggleHidePostFromUser(
+    @Body() data: ToggleHidePostsFromUserRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    const command = new ToggleHidePostsFromUserCommand({
+      ...data,
+      userId: user.id,
+    })
+    await this.service.toggleHidePostFromUser(command)
   }
 }
