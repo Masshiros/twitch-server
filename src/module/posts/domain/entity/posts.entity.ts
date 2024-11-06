@@ -4,6 +4,7 @@ import { EUserPostVisibility } from "../enum/posts.enum"
 import { PostReactions } from "./post-reactions.entity"
 
 interface PostProps {
+  id?: string
   userId: string
   groupId?: string
   content: string
@@ -23,14 +24,14 @@ export class Post extends BaseEntity {
   private _postReactions?: PostReactions[]
   constructor(props: PostProps) {
     super()
-    this._id = randomUUID()
+    this._id = props.id ?? randomUUID()
     this._userId = props.userId
     this._groupId = props.groupId
     this._content = props.content
-    this._visibility = props.visibility || EUserPostVisibility.PUBLIC
-    this._totalViewCount = props.totalViewCount || 0
-    this._postReactions = props.postReactions || []
-    this._createdAt = props.createdAt || new Date()
+    this._visibility = props.visibility ?? EUserPostVisibility.PUBLIC
+    this._totalViewCount = props.totalViewCount ?? 0
+    this._postReactions = props.postReactions ?? []
+    this._createdAt = props.createdAt ?? new Date()
     this._updatedAt = props.updatedAt
     this._deletedAt = props.deletedAt
   }

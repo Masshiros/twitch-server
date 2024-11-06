@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Post,
+  Query,
   Response,
   UploadedFiles,
   UseInterceptors,
@@ -16,10 +18,12 @@ import { Permission } from "libs/decorator/permission.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { CreateUserPostCommand } from "../application/command/create-user-post/create-user-post.command"
+import { DeleteUserPostCommand } from "../application/command/delete-user-post/delete-user-post.command"
 import { ReactToPostCommand } from "../application/command/react-to-post/react-to-post.command"
 import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { PostsService } from "../application/posts.service"
 import { CreatePostRequestDto } from "./dto/request/create-post.request.dto"
+import { DeletePostRequestDto } from "./dto/request/delete-post.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 
@@ -86,5 +90,25 @@ export class PostsController {
     console.log(data)
 
     await this.service.createPost(command)
+  }
+  // DELETE: delete user's post
+  @ApiOperationDecorator({
+    summary: "Delete post",
+    description: "Current logged in user delete a post",
+    auth: true,
+    fileFieldName: "images",
+  })
+  @Permission([Permissions.Posts.Delete])
+  @ResponseMessage(SuccessMessages.posts.DELETE_POST)
+  @Delete("")
+  async deletePost(
+    @Query() query: DeletePostRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new DeleteUserPostCommand({
+      postId: query.postId,
+      userId: user.id,
+    })
+    await this.service.deletePost(command)
   }
 }

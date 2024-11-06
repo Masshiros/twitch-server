@@ -9,6 +9,7 @@ export class PostMapper {
   // Convert Prisma Post to Domain PostAggregate
   static toDomain(prismaPost: PrismaPost): Post {
     return new Post({
+      id: prismaPost.id,
       userId: prismaPost.userId,
       groupId: prismaPost.groupId,
       content: prismaPost.content,

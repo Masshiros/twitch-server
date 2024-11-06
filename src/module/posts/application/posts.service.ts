@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { CreateUserPostCommand } from "./command/create-user-post/create-user-post.command"
+import { DeleteUserPostCommand } from "./command/delete-user-post/delete-user-post.command"
 import { ReactToPostCommand } from "./command/react-to-post/react-to-post.command"
 import { ToggleHidePostsFromUserCommand } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 
@@ -17,6 +18,9 @@ export class PostsService {
     return this.commandBus.execute(command)
   }
   async createPost(command: CreateUserPostCommand) {
+    return this.commandBus.execute(command)
+  }
+  async deletePost(command: DeleteUserPostCommand) {
     return this.commandBus.execute(command)
   }
 }
