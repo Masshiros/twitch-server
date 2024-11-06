@@ -31,11 +31,28 @@ export class CreatePostRequestDto {
   taggedUserIds?: string[]
 
   @ApiProperty({
+    description: "IDs of users can view post",
+    type: "array",
+    items: { type: "string" },
+    required: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? value.split(",") : value,
+  )
+  @IsArray()
+  listUserViewIds?: string[]
+
+  @ApiProperty({
     description: "List of images",
     type: "array",
     items: { type: "string", format: "binary" },
+    required: false,
   })
   @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? value.split(",") : value,
+  )
   @IsArray()
   images: Express.Multer.File[]
 }

@@ -588,4 +588,152 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
+  async addUserView(user: UserAggregate, post: Post) {
+    try {
+      const existedData =
+        await this.prismaService.userPostViewPermission.findUnique({
+          where: {
+            postId_viewerId: {
+              postId: post.id,
+              viewerId: user.id,
+            },
+          },
+        })
+      if (existedData) {
+        return
+      }
+      await this.prismaService.userPostViewPermission.create({
+        data: {
+          postId: post.id,
+          viewerId: user.id,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async addUserViews(user: UserAggregate[], post: Post): Promise<void> {
+    try {
+      await Promise.all(
+        user.map(async (u) => {
+          const existedData =
+            await this.prismaService.userPostViewPermission.findUnique({
+              where: {
+                postId_viewerId: {
+                  postId: post.id,
+                  viewerId: u.id,
+                },
+              },
+            })
+          if (existedData) {
+            return
+          }
+          await this.prismaService.userPostViewPermission.create({
+            data: {
+              postId: post.id,
+              viewerId: u.id,
+            },
+          })
+        }),
+      )
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async removeUserView(user: UserAggregate, post: Post): Promise<void> {
+    try {
+      const existedData =
+        await this.prismaService.userPostViewPermission.findUnique({
+          where: {
+            postId_viewerId: {
+              postId: post.id,
+              viewerId: user.id,
+            },
+          },
+        })
+      if (!existedData) {
+        return
+      }
+      await this.prismaService.userPostViewPermission.delete({
+        where: {
+          postId_viewerId: {
+            postId: post.id,
+            viewerId: user.id,
+          },
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async removeUserViews(user: UserAggregate[], post: Post): Promise<void> {
+    try {
+      await Promise.all(
+        user.map(async (u) => {
+          const existedData =
+            await this.prismaService.userPostViewPermission.findUnique({
+              where: {
+                postId_viewerId: {
+                  postId: post.id,
+                  viewerId: u.id,
+                },
+              },
+            })
+          if (!existedData) {
+            return
+          }
+          await this.prismaService.userPostViewPermission.delete({
+            where: {
+              postId_viewerId: {
+                postId: post.id,
+                viewerId: u.id,
+              },
+            },
+          })
+        }),
+      )
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
 }

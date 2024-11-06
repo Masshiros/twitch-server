@@ -356,11 +356,11 @@ model Post {
 model PostTaggedUser {
   postId       String
   taggedUserId String
-  post         Post   @relation(fields: [postId], references: [id])
-  taggedUser   User   @relation(fields: [taggedUserId], references: [id])
+  post         Post   @relation(fields: [postId], references: [id],onDelete: Cascade)
+  taggedUser   User   @relation(fields: [taggedUserId], references: [id],onDelete: Cascade)
 
   @@id([postId, taggedUserId])
-  @@map("posttaggedUsers")
+  @@map("postTaggedUsers")
 }
 
 model UserPostViewPermission {

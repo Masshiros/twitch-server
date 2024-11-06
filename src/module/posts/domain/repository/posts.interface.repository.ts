@@ -45,4 +45,9 @@ export abstract class IPostsRepository {
   addTagUsers: (users: UserAggregate[], post: Post) => Promise<void>
   removeTagUser: (user: UserAggregate, post: Post) => Promise<void>
   removeAllTagUser: (post: Post) => Promise<void>
+  // user view permission
+  addUserView: (user: UserAggregate, post: Post) => Promise<void>
+  addUserViews: (user: UserAggregate[], post: Post) => Promise<void>
+  removeUserView: (user: UserAggregate, post: Post) => Promise<void>
+  removeUserViews: (user: UserAggregate[], post: Post) => Promise<void>
 }
