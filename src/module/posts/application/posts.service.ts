@@ -6,6 +6,7 @@ import { EditUserPostCommand } from "./command/edit-user-post/edit-user-post.com
 import { ReactToPostCommand } from "./command/react-to-post/react-to-post.command"
 import { ToggleHidePostsFromUserCommand } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { GetAllReactionsQuery } from "./query/get-all-reactions/get-all-reactions.query"
+import { GetReactionsByTypeQuery } from "./query/get-reactions-by-type/get-reactions-by-type.query"
 
 @Injectable()
 export class PostsService {
@@ -29,6 +30,9 @@ export class PostsService {
     return this.commandBus.execute(command)
   }
   async getAllReactions(query: GetAllReactionsQuery) {
+    return this.queryBus.execute(query)
+  }
+  async getReactionsByType(query: GetReactionsByTypeQuery) {
     return this.queryBus.execute(query)
   }
 }

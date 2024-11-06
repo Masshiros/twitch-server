@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { EReactionType } from "@prisma/client"
 
-class ReactionUserDto {
+export class ReactionUserDto {
   @ApiProperty({ description: "ID of the user" })
   id: string
 

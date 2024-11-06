@@ -27,13 +27,16 @@ import { ReactToPostCommand } from "../application/command/react-to-post/react-t
 import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { PostsService } from "../application/posts.service"
 import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
+import { GetReactionsByTypeQuery } from "../application/query/get-reactions-by-type/get-reactions-by-type.query"
 import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
 import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
 import { GetAllReactionsRequestDto } from "./dto/request/get-all-reactions.request.dto"
+import { GetReactionsByTypeRequestDto } from "./dto/request/get-reactions-by-type.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 import { GetAllReactionsResponseDto } from "./dto/response/get-all-reactions.response.dto"
+import { GetReactionsByTypeResponseDto } from "./dto/response/get-reactions-by-type.response.dto"
 
 @ApiTags("posts")
 @Controller("posts")
@@ -139,6 +142,22 @@ export class PostsController {
   ): Promise<GetAllReactionsResponseDto> {
     const query = new GetAllReactionsQuery(param)
     return await this.service.getAllReactions(query)
+  }
+  //Get: Get post's reactions by type
+  @ApiOperationDecorator({
+    summary: "Get post reactions by type",
+    description: "Get post reactions by type ",
+    type: GetReactionsByTypeResponseDto,
+    auth: true,
+  })
+  @Permission([Permissions.Reactions.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_REACTIONS_BY_TYPE)
+  @Get("/reactions")
+  async getPostReactionsByType(
+    @Query() data: GetReactionsByTypeRequestDto,
+  ): Promise<GetReactionsByTypeResponseDto> {
+    const query = new GetReactionsByTypeQuery(data)
+    return await this.service.getReactionsByType(query)
   }
   // Post: Toggle hide posts from user
   @ApiOperationDecorator({

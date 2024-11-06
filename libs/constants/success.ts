@@ -62,6 +62,7 @@ export const SuccessMessages = {
     CREATE_POST: "Create new post successfully",
     REACT_TO_POST: "React to post successfully",
     GET_ALL_REACTIONS: "Get all reactions successfully",
+    GET_REACTIONS_BY_TYPE: "Get post reactions by type successfully",
     HIDE_POST_FROM_USER: "Hide posts from this user successfully",
     DELETE_POST: "Delete post successfully",
     UPDATE_POST: "Update post successfully",

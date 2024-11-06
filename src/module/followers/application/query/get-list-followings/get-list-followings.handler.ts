@@ -4,6 +4,11 @@ import {
   CommandErrorCode,
   CommandErrorDetailCode,
 } from "libs/exception/application/command"
+import {
+  QueryError,
+  QueryErrorCode,
+  QueryErrorDetailCode,
+} from "libs/exception/application/query"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { Follower } from "src/module/followers/domain/entity/followers.entity"
@@ -12,7 +17,6 @@ import { ImageService } from "src/module/image/application/image.service"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { FollowResult } from "../follow.result"
 import { GetListFollowingsQuery } from "./get-list-followings.query"
-import { QueryError, QueryErrorCode, QueryErrorDetailCode } from "libs/exception/application/query"
 
 @QueryHandler(GetListFollowingsQuery)
 export class GetListFollowingsQueryHandler {

@@ -1,9 +1,5 @@
 import { QueryHandler } from "@nestjs/cqrs"
 import {
-  CommandError,
-  CommandErrorCode,
-} from "libs/exception/application/command"
-import {
   QueryError,
   QueryErrorCode,
   QueryErrorDetailCode,
@@ -13,18 +9,20 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { ImageService } from "src/module/image/application/image.service"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { GetAllReactionsQuery } from "./get-all-reactions.query"
-import { GetAllReactionsResult } from "./get-all-reactions.result"
+import { GetReactionsByTypeQuery } from "./get-reactions-by-type.query"
+import { GetReactionsByTypeResult } from "./get-reactions-by-type.result"
 
-@QueryHandler(GetAllReactionsQuery)
-export class GetAllReactionsHandler {
+@QueryHandler(GetReactionsByTypeQuery)
+export class GetReactionsByTypeHandler {
   constructor(
     private readonly postRepository: IPostsRepository,
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
   ) {}
-  async execute(query: GetAllReactionsQuery): Promise<GetAllReactionsResult> {
-    const { postId } = query
+  async execute(
+    query: GetReactionsByTypeQuery,
+  ): Promise<GetReactionsByTypeResult> {
+    const { postId, reactionType } = query
     try {
       if (!postId || postId.length === 0) {
         throw new QueryError({
@@ -48,10 +46,13 @@ export class GetAllReactionsHandler {
       }
       const reactions = await this.postRepository.getPostReactions(post)
       if (!reactions) {
-        return { reactionCount: 0, users: [] }
+        return { type: null, reactionCount: 0, users: [] }
       }
+      const filteredReactions = reactions.filter(
+        (reaction) => reaction.type === reactionType,
+      )
       const users = await Promise.all(
-        reactions.map(async (r) => {
+        filteredReactions.map(async (r) => {
           const user = await this.userRepository.findById(r.userId)
           if (!user) {
             return null
@@ -67,8 +68,9 @@ export class GetAllReactionsHandler {
         }),
       )
       return {
-        reactionCount: users?.length ?? 0,
-        users: users ?? [],
+        type: reactionType,
+        reactionCount: filteredReactions.length,
+        users,
       }
     } catch (err) {
       if (
