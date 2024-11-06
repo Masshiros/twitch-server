@@ -171,11 +171,18 @@ export class ImageService {
     const failedJobs: { image: Image; reason: string }[] = []
     try {
       const jobs = await Promise.all(
-        images.map((image) =>
-          this.imageRemoveQueue.add(Bull.job.image.remove, {
-            image,
-          }),
-        ),
+        images.map((image) => {
+          const plainImageData = {
+            id: image.id,
+            url: image.url,
+            publicId: image.publicId,
+            applicableId: image.applicableId,
+            applicableType: image.applicableType,
+          }
+          return this.imageRemoveQueue.add(Bull.job.image.remove, {
+            imageData: plainImageData,
+          })
+        }),
       )
       for (const [index, job] of jobs.entries()) {
         const jobState = await job.getState()
@@ -222,10 +229,9 @@ export class ImageService {
       const plainImageData = {
         id: image.id,
         url: image.url,
-        publicId: image.publicId, // Ensure this property is included
+        publicId: image.publicId,
         applicableId: image.applicableId,
         applicableType: image.applicableType,
-        // Add any other properties you need
       }
 
       const [job, failedUploadJobs] = await Promise.all([

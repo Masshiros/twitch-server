@@ -7,7 +7,7 @@ import { EUserPostVisibility } from "../enum/posts.enum"
 export abstract class IPostsRepository {
   createPost: (post: Post, taggedUserIds?: string[] | null) => Promise<void>
   findPostById: (postId: string) => Promise<Post | null>
-  updatePost: (data: Post) => Promise<void>
+  updatePost: (data: Post, taggedUserIds?: string[] | null) => Promise<void>
   deletePost: (post: Post) => Promise<void>
   // user feed
   getUserPost: (
@@ -50,4 +50,5 @@ export abstract class IPostsRepository {
   addUserViews: (user: UserAggregate[], post: Post) => Promise<void>
   removeUserView: (user: UserAggregate, post: Post) => Promise<void>
   removeUserViews: (user: UserAggregate[], post: Post) => Promise<void>
+  removePostUserViews: (post: Post) => Promise<void>
 }

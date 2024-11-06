@@ -3,7 +3,7 @@ import { Transform } from "class-transformer"
 import { IsArray, IsEnum, IsOptional, IsString } from "class-validator"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
 
-export class CreatePostRequestDto {
+export class EditUserPostRequestDto {
   @ApiProperty({ description: "Content of the post", type: String })
   @IsString()
   content: string

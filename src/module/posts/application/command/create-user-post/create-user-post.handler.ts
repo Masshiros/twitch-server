@@ -145,7 +145,9 @@ export class CreateUserPostHandler {
     } catch (err) {
       console.log(err)
       savedImages = await this.imageService.getImageByApplicableId(post.id)
-      await this.imageService.removeMultipleImages(savedImages!)
+      if (savedImages) {
+        await this.imageService.removeMultipleImages(savedImages!)
+      }
 
       if (
         err instanceof DomainError ||

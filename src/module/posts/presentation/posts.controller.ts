@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Delete,
+  Param,
+  Patch,
   Post,
   Query,
   Response,
@@ -19,11 +21,13 @@ import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { CreateUserPostCommand } from "../application/command/create-user-post/create-user-post.command"
 import { DeleteUserPostCommand } from "../application/command/delete-user-post/delete-user-post.command"
+import { EditUserPostCommand } from "../application/command/edit-user-post/edit-user-post.command"
 import { ReactToPostCommand } from "../application/command/react-to-post/react-to-post.command"
 import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { PostsService } from "../application/posts.service"
-import { CreatePostRequestDto } from "./dto/request/create-post.request.dto"
-import { DeletePostRequestDto } from "./dto/request/delete-post.request.dto"
+import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
+import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
+import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 
@@ -77,8 +81,8 @@ export class PostsController {
   @ResponseMessage(SuccessMessages.posts.CREATE_POST)
   @UseInterceptors(FilesInterceptor("images"))
   @Post()
-  async createPost(
-    @Body() data: CreatePostRequestDto,
+  async createUserPost(
+    @Body() data: CreateUserPostRequestDto,
     @CurrentUser() user: UserAggregate,
     @UploadedFiles() images: Express.Multer.File[],
   ): Promise<void> {
@@ -89,26 +93,51 @@ export class PostsController {
     })
     console.log(data)
 
-    await this.service.createPost(command)
+    await this.service.createUserPost(command)
   }
   // DELETE: delete user's post
   @ApiOperationDecorator({
     summary: "Delete post",
     description: "Current logged in user delete a post",
     auth: true,
-    fileFieldName: "images",
   })
   @Permission([Permissions.Posts.Delete])
   @ResponseMessage(SuccessMessages.posts.DELETE_POST)
   @Delete("")
-  async deletePost(
-    @Query() query: DeletePostRequestDto,
+  async deleteUserPost(
+    @Query() query: DeleteUserPostRequestDto,
     @CurrentUser() user: UserAggregate,
   ) {
     const command = new DeleteUserPostCommand({
       postId: query.postId,
       userId: user.id,
     })
-    await this.service.deletePost(command)
+    await this.service.deleteUserPost(command)
+  }
+  // PATCH: update user's post
+  @ApiOperationDecorator({
+    summary: "Update post",
+    description: "Current logged in user update a post",
+    auth: true,
+    fileFieldName: "images",
+  })
+  @Permission([Permissions.Posts.Update])
+  @ResponseMessage(SuccessMessages.posts.UPDATE_POST)
+  @UseInterceptors(FilesInterceptor("images"))
+  @Patch(":postId")
+  async editUserPost(
+    @Body() data: EditUserPostRequestDto,
+    @UploadedFiles() images: Express.Multer.File[],
+    @Param("postId") postId: string,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new EditUserPostCommand({
+      ...data,
+      images,
+      postId,
+      userId: user.id,
+    })
+
+    await this.service.editUserPost(command)
   }
 }

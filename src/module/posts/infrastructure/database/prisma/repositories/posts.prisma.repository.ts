@@ -79,7 +79,7 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
-  async updatePost(data: Post): Promise<void> {
+  async updatePost(data: Post, taggedUserIds?: string[] | null): Promise<void> {
     try {
       const { id } = data
       let foundPost = await this.prismaService.post.findUnique({
@@ -92,16 +92,29 @@ export class PostsRepository implements IPostsRepository {
         })
       }
       foundPost = PostMapper.toPersistence(data)
-      const updatedPost = await this.prismaService.post.update({
-        where: { id },
-        data: foundPost,
-      })
-      if (!updatedPost) {
-        throw new InfrastructureError({
-          code: InfrastructureErrorCode.BAD_REQUEST,
-          message: "Update operation not work",
+      await this.prismaService.$transaction(async (prisma) => {
+        const updatedPost = await this.prismaService.post.update({
+          where: { id },
+          data: foundPost,
         })
-      }
+        if (!updatedPost) {
+          throw new InfrastructureError({
+            code: InfrastructureErrorCode.BAD_REQUEST,
+            message: "Update operation not work",
+          })
+        }
+        if (taggedUserIds && taggedUserIds.length > 0) {
+          await prisma.postTaggedUser.deleteMany({
+            where: { postId: id },
+          })
+          const taggedUsersData = taggedUserIds.map((taggedUserId) => ({
+            postId: foundPost.id,
+            taggedUserId,
+          }))
+
+          await prisma.postTaggedUser.createMany({ data: taggedUsersData })
+        }
+      })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)
@@ -722,6 +735,36 @@ export class PostsRepository implements IPostsRepository {
           })
         }),
       )
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async removePostUserViews(post: Post): Promise<void> {
+    try {
+      const existedDatas =
+        await this.prismaService.userPostViewPermission.findMany({
+          where: {
+            postId: post.id,
+          },
+        })
+      if (!existedDatas || existedDatas.length === 0) {
+        return
+      }
+      await this.prismaService.userPostViewPermission.deleteMany({
+        where: {
+          postId: post.id,
+        },
+      })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)
