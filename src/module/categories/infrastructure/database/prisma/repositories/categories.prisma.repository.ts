@@ -29,8 +29,8 @@ export class CategoriesRepository implements ICategoriesRepository {
     try {
       const tags = await this.prismaService.tag.findMany({
         where: { deletedAt: null },
-        skip: offset,
-        take: limit,
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
         select: {
           id: true,
         },

@@ -28,15 +28,18 @@ import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hi
 import { PostsService } from "../application/posts.service"
 import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
 import { GetReactionsByTypeQuery } from "../application/query/get-reactions-by-type/get-reactions-by-type.query"
+import { GetUserPostsQuery } from "../application/query/get-user-posts/get-user-posts.query"
 import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
 import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
 import { GetAllReactionsRequestDto } from "./dto/request/get-all-reactions.request.dto"
 import { GetReactionsByTypeRequestDto } from "./dto/request/get-reactions-by-type.request.dto"
+import { GetUserPostsRequestDto } from "./dto/request/get-user-posts.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 import { GetAllReactionsResponseDto } from "./dto/response/get-all-reactions.response.dto"
 import { GetReactionsByTypeResponseDto } from "./dto/response/get-reactions-by-type.response.dto"
+import { GetUserPostsResponseDto } from "./dto/response/get-user-posts.response.dto"
 
 @ApiTags("posts")
 @Controller("posts")
@@ -159,6 +162,55 @@ export class PostsController {
     const query = new GetReactionsByTypeQuery(data)
     return await this.service.getReactionsByType(query)
   }
+  //Get: Get user's posts
+  @ApiOperationDecorator({
+    summary: "Get user's post",
+    description: "Get specific user's post",
+    type: GetUserPostsResponseDto,
+    auth: true,
+  })
+  @Permission([Permissions.Reactions.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_USER_POSTS)
+  @Get("/:userId")
+  async getUserPosts(
+    @Param("userId") userId: string,
+    @CurrentUser() currentUser: UserAggregate,
+    @Query() data: GetUserPostsRequestDto,
+  ): Promise<GetUserPostsResponseDto> {
+    const query = new GetUserPostsQuery({
+      ...data,
+      userId: userId,
+      currentUserId: currentUser.id,
+    })
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return await this.service.getUserPosts(query)
+  }
+  //Get: Get my posts
+  @ApiOperationDecorator({
+    summary: "Get my post",
+    description: "Get current login user's post",
+    type: GetUserPostsResponseDto,
+    auth: true,
+  })
+  @Permission([Permissions.Reactions.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_MY_POSTS)
+  @Get("/get/me")
+  async getMyPosts(
+    @CurrentUser() user: UserAggregate,
+    @CurrentUser() currentUser: UserAggregate,
+    @Query() data: GetUserPostsRequestDto,
+  ): Promise<GetUserPostsResponseDto> {
+    const query = new GetUserPostsQuery({
+      ...data,
+      userId: user.id,
+      currentUserId: currentUser.id,
+    })
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return await this.service.getUserPosts(query)
+  }
+
   // Post: Toggle hide posts from user
   @ApiOperationDecorator({
     summary: "(Toggle) hide posts from user",

@@ -167,17 +167,17 @@ export class PostsRepository implements IPostsRepository {
       orderBy = "createdAt",
       order = "desc",
     }: {
-      limit: number
-      offset: number
-      orderBy: string
-      order: "asc" | "desc"
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
     },
   ): Promise<Post[]> {
     try {
       const posts = await this.prismaService.post.findMany({
         where: { deletedAt: null, userId },
-        skip: offset,
-        take: limit,
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
         select: {
           id: true,
         },
@@ -601,6 +601,62 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
+  async getAllTagUserId(post: Post): Promise<string[] | null> {
+    try {
+      const taggedUsers = await this.prismaService.postTaggedUser.findMany({
+        where: { postId: post.id },
+      })
+      if (!taggedUsers) {
+        return null
+      }
+      const result = taggedUsers.map((e) => e.taggedUserId)
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getAllTagPost(user: UserAggregate): Promise<Post[] | null> {
+    try {
+      const taggedPosts = await this.prismaService.postTaggedUser.findMany({
+        where: { taggedUserId: user.id },
+      })
+      if (!taggedPosts) {
+        return null
+      }
+      const posts = await Promise.all(
+        taggedPosts.map((e) => {
+          return (
+            this.prismaService.post.findUnique({ where: { id: e.postId } }) ??
+            null
+          )
+        }),
+      )
+      const result = posts.map((p) => PostMapper.toDomain(p))
+      return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async addUserView(user: UserAggregate, post: Post) {
     try {
       const existedData =
@@ -765,6 +821,102 @@ export class PostsRepository implements IPostsRepository {
           postId: post.id,
         },
       })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async hasUserViewPermission(
+    post: Post,
+    currentUser: UserAggregate,
+  ): Promise<boolean> {
+    try {
+      switch (post.visibility) {
+        case EUserPostVisibility.PUBLIC:
+          return true
+
+        case EUserPostVisibility.FRIENDS_ONLY:
+          // TODO(friend): will implement this when have friend table
+          break
+        case EUserPostVisibility.SPECIFIC:
+          const permission =
+            await this.prismaService.userPostViewPermission.findUnique({
+              where: {
+                postId_viewerId: {
+                  postId: post.id,
+                  viewerId: currentUser.id,
+                },
+              },
+            })
+          return !!permission
+        case EUserPostVisibility.ONLY_ME:
+          return post.userId === currentUser.id
+        default:
+          return true
+      }
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async isSharedPost(post: Post): Promise<boolean> {
+    try {
+      const sharedPost = await this.prismaService.sharedPost.findFirst({
+        where: { postId: post.id },
+      })
+      return !!sharedPost
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getUserSharedPost(
+    sharedFromUser: UserAggregate,
+  ): Promise<Post[] | null> {
+    try {
+      const sharedPost = await this.prismaService.sharedPost.findMany({
+        where: {
+          sharedToId: sharedFromUser.id,
+          // add esharetype later
+        },
+      })
+      const posts = await Promise.all(
+        sharedPost.map((p) => {
+          return (
+            this.prismaService.post.findUnique({ where: { id: p.postId } }) ??
+            null
+          )
+        }),
+      )
+      const result = posts.map((p) => PostMapper.toDomain(p))
+      return result ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

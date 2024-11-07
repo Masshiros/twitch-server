@@ -9,7 +9,7 @@ export abstract class IPostsRepository {
   findPostById: (postId: string) => Promise<Post | null>
   updatePost: (data: Post, taggedUserIds?: string[] | null) => Promise<void>
   deletePost: (post: Post) => Promise<void>
-  // user feed
+  // user
   getUserPost: (
     userId: string,
     {
@@ -18,10 +18,10 @@ export abstract class IPostsRepository {
       orderBy,
       order,
     }: {
-      limit: number
-      offset: number
-      orderBy: string
-      order: "asc" | "desc"
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
     },
   ) => Promise<Post[]>
   getPostsByVisibility: (
@@ -45,10 +45,19 @@ export abstract class IPostsRepository {
   addTagUsers: (users: UserAggregate[], post: Post) => Promise<void>
   removeTagUser: (user: UserAggregate, post: Post) => Promise<void>
   removeAllTagUser: (post: Post) => Promise<void>
+  getAllTagUserId: (post: Post) => Promise<string[] | null>
+  getAllTagPost: (user: UserAggregate) => Promise<Post[] | null>
   // user view permission
   addUserView: (user: UserAggregate, post: Post) => Promise<void>
   addUserViews: (user: UserAggregate[], post: Post) => Promise<void>
   removeUserView: (user: UserAggregate, post: Post) => Promise<void>
   removeUserViews: (user: UserAggregate[], post: Post) => Promise<void>
   removePostUserViews: (post: Post) => Promise<void>
+  hasUserViewPermission: (
+    post: Post,
+    currentUser: UserAggregate,
+  ) => Promise<boolean>
+  // share
+  isSharedPost: (post: Post) => Promise<boolean>
+  getUserSharedPost: (sharedFromUser: UserAggregate) => Promise<Post[] | null>
 }

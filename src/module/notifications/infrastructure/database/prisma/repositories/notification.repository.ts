@@ -129,8 +129,8 @@ export class NotificationRepository implements INotificationRepository {
           select: {
             notificationId: true,
           },
-          skip: offset,
-          take: limit,
+          ...(offset !== null ? { skip: offset } : {}),
+          ...(limit !== null ? { take: limit } : {}),
         })
       if (!notificationUserEntries.length) {
         return []

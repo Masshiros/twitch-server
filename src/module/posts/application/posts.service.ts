@@ -7,6 +7,7 @@ import { ReactToPostCommand } from "./command/react-to-post/react-to-post.comman
 import { ToggleHidePostsFromUserCommand } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { GetAllReactionsQuery } from "./query/get-all-reactions/get-all-reactions.query"
 import { GetReactionsByTypeQuery } from "./query/get-reactions-by-type/get-reactions-by-type.query"
+import { GetUserPostsQuery } from "./query/get-user-posts/get-user-posts.query"
 
 @Injectable()
 export class PostsService {
@@ -33,6 +34,9 @@ export class PostsService {
     return this.queryBus.execute(query)
   }
   async getReactionsByType(query: GetReactionsByTypeQuery) {
+    return this.queryBus.execute(query)
+  }
+  async getUserPosts(query: GetUserPostsQuery) {
     return this.queryBus.execute(query)
   }
 }

@@ -1,14 +1,8 @@
 import { EReactionType } from "libs/constants/enum"
-
-interface ReactionUser {
-  id: string
-  username: string
-  avatar: string
-  reactionType: EReactionType
-}
+import { ReactionUserResult } from "../common/reaction-user.result"
 
 export class GetReactionsByTypeResult {
   type: EReactionType
   reactionCount: number
-  users: ReactionUser[]
+  users: ReactionUserResult[]
 }

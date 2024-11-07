@@ -348,9 +348,21 @@ model Post {
   group           Group?                   @relation(fields: [groupId], references: [id])
   user            User                     @relation(fields: [userId], references: [id])
   taggedUsers     PostTaggedUser[]
+  sharedPost      SharedPost[]
   viewPermissions UserPostViewPermission[]
 
   @@map("posts")
+}
+model SharedPost{
+   id            String    @id @default(uuid())
+  postId        String
+  sharedById    String
+  sharedToId    String
+  sharedToType  ESharedType
+  createdAt     DateTime  @default(now())
+
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@map("sharedPosts")
 }
 
 model PostTaggedUser {
@@ -431,4 +443,9 @@ enum EReactionType {
   WOW
   SAD
   ANGRY
+}
+enum ESharedType{
+  USER 
+  CHAT 
+  GROUP
 }
