@@ -6,7 +6,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+// user
 model User {
   id                    String                   @id @default(uuid())
   name                  String                   @unique
@@ -51,28 +51,80 @@ model User {
   userCategories        UsersCategories[]        @relation("Users")
   viewPermissions       UserPostViewPermission[]
   userRoles             UserRole[]
+  friends               Friend[]                 @relation("UserFriends")
+  reverseFriends        Friend[]                 @relation("UserFriendsReverse")
+  sentFriendRequest     FriendRequest[]          @relation("SentFriendRequests")
+  receivedFriendRequest FriendRequest[]          @relation("ReceivedFriendRequests")
+
 
   @@index([isLive])
   @@index([isActive])
   @@map("users")
 }
-enum EImage{
-  USER
-  POST
-}
-model Image{
-  id             String @id @default(uuid())
-  url            String 
-  publicId       String @unique
-  applicableType EImage
-  applicableId   String
-  createdAt             DateTime                 @default(now())
-  updatedAt             DateTime                 @default(now()) @updatedAt
-  deletedAt             DateTime?
- 
-  @@map("images")
+
+model ExternalLink {
+  id        String    @id @default(uuid())
+  title     String
+  url       String
+  userId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("externalLinks")
 }
 
+model Device {
+  id             String         @id @default(uuid())
+  userId         String
+  type           String
+  name           String
+  lastUsed       DateTime
+  userAgent      String
+  ipAddress      String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now()) @updatedAt
+  deletedAt      DateTime?
+  user           User           @relation(fields: [userId], references: [id])
+  loginHistories LoginHistory[]
+  token          Token?
+
+  @@map("devices")
+}
+
+model LoginHistory {
+  id          String    @id @default(uuid())
+  userId      String
+  deviceId    String
+  loginAt     DateTime
+  loginStatus Boolean
+  reason      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+  device      Device    @relation(fields: [deviceId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("loginHistories")
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  userId    String
+  deviceId  String    @unique
+  token     String
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  device    Device    @relation(fields: [deviceId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("tokens")
+}
+
+// role permission
 model Role {
   id              String           @id @default(uuid())
   name            String           @unique
@@ -123,6 +175,25 @@ model RolePermission {
   @@map("rolePermissions")
 }
 
+// image
+enum EImage{
+  USER
+  POST
+}
+model Image{
+  id             String @id @default(uuid())
+  url            String 
+  publicId       String @unique
+  applicableType EImage
+  applicableId   String
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @default(now()) @updatedAt
+  deletedAt             DateTime?
+ 
+  @@map("images")
+}
+
+// notification
 model Notification {
   id                 String             @id @default(uuid())
   title              String
@@ -150,31 +221,50 @@ model NotificationUser {
   @@id([receiverId, notificationId])
   @@map("notificationsUser")
 }
-
+// follower
 model Follower {
   followDate        DateTime @default(now())
   destinationUserId String
   sourceUserId      String
   destinationUser   User     @relation("UserFollowing", fields: [destinationUserId], references: [id])
   sourceUser        User     @relation("UserFollowers", fields: [sourceUserId], references: [id])
-
+  createdAt    DateTime   @default(now())
+  deletedAt    DateTime?
+  updatedAt    DateTime   @default(now()) @updatedAt
   @@id([sourceUserId, destinationUserId])
   @@map("followers")
 }
-
-model ExternalLink {
-  id        String    @id @default(uuid())
-  title     String
-  url       String
-  userId    String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  deletedAt DateTime?
-  user      User      @relation(fields: [userId], references: [id])
-
-  @@map("externalLinks")
+// friend
+enum EFriendRequestStatus {
+  PENDING    // Request is pending
+  ACCEPTED   // Request accepted (move to Friend table)
+  REJECTED   // Request rejected
 }
+model Friend{
+  userId      String
+  friendId    String
+  user        User     @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+  friend      User     @relation("UserFriendsReverse", fields: [friendId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  deletedAt    DateTime?
+  updatedAt    DateTime   @default(now()) @updatedAt
+  @@id([userId,friendId])
+  @@map("friends")
 
+}
+model FriendRequest{
+  senderId    String
+  receiverId  String
+  status      EFriendRequestStatus  @default(PENDING)
+  sender      User              @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User              @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  deletedAt    DateTime?
+  updatedAt    DateTime   @default(now()) @updatedAt
+  @@id([senderId,receiverId])
+  @@map("friendRequests")
+}
+// category - tag
 model Category {
   id                String              @id @default(uuid())
   currentTotalView  Int                 @default(0)
@@ -239,101 +329,7 @@ model CategoryFollowers {
   @@id([userId, categoryId])
   @@map("categoryFollowers")
 }
-
-model Device {
-  id             String         @id @default(uuid())
-  userId         String
-  type           String
-  name           String
-  lastUsed       DateTime
-  userAgent      String
-  ipAddress      String
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @default(now()) @updatedAt
-  deletedAt      DateTime?
-  user           User           @relation(fields: [userId], references: [id])
-  loginHistories LoginHistory[]
-  token          Token?
-
-  @@map("devices")
-}
-
-model LoginHistory {
-  id          String    @id @default(uuid())
-  userId      String
-  deviceId    String
-  loginAt     DateTime
-  loginStatus Boolean
-  reason      String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
-  deletedAt   DateTime?
-  device      Device    @relation(fields: [deviceId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
-
-  @@map("loginHistories")
-}
-
-model Token {
-  id        String    @id @default(uuid())
-  userId    String
-  deviceId  String    @unique
-  token     String
-  expiresAt DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  deletedAt DateTime?
-  device    Device    @relation(fields: [deviceId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
-
-  @@map("tokens")
-}
-
-model HiddenUser {
-  userId       String
-  hiddenUserId String
-  createdAt    DateTime  @default(now())
-  deletedAt    DateTime?
-  updatedAt    DateTime  @default(now()) @updatedAt
-  hiddenUser   User      @relation("HiddenUser", fields: [hiddenUserId], references: [id])
-  user         User      @relation("UserWhoHides", fields: [userId], references: [id])
-
-  @@id([userId, hiddenUserId])
-  @@map("hidden_users")
-}
-
-model Group {
-  id          String           @id @default(uuid())
-  ownerId     String
-  name        String
-  description String
-  visibility  EGroupVisibility
-  joinLink    String?
-  createdAt   DateTime         @default(now())
-  deletedAt   DateTime?
-  updatedAt   DateTime         @default(now()) @updatedAt
-  members     GroupMember[]
-  owner       User             @relation("GroupOwner", fields: [ownerId], references: [id])
-  posts       Post[]
-
-  @@map("groups")
-}
-
-model GroupMember {
-  groupId   String
-  userId    String
-  joinedAt  DateTime   @default(now())
-  role      EGroupRole
-  createdAt DateTime   @default(now())
-  deletedAt DateTime?
-  updatedAt DateTime   @default(now()) @updatedAt
-  group     Group      @relation(fields: [groupId], references: [id])
-  user      User       @relation(fields: [userId], references: [id])
-
-  @@id([groupId, userId])
-  @@map("groupMembers")
-}
-
+// post 
 model Post {
   id              String                   @id @default(uuid())
   userId          String
@@ -401,6 +397,52 @@ model PostReaction {
   @@id([userId, postId])
   @@map("postReactions")
 }
+
+model HiddenUser {
+  userId       String
+  hiddenUserId String
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+  updatedAt    DateTime  @default(now()) @updatedAt
+  hiddenUser   User      @relation("HiddenUser", fields: [hiddenUserId], references: [id])
+  user         User      @relation("UserWhoHides", fields: [userId], references: [id])
+
+  @@id([userId, hiddenUserId])
+  @@map("hiddenUsers")
+}
+// group
+model Group {
+  id          String           @id @default(uuid())
+  ownerId     String
+  name        String
+  description String
+  visibility  EGroupVisibility
+  joinLink    String?
+  createdAt   DateTime         @default(now())
+  deletedAt   DateTime?
+  updatedAt   DateTime         @default(now()) @updatedAt
+  members     GroupMember[]
+  owner       User             @relation("GroupOwner", fields: [ownerId], references: [id])
+  posts       Post[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  groupId   String
+  userId    String
+  joinedAt  DateTime   @default(now())
+  role      EGroupRole
+  createdAt DateTime   @default(now())
+  deletedAt DateTime?
+  updatedAt DateTime   @default(now()) @updatedAt
+  group     Group      @relation(fields: [groupId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
+
+  @@id([groupId, userId])
+  @@map("groupMembers")
+}
+
 
 enum ENotification {
   USER

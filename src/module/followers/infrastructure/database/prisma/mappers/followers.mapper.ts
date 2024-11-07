@@ -6,6 +6,9 @@ export class FollowerMapper {
     return new Follower(
       prismaFollower.sourceUserId,
       prismaFollower.destinationUserId,
+      prismaFollower.createdAt,
+      prismaFollower.updatedAt,
+      prismaFollower.deletedAt,
     )
   }
 
@@ -14,6 +17,9 @@ export class FollowerMapper {
       sourceUserId: domainFollower.sourceUserId,
       destinationUserId: domainFollower.destinationUserId,
       followDate: domainFollower.followDate,
+      createdAt: domainFollower.createdAt,
+      updatedAt: domainFollower.updatedAt,
+      deletedAt: domainFollower.deletedAt,
     }
   }
 }
