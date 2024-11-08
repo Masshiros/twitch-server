@@ -17,6 +17,7 @@ import { GetAllReactionsHandler } from "./query/get-all-reactions/get-all-reacti
 import { GetReactionsByTypeHandler } from "./query/get-reactions-by-type/get-reactions-by-type.handler"
 import { GetUserFeedHandler } from "./query/get-user-feed/get-user-feed.handler"
 import { GetUserPostsHandler } from "./query/get-user-posts/get-user-posts.handler"
+import { SearchPostHandler } from "./query/search-post/search-post.handler"
 
 const commandHandlers = [
   ReactToPostHandler,
@@ -31,6 +32,7 @@ const queryHandlers = [
   GetReactionsByTypeHandler,
   GetUserPostsHandler,
   GetUserFeedHandler,
+  SearchPostHandler,
 ]
 @Module({
   controllers: [PostsController],

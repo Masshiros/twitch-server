@@ -3,7 +3,7 @@ import { Expose, Type } from "class-transformer"
 import { PostInfoResponseDto } from "./common/post-info.response.dto"
 import { UserResponseDto } from "./common/user.response.dto"
 
-export class GetUserPostsResponseDto {
+export class SearchPostsResponseDto {
   @ApiProperty({ type: UserResponseDto, description: "User details" })
   @Expose()
   @Type(() => UserResponseDto)

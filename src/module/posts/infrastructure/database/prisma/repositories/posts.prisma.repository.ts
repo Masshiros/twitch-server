@@ -160,6 +160,36 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
+  async searchPostsByKeyword(keyword: string): Promise<Post[]> {
+    try {
+      const posts = await this.prismaService.post.findMany({
+        where: {
+          content: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+          deletedAt: null,
+        },
+      })
+      if (!posts) {
+        return []
+      }
+      const result = posts.map((p) => PostMapper.toDomain(p))
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async getUserPost(
     userId: string,
     {

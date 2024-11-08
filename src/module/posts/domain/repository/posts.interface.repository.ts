@@ -10,6 +10,7 @@ export abstract class IPostsRepository {
   findPostById: (postId: string) => Promise<Post | null>
   updatePost: (data: Post, taggedUserIds?: string[] | null) => Promise<void>
   deletePost: (post: Post) => Promise<void>
+  searchPostsByKeyword: (keyword: string) => Promise<Post[]>
   // user
   getUserPost: (
     userId: string,

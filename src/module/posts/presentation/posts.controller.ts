@@ -31,6 +31,7 @@ import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get
 import { GetReactionsByTypeQuery } from "../application/query/get-reactions-by-type/get-reactions-by-type.query"
 import { GetUserFeedQuery } from "../application/query/get-user-feed/get-user-feed.query"
 import { GetUserPostsQuery } from "../application/query/get-user-posts/get-user-posts.query"
+import { SearchPostQuery } from "../application/query/search-post/search-post.query"
 import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
 import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
@@ -39,12 +40,14 @@ import { GetReactionsByTypeRequestDto } from "./dto/request/get-reactions-by-typ
 import { GetUserFeedRequestDto } from "./dto/request/get-user-feed.request.dto"
 import { GetUserPostsRequestDto } from "./dto/request/get-user-posts.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
+import { SearchPostRequestDto } from "./dto/request/search-post.request.dto"
 import { SharePostToMeRequestDto } from "./dto/request/share-post-to-me.request.dto"
 import { SharePostToOtherRequestDto } from "./dto/request/share-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 import { GetAllReactionsResponseDto } from "./dto/response/get-all-reactions.response.dto"
 import { GetReactionsByTypeResponseDto } from "./dto/response/get-reactions-by-type.response.dto"
 import { GetUserPostsResponseDto } from "./dto/response/get-user-posts.response.dto"
+import { SearchPostsResponseDto } from "./dto/response/search-posts.response.dto"
 
 @ApiTags("posts")
 @Controller("posts")
@@ -226,6 +229,23 @@ export class PostsController {
     query.limit = data.limit ?? 5
     query.offset = data.page ? (data.page - 1) * data.limit : null
     return await this.service.getUserPosts(query)
+  }
+  //Get: Search post by keyword
+  @ApiOperationDecorator({
+    summary: "Search post by keyword",
+    description: "Search post by keyword",
+    type: SearchPostsResponseDto,
+    auth: true,
+  })
+  @Permission([Permissions.Posts.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_USER_POSTS)
+  @Get("/search/:keyword")
+  async searchPostsByKeyword(
+    @CurrentUser() currentUser: UserAggregate,
+    @Query() data: SearchPostRequestDto,
+  ): Promise<SearchPostsResponseDto> {
+    const query = new SearchPostQuery({ ...data })
+    return await this.service.searchPost(query)
   }
   //Get: Get my posts
   @ApiOperationDecorator({

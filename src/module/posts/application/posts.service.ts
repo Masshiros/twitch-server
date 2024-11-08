@@ -10,6 +10,7 @@ import { GetAllReactionsQuery } from "./query/get-all-reactions/get-all-reaction
 import { GetReactionsByTypeQuery } from "./query/get-reactions-by-type/get-reactions-by-type.query"
 import { GetUserFeedQuery } from "./query/get-user-feed/get-user-feed.query"
 import { GetUserPostsQuery } from "./query/get-user-posts/get-user-posts.query"
+import { SearchPostQuery } from "./query/search-post/search-post.query"
 
 @Injectable()
 export class PostsService {
@@ -45,6 +46,9 @@ export class PostsService {
     return this.queryBus.execute(query)
   }
   async getUserFeed(query: GetUserFeedQuery) {
+    return this.queryBus.execute(query)
+  }
+  async searchPost(query: SearchPostQuery) {
     return this.queryBus.execute(query)
   }
 }

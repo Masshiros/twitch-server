@@ -79,5 +79,6 @@ export const SuccessMessages = {
     DELETE_POST: "Delete post successfully",
     UPDATE_POST: "Update post successfully",
     SHARE_POST: "Share post successfully",
+    SEARCH_POST: "Search post successfully",
   },
 }
