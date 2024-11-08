@@ -24,6 +24,20 @@ export abstract class IPostsRepository {
       order?: "asc" | "desc"
     },
   ) => Promise<Post[]>
+  getPostOfUsers: (
+    userIds: string[],
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ) => Promise<Post[]>
   getPostsByVisibility: (
     userId: string,
     visibility: EUserPostVisibility,
@@ -36,6 +50,7 @@ export abstract class IPostsRepository {
   hidePostsFromUser: (userId: string, hiddenUserId: string) => Promise<void>
   unhidePostsFromUser: (userId: string, hiddenUserId: string) => Promise<void>
   isPostHiddenFromUser: (user: UserAggregate, post: Post) => Promise<boolean>
+  getHiddenUserIds: (user: UserAggregate) => Promise<string[]>
   // reaction
   addOrUpdateReactionToPost: (reaction: PostReactions) => Promise<void>
   removeReactionFromPost: (reaction: PostReactions) => Promise<void>

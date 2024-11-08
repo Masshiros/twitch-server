@@ -7,6 +7,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
 import { EImage } from "src/module/image/domain/enum/image.enum"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
@@ -22,6 +23,7 @@ export class EditUserPostHandler {
     private readonly postRepository: IPostsRepository,
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
+    private readonly friendRepository: IFriendRepository,
   ) {}
   async execute(command: EditUserPostCommand) {
     const {
@@ -161,6 +163,31 @@ export class EditUserPostHandler {
         break
       case EUserPostVisibility.FRIENDS_ONLY:
         //TODO(friend):Get friend list
+        const friends = await this.friendRepository.getFriends(user)
+        if (friends && friends.length > 0) {
+          const listUserView = await Promise.all(
+            friends.map(async (e) => {
+              const user = await this.userRepository.findById(e.friendId)
+              if (!user) {
+                throw new CommandError({
+                  code: CommandErrorCode.BAD_REQUEST,
+                  message: "User in view list not found",
+                  info: {
+                    errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
+                  },
+                })
+              }
+              return user
+            }),
+          )
+          await this.postRepository.addUserViews(listUserView, post)
+        }
+        if (friends.length === 0) {
+          throw new CommandError({
+            code: CommandErrorCode.BAD_REQUEST,
+            message: "You do not have friends",
+          })
+        }
         break
       case EUserPostVisibility.SPECIFIC:
         const specificUsers = await Promise.all(

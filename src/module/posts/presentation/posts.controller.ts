@@ -28,12 +28,14 @@ import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hi
 import { PostsService } from "../application/posts.service"
 import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
 import { GetReactionsByTypeQuery } from "../application/query/get-reactions-by-type/get-reactions-by-type.query"
+import { GetUserFeedQuery } from "../application/query/get-user-feed/get-user-feed.query"
 import { GetUserPostsQuery } from "../application/query/get-user-posts/get-user-posts.query"
 import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
 import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
 import { GetAllReactionsRequestDto } from "./dto/request/get-all-reactions.request.dto"
 import { GetReactionsByTypeRequestDto } from "./dto/request/get-reactions-by-type.request.dto"
+import { GetUserFeedRequestDto } from "./dto/request/get-user-feed.request.dto"
 import { GetUserPostsRequestDto } from "./dto/request/get-user-posts.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
@@ -193,7 +195,7 @@ export class PostsController {
     type: GetUserPostsResponseDto,
     auth: true,
   })
-  @Permission([Permissions.Reactions.Read])
+  @Permission([Permissions.Posts.Read])
   @ResponseMessage(SuccessMessages.posts.GET_MY_POSTS)
   @Get("/get/me")
   async getMyPosts(
@@ -209,6 +211,25 @@ export class PostsController {
     query.limit = data.limit ?? 5
     query.offset = data.page ? (data.page - 1) * data.limit : null
     return await this.service.getUserPosts(query)
+  }
+  //Get: Get my feed
+  @ApiOperationDecorator({
+    summary: "Get my feed",
+    description: "Get current login user's feed",
+    type: GetUserPostsResponseDto,
+    auth: true,
+  })
+  @Permission([Permissions.Posts.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_MY_FEED)
+  @Get("/get/my-feed")
+  async getMyFeed(
+    @CurrentUser() user: UserAggregate,
+    @Query() data: GetUserFeedRequestDto,
+  ): Promise<GetUserPostsResponseDto> {
+    const query = new GetUserFeedQuery({ userId: user.id })
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return await this.service.getUserFeed(query)
   }
 
   // Post: Toggle hide posts from user

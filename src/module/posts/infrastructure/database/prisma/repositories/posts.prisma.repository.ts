@@ -212,6 +212,63 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
+  async getPostOfUsers(
+    userIds: string[],
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ): Promise<Post[]> {
+    try {
+      const postEntries = await this.prismaService.post.findMany({
+        where: {
+          userId: { in: userIds },
+          deletedAt: null,
+        },
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
+        select: {
+          id: true,
+        },
+      })
+      if (postEntries.length === 0) {
+        return []
+      }
+      const postIds = postEntries.map((e) => e.id)
+      const posts = await this.prismaService.post.findMany({
+        where: {
+          id: {
+            in: postIds,
+          },
+        },
+        orderBy: { [orderBy]: order },
+      })
+      if (!posts) {
+        return []
+      }
+      const result = posts.map((p) => PostMapper.toDomain(p))
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async getPostsByVisibility(
     userId: string,
     visibility: EUserPostVisibility,
@@ -394,6 +451,30 @@ export class PostsRepository implements IPostsRepository {
         },
       })
       return !!hiddenUser
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getHiddenUserIds(user: UserAggregate): Promise<string[]> {
+    try {
+      const hiddenUsers = await this.prismaService.hiddenUser.findMany({
+        where: { userId: user.id },
+        select: { hiddenUserId: true },
+      })
+      if (!hiddenUsers) {
+        return []
+      }
+      return hiddenUsers.map((e) => e.hiddenUserId)
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)
