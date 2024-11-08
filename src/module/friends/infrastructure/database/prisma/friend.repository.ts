@@ -235,6 +235,7 @@ export class FriendRepository implements IFriendRepository {
       const friendRequests = await this.prismaService.friendRequest.findMany({
         where: {
           receiverId: receiver.id,
+          status: EFriendRequestStatus.PENDING,
         },
       })
       if (!friendRequests) {
