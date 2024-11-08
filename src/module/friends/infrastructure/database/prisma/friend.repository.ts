@@ -161,7 +161,7 @@ export class FriendRepository implements IFriendRepository {
               receiverId: request.receiverId,
             },
           },
-          data: { status: request.status ?? EFriendRequestStatus.ACCEPTED },
+          data: { status: EFriendRequestStatus.ACCEPTED },
         })
         await Promise.all([
           this.prismaService.friend.create({
@@ -191,8 +191,33 @@ export class FriendRepository implements IFriendRepository {
             receiverId: request.receiverId,
           },
         },
-        data: { status: request.status ?? EFriendRequestStatus.REJECTED },
+        data: { status: EFriendRequestStatus.REJECTED },
       })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getFriendRequest(
+    sender: UserAggregate,
+    receiver: UserAggregate,
+  ): Promise<FriendRequest> {
+    try {
+      const friendRequest = await this.prismaService.friendRequest.findUnique({
+        where: {
+          senderId_receiverId: { senderId: sender.id, receiverId: receiver.id },
+        },
+      })
+      if (!friendRequest) {
+        return null
+      }
+      const result = FriendRequestMapper.toDomain(friendRequest)
+      return result ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

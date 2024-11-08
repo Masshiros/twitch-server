@@ -17,6 +17,10 @@ export abstract class IFriendRepository {
   ) => Promise<Friend[]>
   //   getFriendSuggestions(user: UserAggregate): Promise<UserAggregate[]>
   // Friend request management
+  getFriendRequest: (
+    sender: UserAggregate,
+    receiver: UserAggregate,
+  ) => Promise<FriendRequest>
   sendFriendRequest: (request: FriendRequest) => Promise<void>
   acceptFriendRequest: (request: FriendRequest) => Promise<void>
   rejectFriendRequest: (request: FriendRequest) => Promise<void>

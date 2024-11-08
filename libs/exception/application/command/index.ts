@@ -45,6 +45,7 @@ export const CommandErrorDetailCode = {
   DATA_REFER_TO_THIS_RECORD: "DATA_REFER_TO_THIS_RECORD",
   SOMETHING_WRONG_HAPPEN: "SOMETHING_WRONG_HAPPEN",
   UPLOAD_IMAGE_FAIL: "UPLOAD_IMAGE_FAIL",
+  ALREADY_EXIST: "ALREADY_EXIST",
 } as const
 export type CommandErrorDetailCode =
   (typeof CommandErrorDetailCode)[keyof typeof CommandErrorDetailCode]

@@ -6,9 +6,9 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { FriendFactory } from "src/module/friends/domain/factory/friend.factory"
+import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { FriendFactory } from "../../domain/factory/friend.factory"
-import { IFriendRepository } from "../../domain/repository/friend.interface.repository"
 import { SendFriendRequestCommand } from "./send-friend-request.command"
 
 @CommandHandler(SendFriendRequestCommand)
@@ -77,6 +77,8 @@ export class SendFriendRequestHandler {
       }
 
       await this.friendRepository.sendFriendRequest(friendRequest)
+
+      //TODO(notify): Send notification
     } catch (err) {
       if (
         err instanceof DomainError ||
