@@ -11,6 +11,7 @@ import { SendFriendRequestHandler } from "./command/send-friend-request/send-fri
 import { FriendService } from "./friend.service"
 import { GetListFriendRequestHandler } from "./query/get-list-friend-requests/get-list-friend-requests.handler"
 import { GetListFriendHandler } from "./query/get-list-friend/get-list-friend.handler"
+import { GetMutualFriendsHandler } from "./query/get-mutual-friend/get-mutual-friends.handler"
 
 const commandHandlers = [
   SendFriendRequestHandler,
@@ -18,7 +19,11 @@ const commandHandlers = [
   RejectFriendRequestHandler,
   RemoveFriendHandler,
 ]
-const queryHandlers = [GetListFriendRequestHandler, GetListFriendHandler]
+const queryHandlers = [
+  GetListFriendRequestHandler,
+  GetListFriendHandler,
+  GetMutualFriendsHandler,
+]
 @Module({
   controllers: [FriendController],
   providers: [FriendService, ...commandHandlers, ...queryHandlers],

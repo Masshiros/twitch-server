@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Query } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
@@ -14,13 +22,16 @@ import { SendFriendRequestCommand } from "../application/command/send-friend-req
 import { FriendService } from "../application/friend.service"
 import { GetListFriendRequestQuery } from "../application/query/get-list-friend-requests/get-list-friend-requests.query"
 import { GetListFriendQuery } from "../application/query/get-list-friend/get-list-friend.query"
+import { GetMutualFriendsQuery } from "../application/query/get-mutual-friend/get-mutual-friends.query"
 import { AcceptFriendRequestRequestDto } from "./dto/request/accept-friend-request.request.dto"
 import { GetListFriendsRequestDto } from "./dto/request/get-list-friends.request.dto"
+import { GetMutualFriendsRequestDto } from "./dto/request/get-mutual-friends.request.dto"
 import { RejectFriendRequestRequestDto } from "./dto/request/reject-friend-request.request.dto"
 import { RemoveFriendRequestDto } from "./dto/request/remove-friend.request.dto"
 import { SendFriendRequestRequestDto } from "./dto/request/send-friend-request.request.dto"
 import { GetListFriendRequestsResponseDto } from "./dto/response/get-list-friend-requests.response.dto"
 import { GetListFriendResponseDto } from "./dto/response/get-list-friend.response.dto"
+import { GetMutualFriendResponseDto } from "./dto/response/get-mutual-friends.response.dto"
 
 @ApiTags("Friend")
 @Controller("friends")
@@ -106,7 +117,7 @@ export class FriendController {
   }
   //GET: Get List Friends
   @ApiOperationDecorator({
-    summary: "Get list friend  ",
+    summary: "Get list friend",
     description: "Current user get list friends of other user ",
     auth: true,
   })
@@ -140,6 +151,25 @@ export class FriendController {
       currentUserId: user.id,
     })
     return await this.service.getListFriends(query)
+  }
+  //GET: Get Friend's Mutual friends
+  @ApiOperationDecorator({
+    summary: "Get mutual friends",
+    description: "Current user get mutual friends with other user",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.friend.GET_MUTUAL_FRIENDS)
+  // @Permission([Permissions.FriendRequests.Read])
+  @Get("/:userId/mutual-friends")
+  async getMutualFriends(
+    @Param() data: GetMutualFriendsRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetMutualFriendResponseDto> {
+    const query = new GetMutualFriendsQuery({
+      userId: data.userId,
+      currentUserId: user.id,
+    })
+    return await this.service.getMutualFriends(query)
   }
   // DELETE: Remove friend
   @ApiOperationDecorator({
