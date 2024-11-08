@@ -8,6 +8,7 @@ import { PrismaService } from "prisma/prisma.service"
 import { PostReactions } from "src/module/posts/domain/entity/post-reactions.entity"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
+import { ESharedType } from "src/module/posts/domain/enum/shared-type.enum"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { handlePrismaError } from "utils/prisma-error"
@@ -927,6 +928,15 @@ export class PostsRepository implements IPostsRepository {
 
         case EUserPostVisibility.FRIENDS_ONLY:
           // TODO(friend): will implement this when have friend table
+          const count = await this.prismaService.friend.count({
+            where: {
+              OR: [
+                { userId: post.userId, friendId: currentUser.id },
+                { userId: currentUser.id, friendId: post.userId },
+              ],
+            },
+          })
+          return count > 0
           break
         case EUserPostVisibility.SPECIFIC:
           const permission =
@@ -958,10 +968,10 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
-  async isSharedPost(post: Post): Promise<boolean> {
+  async isSharedPost(post: Post, user: UserAggregate): Promise<boolean> {
     try {
       const sharedPost = await this.prismaService.sharedPost.findFirst({
-        where: { postId: post.id },
+        where: { postId: post.id, sharedById: user.id },
       })
       return !!sharedPost
     } catch (error) {
@@ -998,6 +1008,37 @@ export class PostsRepository implements IPostsRepository {
       )
       const result = posts.map((p) => PostMapper.toDomain(p))
       return result ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async sharePost(
+    post: Post,
+    shareBy: UserAggregate,
+    shareTo: UserAggregate,
+    shareToType: ESharedType,
+    customContent: string,
+  ): Promise<void> {
+    try {
+      await this.prismaService.sharedPost.create({
+        data: {
+          postId: post.id,
+          sharedById: shareBy.id,
+          sharedToId: shareTo.id,
+          sharedToType: shareToType,
+          customContent: customContent,
+        },
+      })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

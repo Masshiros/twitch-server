@@ -4,6 +4,7 @@ import { CreateUserPostCommand } from "./command/create-user-post/create-user-po
 import { DeleteUserPostCommand } from "./command/delete-user-post/delete-user-post.command"
 import { EditUserPostCommand } from "./command/edit-user-post/edit-user-post.command"
 import { ReactToPostCommand } from "./command/react-to-post/react-to-post.command"
+import { SharePostCommand } from "./command/share-post/share-post.command"
 import { ToggleHidePostsFromUserCommand } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { GetAllReactionsQuery } from "./query/get-all-reactions/get-all-reactions.query"
 import { GetReactionsByTypeQuery } from "./query/get-reactions-by-type/get-reactions-by-type.query"
@@ -29,6 +30,9 @@ export class PostsService {
     return this.commandBus.execute(command)
   }
   async editUserPost(command: EditUserPostCommand) {
+    return this.commandBus.execute(command)
+  }
+  async sharePost(command: SharePostCommand) {
     return this.commandBus.execute(command)
   }
   async getAllReactions(query: GetAllReactionsQuery) {

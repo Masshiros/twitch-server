@@ -3,6 +3,7 @@ import { UserAggregate } from "src/module/users/domain/aggregate"
 import { PostReactions } from "../entity/post-reactions.entity"
 import { Post } from "../entity/posts.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
+import { ESharedType } from "../enum/shared-type.enum"
 
 export abstract class IPostsRepository {
   createPost: (post: Post, taggedUserIds?: string[] | null) => Promise<void>
@@ -73,6 +74,13 @@ export abstract class IPostsRepository {
     currentUser: UserAggregate,
   ) => Promise<boolean>
   // share
-  isSharedPost: (post: Post) => Promise<boolean>
+  isSharedPost: (post: Post, user: UserAggregate) => Promise<boolean>
   getUserSharedPost: (sharedFromUser: UserAggregate) => Promise<Post[] | null>
+  sharePost: (
+    post: Post,
+    shareBy: UserAggregate,
+    shareTo: UserAggregate,
+    shareToType: ESharedType,
+    customContent: string,
+  ) => Promise<void>
 }

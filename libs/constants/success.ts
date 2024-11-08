@@ -78,5 +78,6 @@ export const SuccessMessages = {
     HIDE_POST_FROM_USER: "Hide posts from this user successfully",
     DELETE_POST: "Delete post successfully",
     UPDATE_POST: "Update post successfully",
+    SHARE_POST: "Share post successfully",
   },
 }

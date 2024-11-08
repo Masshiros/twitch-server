@@ -24,6 +24,7 @@ import { CreateUserPostCommand } from "../application/command/create-user-post/c
 import { DeleteUserPostCommand } from "../application/command/delete-user-post/delete-user-post.command"
 import { EditUserPostCommand } from "../application/command/edit-user-post/edit-user-post.command"
 import { ReactToPostCommand } from "../application/command/react-to-post/react-to-post.command"
+import { SharePostCommand } from "../application/command/share-post/share-post.command"
 import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { PostsService } from "../application/posts.service"
 import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
@@ -38,6 +39,8 @@ import { GetReactionsByTypeRequestDto } from "./dto/request/get-reactions-by-typ
 import { GetUserFeedRequestDto } from "./dto/request/get-user-feed.request.dto"
 import { GetUserPostsRequestDto } from "./dto/request/get-user-posts.request.dto"
 import { ReactToPostRequestDto } from "./dto/request/react-to-post.request.dto"
+import { SharePostToMeRequestDto } from "./dto/request/share-post-to-me.request.dto"
+import { SharePostToOtherRequestDto } from "./dto/request/share-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 import { GetAllReactionsResponseDto } from "./dto/response/get-all-reactions.response.dto"
 import { GetReactionsByTypeResponseDto } from "./dto/response/get-reactions-by-type.response.dto"
@@ -132,6 +135,42 @@ export class PostsController {
   ): Promise<void> {
     const command = new ReactToPostCommand({ ...data, userId: user.id })
     await this.service.reactToPost(command)
+  }
+  //POST: Share Post to others
+  @ApiOperationDecorator({
+    summary: "Share post",
+    description: "Share a specific post",
+    auth: true,
+  })
+  @Permission([Permissions.Posts.Create, Permissions.Posts.Update])
+  @ResponseMessage(SuccessMessages.posts.SHARE_POST)
+  @Post("share-post")
+  async sharePost(
+    @Body() data: SharePostToOtherRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    const command = new SharePostCommand({ ...data, sharedById: user.id })
+    await this.service.sharePost(command)
+  }
+  //POST: Share Post to me
+  @ApiOperationDecorator({
+    summary: "Share post to my page",
+    description: "Share a specific post to my page",
+    auth: true,
+  })
+  @Permission([Permissions.Posts.Create, Permissions.Posts.Update])
+  @ResponseMessage(SuccessMessages.posts.SHARE_POST)
+  @Post("share-post/me")
+  async sharePostToMe(
+    @Body() data: SharePostToMeRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    const command = new SharePostCommand({
+      ...data,
+      sharedById: user.id,
+      sharedToId: user.id,
+    })
+    await this.service.sharePost(command)
   }
   //Get: Get all post reactions
   @ApiOperationDecorator({
