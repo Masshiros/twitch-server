@@ -5,6 +5,7 @@ import { RejectFriendRequestCommand } from "./command/reject-friend-request/reje
 import { RemoveFriendCommand } from "./command/remove-friend/remove-friend.command"
 import { SendFriendRequestCommand } from "./command/send-friend-request/send-friend-request.command"
 import { GetListFriendRequestQuery } from "./query/get-list-friend-requests/get-list-friend-requests.query"
+import { GetListFriendQuery } from "./query/get-list-friend/get-list-friend.query"
 
 @Injectable()
 export class FriendService {
@@ -25,6 +26,9 @@ export class FriendService {
     return this.commandBus.execute(command)
   }
   async getListFriendRequests(query: GetListFriendRequestQuery) {
+    return this.queryBus.execute(query)
+  }
+  async getListFriends(query: GetListFriendQuery) {
     return this.queryBus.execute(query)
   }
 }

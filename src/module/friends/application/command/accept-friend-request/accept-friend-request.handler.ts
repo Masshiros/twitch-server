@@ -6,6 +6,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { EFriendRequestStatus } from "src/module/friends/domain/enum/friend-request-status.enum"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { AcceptFriendRequestCommand } from "./accept-friend-request.command"

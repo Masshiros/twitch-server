@@ -46,10 +46,14 @@ export class GetListFriendRequestHandler {
       }
       const friendRequests =
         await this.friendRepository.getListFriendRequest(receiver)
+
       //   console.log(friendRequests)
       const result = await Promise.all(
         friendRequests.map(async (e) => {
           const sender = await this.userRepository.findById(e.senderId)
+          if (!sender) {
+            return null
+          }
           const avatar = await this.imageService.getImageByApplicableId(
             sender.id,
           )
@@ -63,7 +67,7 @@ export class GetListFriendRequestHandler {
           }
         }),
       )
-      return { friendRequests: result }
+      return { friendRequests: result.filter((e) => e !== null) }
     } catch (err) {
       if (
         err instanceof DomainError ||

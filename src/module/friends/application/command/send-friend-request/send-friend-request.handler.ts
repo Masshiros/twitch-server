@@ -40,6 +40,12 @@ export class SendFriendRequestHandler {
           },
         })
       }
+      if (receiverId === senderId) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "You can not send friend request to yourself",
+        })
+      }
       const [sender, receiver] = await Promise.all([
         this.userRepository.findById(senderId),
         this.userRepository.findById(receiverId),

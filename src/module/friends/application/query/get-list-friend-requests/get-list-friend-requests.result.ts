@@ -6,5 +6,5 @@ export class GetListFriendRequestsResult {
       avatar: string
     }
     sentAt: string
-  }[]
+  }[] = []
 }

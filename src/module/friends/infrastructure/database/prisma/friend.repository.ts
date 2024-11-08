@@ -133,10 +133,10 @@ export class FriendRepository implements IFriendRepository {
       const mutualFriendIds = await this.prismaService.$queryRaw<
         Array<{ friendId: string }>
       >`
-      SELECT f1.friendId
-      FROM Friend AS f1
-      JOIN Friend AS f2 ON f1.friendId = f2.friendId
-      WHERE f1.userId = ${user.id} AND f2.userId = ${friend.id}
+      SELECT f1."friendId"
+      FROM twitch."friends" AS f1
+      JOIN twitch."friends" AS f2 ON f1."friendId" = f2."friendId"
+      WHERE f1."userId" = '${user.id}' AND f2."userId" = '${friend.id}'
     `
 
       const mutualFriends = await this.prismaService.user.findMany({
@@ -180,23 +180,22 @@ export class FriendRepository implements IFriendRepository {
   async acceptFriendRequest(request: FriendRequest): Promise<void> {
     try {
       await this.prismaService.$transaction(async (prisma) => {
-        await prisma.friendRequest.update({
+        await prisma.friendRequest.delete({
           where: {
             senderId_receiverId: {
               senderId: request.senderId,
               receiverId: request.receiverId,
             },
           },
-          data: { status: EFriendRequestStatus.ACCEPTED },
-        })
-        await Promise.all([
-          this.prismaService.friend.create({
-            data: { userId: request.senderId, friendId: request.receiverId },
-          }),
-          this.prismaService.friend.create({
-            data: { userId: request.receiverId, friendId: request.senderId },
-          }),
-        ])
+        }),
+          await Promise.all([
+            prisma.friend.create({
+              data: { userId: request.senderId, friendId: request.receiverId },
+            }),
+            prisma.friend.create({
+              data: { userId: request.receiverId, friendId: request.senderId },
+            }),
+          ])
       })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -210,14 +209,13 @@ export class FriendRepository implements IFriendRepository {
   }
   async rejectFriendRequest(request: FriendRequest): Promise<void> {
     try {
-      await this.prismaService.friendRequest.update({
+      await this.prismaService.friendRequest.delete({
         where: {
           senderId_receiverId: {
             senderId: request.senderId,
             receiverId: request.receiverId,
           },
         },
-        data: { status: EFriendRequestStatus.REJECTED },
       })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
