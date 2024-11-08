@@ -9,6 +9,7 @@ import { FriendRequest } from "src/module/friends/domain/entity/friend-request.e
 import { Friend } from "src/module/friends/domain/entity/friend.entity"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { ThisMonthInstance } from "twilio/lib/rest/api/v2010/account/usage/record/thisMonth"
 import { handlePrismaError } from "utils/prisma-error"
 import { FriendRequestMapper } from "../mapper/friend-request.prisma.mapper"
 import { FriendMapper } from "../mapper/friend.prisma.mapper"
@@ -68,6 +69,31 @@ export class FriendRepository implements IFriendRepository {
       }
       const result = friends.map((f) => FriendMapper.toDomain(f))
       return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getFriend(user: UserAggregate, friend: UserAggregate): Promise<Friend> {
+    try {
+      const existFriend = await this.prismaService.friend.findUnique({
+        where: {
+          userId_friendId: {
+            userId: user.id,
+            friendId: friend.id,
+          },
+        },
+      })
+      if (!existFriend) {
+        return null
+      }
+      const result = FriendMapper.toDomain(existFriend)
+      return result ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

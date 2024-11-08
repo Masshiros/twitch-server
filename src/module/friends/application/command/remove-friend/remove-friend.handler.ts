@@ -6,90 +6,75 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
-import { FriendFactory } from "src/module/friends/domain/factory/friend.factory"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { SendFriendRequestCommand } from "./send-friend-request.command"
+import { RemoveFriendCommand } from "./remove-friend.command"
 
-@CommandHandler(SendFriendRequestCommand)
-export class SendFriendRequestHandler {
+@CommandHandler(RemoveFriendCommand)
+export class RemoveFriendHandler {
   constructor(
     private readonly friendRepository: IFriendRepository,
     private readonly userRepository: IUserRepository,
   ) {}
-  async execute(command: SendFriendRequestCommand) {
-    const { senderId, receiverId } = command
+  async execute(command: RemoveFriendCommand) {
+    const { userId, friendId } = command
     try {
-      if (!senderId || senderId.length === 0) {
+      if (!userId || userId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message: "Data from client can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
-            field: "senderId",
+            field: "userId",
           },
         })
       }
-      if (!receiverId || receiverId.length === 0) {
+      if (!friendId || friendId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message: "Data from client can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
-            field: "receiverId",
+            field: "friendId",
           },
         })
       }
-      const [sender, receiver] = await Promise.all([
-        this.userRepository.findById(senderId),
-        this.userRepository.findById(receiverId),
+      const [user, friend] = await Promise.all([
+        this.userRepository.findById(userId),
+        this.userRepository.findById(friendId),
       ])
-      if (!sender) {
+      if (!user) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Sender not found",
+          message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
           },
         })
       }
-      if (!receiver) {
+      if (!friend) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Receiver not found",
+          message: "Friend not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
           },
         })
       }
-      // check is friend
-      const isFriend = await this.friendRepository.isFriend(sender, receiver)
-      if (isFriend) {
+      const [isFriend, existFriend] = await Promise.all([
+        this.friendRepository.isFriend(user, friend),
+        this.friendRepository.getFriend(user, friend),
+      ])
+      if (!isFriend && !existFriend) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Already friend",
+          message: "You are not friend with this person",
           info: {
             errorCode: CommandErrorDetailCode.ALREADY_EXIST,
           },
         })
       }
-      const friendRequest = FriendFactory.createFriendRequest({
-        senderId: sender.id,
-        receiverId: receiver.id,
-      })
-      if (!friendRequest) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Cannot send request",
-          info: {
-            errorCode: CommandErrorDetailCode.SOMETHING_WRONG_HAPPEN,
-          },
-        })
-      }
-
-      await this.friendRepository.sendFriendRequest(friendRequest)
-
-      //TODO(notify): Send notification
+      await this.friendRepository.removeFriend(existFriend)
     } catch (err) {
       if (
         err instanceof DomainError ||

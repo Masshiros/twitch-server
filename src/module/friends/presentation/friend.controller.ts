@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common"
+import { Body, Controller, Delete, Get, Post } from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
@@ -9,11 +9,13 @@ import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { AcceptFriendRequestCommand } from "../application/command/accept-friend-request/accept-friend-request.command"
 import { RejectFriendRequestCommand } from "../application/command/reject-friend-request/reject-friend-request.command"
+import { RemoveFriendCommand } from "../application/command/remove-friend/remove-friend.command"
 import { SendFriendRequestCommand } from "../application/command/send-friend-request/send-friend-request.command"
 import { FriendService } from "../application/friend.service"
 import { GetListFriendRequestQuery } from "../application/query/get-list-friend-requests/get-list-friend-requests.query"
 import { AcceptFriendRequestRequestDto } from "./dto/request/accept-friend-request.request.dto"
 import { RejectFriendRequestRequestDto } from "./dto/request/reject-friend-request.request.dto"
+import { RemoveFriendRequestDto } from "./dto/request/remove-friend.request.dto"
 import { SendFriendRequestRequestDto } from "./dto/request/send-friend-request.request.dto"
 import { GetListFriendRequestsResponseDto } from "./dto/response/get-list-friend-requests.response.dto"
 
@@ -91,11 +93,31 @@ export class FriendController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.GET_LIST_FRIEND_REQUESTS)
+  // @Permission([Permissions.FriendRequests.Read])
   @Get("/friend-requests")
   async getListFriendRequests(
     @CurrentUser() user: UserAggregate,
   ): Promise<GetListFriendRequestsResponseDto> {
     const query = new GetListFriendRequestQuery({ receiverId: user.id })
     return await this.service.getListFriendRequests(query)
+  }
+  // DELETE: Remove friend
+  @ApiOperationDecorator({
+    summary: "Remove friend ",
+    description: "Current user want to remove friend ",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.friend.REMOVE_FRIEND)
+  // @Permission([Permissions.Friends.Delete])
+  @Delete()
+  async removeFriends(
+    @CurrentUser() user: UserAggregate,
+    @Body() data: RemoveFriendRequestDto,
+  ) {
+    const command = new RemoveFriendCommand({
+      userId: user.id,
+      friendId: data.friendId,
+    })
+    await this.service.removeFriend(command)
   }
 }

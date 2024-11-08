@@ -8,6 +8,10 @@ export abstract class IFriendRepository {
   addFriend: (friend: Friend) => Promise<void>
   removeFriend: (friend: Friend) => Promise<void>
   getFriends: (user: UserAggregate) => Promise<Friend[]>
+  getFriend: (
+    user: UserAggregate,
+    friend: UserAggregate,
+  ) => Promise<Friend | null>
   isFriend: (user: UserAggregate, friend: UserAggregate) => Promise<boolean>
 
   // Friend recommendations

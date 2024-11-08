@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { AcceptFriendRequestCommand } from "./command/accept-friend-request/accept-friend-request.command"
 import { RejectFriendRequestCommand } from "./command/reject-friend-request/reject-friend-request.command"
+import { RemoveFriendCommand } from "./command/remove-friend/remove-friend.command"
 import { SendFriendRequestCommand } from "./command/send-friend-request/send-friend-request.command"
 import { GetListFriendRequestQuery } from "./query/get-list-friend-requests/get-list-friend-requests.query"
 
@@ -18,6 +19,9 @@ export class FriendService {
     return this.commandBus.execute(command)
   }
   async rejectFriendRequest(command: RejectFriendRequestCommand) {
+    return this.commandBus.execute(command)
+  }
+  async removeFriend(command: RemoveFriendCommand) {
     return this.commandBus.execute(command)
   }
   async getListFriendRequests(query: GetListFriendRequestQuery) {

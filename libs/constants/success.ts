@@ -30,6 +30,7 @@ export const SuccessMessages = {
     ACCEPT_FRIEND_REQUEST: "Accept friend request successfully",
     REJECT_FRIEND_REQUEST: "Reject friend request successfully",
     GET_LIST_FRIEND_REQUESTS: "Get list friend requests successfully",
+    REMOVE_FRIEND: "Remove friend successfully",
   },
   followers: {
     FOLLOW_USER: "Follow user successfully",

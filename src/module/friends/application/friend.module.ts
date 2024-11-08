@@ -6,6 +6,7 @@ import { FriendsDatabaseModule } from "../infrastructure/database/friend.databas
 import { FriendController } from "../presentation/friend.controller"
 import { AcceptFriendRequestHandler } from "./command/accept-friend-request/accept-friend-request.handler"
 import { RejectFriendRequestHandler } from "./command/reject-friend-request/reject-friend-request.handler"
+import { RemoveFriendHandler } from "./command/remove-friend/remove-friend.handler"
 import { SendFriendRequestHandler } from "./command/send-friend-request/send-friend-request.handler"
 import { FriendService } from "./friend.service"
 import { GetListFriendRequestHandler } from "./query/get-list-friend-requests/get-list-friend-requests.handler"
@@ -14,6 +15,7 @@ const commandHandlers = [
   SendFriendRequestHandler,
   AcceptFriendRequestHandler,
   RejectFriendRequestHandler,
+  RemoveFriendHandler,
 ]
 const queryHandlers = [GetListFriendRequestHandler]
 @Module({
