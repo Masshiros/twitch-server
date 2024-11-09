@@ -333,7 +333,7 @@ model CategoryFollowers {
 model Post {
   id              String                   @id @default(uuid())
   userId          String
-  groupId         String?
+  // groupId         String?
   content         String
   totalViewCount  Int                      @default(0)
   visibility      EUserPostVisibility
@@ -341,7 +341,7 @@ model Post {
   updatedAt       DateTime                 @default(now()) @updatedAt
   deletedAt       DateTime?
   reactions       PostReaction[]           @relation("UserPostReactions")
-  group           Group?                   @relation(fields: [groupId], references: [id])
+  // group           Group?                   @relation(fields: [groupId], references: [id])
   user            User                     @relation(fields: [userId], references: [id])
   taggedUsers     PostTaggedUser[]
   sharedPost      SharedPost[]
@@ -418,13 +418,14 @@ model Group {
   name        String
   description String
   visibility  EGroupVisibility
+  // privacy     
   joinLink    String?
   createdAt   DateTime         @default(now())
   deletedAt   DateTime?
   updatedAt   DateTime         @default(now()) @updatedAt
   members     GroupMember[]
   owner       User             @relation("GroupOwner", fields: [ownerId], references: [id])
-  posts       Post[]
+  // posts       Post[]
 
   @@map("groups")
 }

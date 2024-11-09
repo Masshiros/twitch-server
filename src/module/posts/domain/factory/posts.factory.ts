@@ -22,7 +22,7 @@ export class PostFactory {
   static createPost(props: PostCreationProps): Post {
     return new Post({
       userId: props.userId,
-      groupId: props.groupId,
+      // groupId: props.groupId,
       content: props.content,
       visibility: props.visibility ?? EUserPostVisibility.PUBLIC,
       totalViewCount: props.totalViewCount ?? 0,

@@ -6,7 +6,7 @@ import { PostReactions } from "./post-reactions.entity"
 interface PostProps {
   id?: string
   userId: string
-  groupId?: string
+  // groupId?: string
   content: string
   visibility: EUserPostVisibility
   totalViewCount?: number
@@ -17,7 +17,7 @@ interface PostProps {
 }
 export class Post extends BaseEntity {
   private _userId: string
-  private _groupId: string
+  // private _groupId: string
   private _content: string
   private _visibility: EUserPostVisibility
   private _totalViewCount?: number
@@ -26,7 +26,7 @@ export class Post extends BaseEntity {
     super()
     this._id = props.id ?? randomUUID()
     this._userId = props.userId
-    this._groupId = props.groupId
+    // this._groupId = props.groupId
     this._content = props.content
     this._visibility = props.visibility ?? EUserPostVisibility.PUBLIC
     this._totalViewCount = props.totalViewCount ?? 0
@@ -41,12 +41,12 @@ export class Post extends BaseEntity {
   set userId(value: string) {
     this._userId = value
   }
-  get groupId(): string {
-    return this._groupId
-  }
-  set groupId(value: string) {
-    this._groupId = value
-  }
+  // get groupId(): string {
+  //   return this._groupId
+  // }
+  // set groupId(value: string) {
+  //   this._groupId = value
+  // }
   get content(): string {
     return this._content
   }

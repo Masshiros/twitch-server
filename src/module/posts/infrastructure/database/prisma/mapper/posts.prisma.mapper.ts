@@ -11,7 +11,7 @@ export class PostMapper {
     return new Post({
       id: prismaPost.id,
       userId: prismaPost.userId,
-      groupId: prismaPost.groupId,
+      // groupId: prismaPost.groupId,
       content: prismaPost.content,
       visibility: this.mapPrismaToDomainEnum(prismaPost.visibility),
       totalViewCount: prismaPost.totalViewCount,
@@ -25,7 +25,7 @@ export class PostMapper {
     return {
       id: domainPost.id,
       userId: domainPost.userId,
-      groupId: domainPost.groupId,
+      // groupId: domainPost.groupId,
       content: domainPost.content,
       visibility: this.mapDomainToPrismaEnum(domainPost.visibility),
       totalViewCount: domainPost.totalViewCount,
