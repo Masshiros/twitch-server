@@ -25,7 +25,7 @@ export class GetUserPostsHandler {
       if (!userId || userId.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: " Data from client can not be empty",
+          message: "User to get posts' id can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "userId",
@@ -35,7 +35,7 @@ export class GetUserPostsHandler {
       if (!currentUserId || currentUserId.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: " Data from client can not be empty",
+          message: "Current user's id can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "currentUserId",
@@ -46,7 +46,7 @@ export class GetUserPostsHandler {
       const currentUser = await this.userRepository.findById(currentUserId)
       if (!user) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
@@ -55,8 +55,8 @@ export class GetUserPostsHandler {
       }
       if (!currentUser) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
-          message: "User not found",
+          code: QueryErrorCode.NOT_FOUND,
+          message: "Current user not found",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },

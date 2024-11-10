@@ -24,7 +24,7 @@ export class SharePostHandler {
       if (!postId || postId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Post to share can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "postId",
@@ -34,7 +34,7 @@ export class SharePostHandler {
       if (!sharedById || sharedById.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Who share post's id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "sharedById",
@@ -44,7 +44,7 @@ export class SharePostHandler {
       if (!sharedToId || sharedToId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Where receive post's id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "sharedToId",
@@ -54,7 +54,7 @@ export class SharePostHandler {
       if (!shareToType || shareToType.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Type of where to share can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "sharedToType",
@@ -67,7 +67,7 @@ export class SharePostHandler {
       ])
       if (!shareBy) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User share post not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -76,7 +76,7 @@ export class SharePostHandler {
       }
       if (!post) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Post not found",
           info: {
             errorCode: CommandErrorDetailCode.NOT_FOUND,

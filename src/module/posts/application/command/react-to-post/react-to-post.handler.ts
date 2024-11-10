@@ -23,7 +23,7 @@ export class ReactToPostHandler {
       if (!userId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -32,7 +32,7 @@ export class ReactToPostHandler {
       if (!postId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Post to react's id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -41,7 +41,7 @@ export class ReactToPostHandler {
       if (!reactionType) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Reaction type can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -50,7 +50,7 @@ export class ReactToPostHandler {
       const user = await this.userRepository.findById(userId!)
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -60,7 +60,7 @@ export class ReactToPostHandler {
       const post = await this.postRepository.findPostById(postId!)
       if (!post) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Post not found",
           info: {
             errorCode: CommandErrorDetailCode.NOT_FOUND,

@@ -15,6 +15,7 @@ import { FilesInterceptor } from "@nestjs/platform-express"
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
+import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
@@ -57,6 +58,10 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Create a post",
     description: "Create a post for current logged in user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.createUserPost.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.createUserPost.notFound,
     auth: true,
     fileFieldName: "images",
   })
@@ -82,6 +87,10 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Delete post",
     description: "Current logged in user delete a post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.deleteUserPost.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.deleteUserPost.notFound,
     auth: true,
   })
   @Permission([Permissions.Posts.Delete])
@@ -101,6 +110,9 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Update post",
     description: "Current logged in user update a post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.editUserPost.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.posts.editUserPost.notFound,
     auth: true,
     fileFieldName: "images",
   })
@@ -127,6 +139,9 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "React to post",
     description: "React to a specific post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.reactToPost.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.posts.reactToPost.notFound,
     auth: true,
   })
   @Permission([Permissions.Reactions.Create, Permissions.Reactions.Update])
@@ -143,6 +158,9 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Share post",
     description: "Share a specific post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.sharePost.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.posts.sharePost.notFound,
     auth: true,
   })
   @Permission([Permissions.Posts.Create, Permissions.Posts.Update])
@@ -159,6 +177,9 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Share post to my page",
     description: "Share a specific post to my page",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.sharePost.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.posts.sharePost.notFound,
     auth: true,
   })
   @Permission([Permissions.Posts.Create, Permissions.Posts.Update])
@@ -179,6 +200,10 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Get all reactions",
     description: "Get all reactions of specific post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.getAllReactions.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.getAllReactions.notFound,
     auth: true,
   })
   @Permission([Permissions.Reactions.Read])
@@ -194,6 +219,10 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Get post reactions by type",
     description: "Get post reactions by type ",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.getReactionsByType.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.getReactionsByType.notFound,
     type: GetReactionsByTypeResponseDto,
     auth: true,
   })
@@ -210,6 +239,9 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Get user's post",
     description: "Get specific user's post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.getUserPosts.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.posts.getUserPosts.notFound,
     type: GetUserPostsResponseDto,
     auth: true,
   })
@@ -234,11 +266,13 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Search post by keyword",
     description: "Search post by keyword",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.searchPost.badRequest,
     type: SearchPostsResponseDto,
     auth: true,
   })
   @Permission([Permissions.Posts.Read])
-  @ResponseMessage(SuccessMessages.posts.GET_USER_POSTS)
+  @ResponseMessage(SuccessMessages.posts.SEARCH_POST)
   @Get("/search/:keyword")
   async searchPostsByKeyword(
     @CurrentUser() currentUser: UserAggregate,
@@ -251,6 +285,9 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Get my post",
     description: "Get current login user's post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.getUserPosts.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.posts.getUserPosts.notFound,
     type: GetUserPostsResponseDto,
     auth: true,
   })
@@ -275,6 +312,9 @@ export class PostsController {
   @ApiOperationDecorator({
     summary: "Get my feed",
     description: "Get current login user's feed",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.getUserFeed.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.posts.getUserFeed.notFound,
     type: GetUserPostsResponseDto,
     auth: true,
   })
@@ -296,6 +336,10 @@ export class PostsController {
     summary: "(Toggle) hide posts from user",
     description:
       "All posts of this user will be hidden or unhidden from new feed of current user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.toggleHidePostsFromUser.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.toggleHidePostsFromUser.notFound,
     auth: true,
   })
   @Permission([Permissions.Posts.Create, Permissions.Posts.Update])

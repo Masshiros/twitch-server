@@ -22,7 +22,7 @@ export class ToggleHidePostsFromUserHandler {
       if (!userId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -31,7 +31,7 @@ export class ToggleHidePostsFromUserHandler {
       if (!hiddenUserId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Id of user to hide post from can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -40,7 +40,7 @@ export class ToggleHidePostsFromUserHandler {
       const user = await this.userRepository.findById(userId!)
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -50,7 +50,7 @@ export class ToggleHidePostsFromUserHandler {
       const hiddenUser = await this.userRepository.findById(userId!)
       if (!hiddenUser) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User to hidden not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

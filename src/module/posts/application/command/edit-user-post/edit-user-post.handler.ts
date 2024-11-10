@@ -41,7 +41,7 @@ export class EditUserPostHandler {
       if (!userId || userId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "userId",
@@ -51,7 +51,7 @@ export class EditUserPostHandler {
       if (!postId || postId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Post to edit's id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "postId",
@@ -61,7 +61,7 @@ export class EditUserPostHandler {
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -71,7 +71,7 @@ export class EditUserPostHandler {
       post = await this.postRepository.findPostById(postId)
       if (!post) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Post not found",
           info: {
             errorCode: CommandErrorDetailCode.NOT_FOUND,
@@ -80,7 +80,7 @@ export class EditUserPostHandler {
       }
       if (post.userId !== user.id) {
         throw new CommandError({
-          code: CommandErrorCode.NOT_FOUND,
+          code: CommandErrorCode.BAD_REQUEST,
           message: "This post is not belong to you",
           info: {
             errorCode: CommandErrorDetailCode.UNAUTHORIZED,
@@ -105,7 +105,7 @@ export class EditUserPostHandler {
             const taggedUser = await this.userRepository.findById(id)
             if (!taggedUser) {
               throw new CommandError({
-                code: CommandErrorCode.BAD_REQUEST,
+                code: CommandErrorCode.NOT_FOUND,
                 message: "Tag user not found",
                 info: {
                   errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -170,7 +170,7 @@ export class EditUserPostHandler {
               const user = await this.userRepository.findById(e.friendId)
               if (!user) {
                 throw new CommandError({
-                  code: CommandErrorCode.BAD_REQUEST,
+                  code: CommandErrorCode.NOT_FOUND,
                   message: "User in view list not found",
                   info: {
                     errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -195,7 +195,7 @@ export class EditUserPostHandler {
             const user = await this.userRepository.findById(id)
             if (!user) {
               throw new CommandError({
-                code: CommandErrorCode.BAD_REQUEST,
+                code: CommandErrorCode.NOT_FOUND,
                 message: "User in view list not found",
                 info: {
                   errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

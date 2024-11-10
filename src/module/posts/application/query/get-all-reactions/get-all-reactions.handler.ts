@@ -29,7 +29,7 @@ export class GetAllReactionsHandler {
       if (!postId || postId.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Post id can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "postId",
@@ -39,7 +39,7 @@ export class GetAllReactionsHandler {
       const post = await this.postRepository.findPostById(postId)
       if (!post) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "Post not found",
           info: {
             errorCode: QueryErrorDetailCode.NOT_FOUND,

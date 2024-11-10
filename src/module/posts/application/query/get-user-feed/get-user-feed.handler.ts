@@ -29,7 +29,7 @@ export class GetUserFeedHandler {
       if (!userId || userId.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: " Data from client can not be empty",
+          message: "User id can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "userId",
@@ -39,7 +39,7 @@ export class GetUserFeedHandler {
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: QueryErrorDetailCode.USER_NOT_FOUND,

@@ -254,4 +254,89 @@ export const SwaggerErrorMessages = {
       notFound: ["User not found", "currentUser not found"],
     },
   },
+  posts: {
+    createUserPost: {
+      badRequest: [
+        "User id can not be empty",
+        "Post content can not be empty",
+        "Post visibility can not be empty",
+        "Cannot create post",
+        "You do not have friends",
+      ],
+      notFound: [
+        "User not found",
+        "Tag user not found",
+        "User in view list not found",
+      ],
+    },
+    deleteUserPost: {
+      badRequest: [
+        "User id can not be empty",
+        "Post to delete's id can not be empty",
+        "This post does not belong to you",
+      ],
+      notFound: ["User not found", "Post not found"],
+    },
+    editUserPost: {
+      badRequest: [
+        "User id can not be empty",
+        "Post to edit's id can not be empty",
+        "This post does not belong to you",
+        "You do not have friends",
+      ],
+      notFound: [
+        "User not found",
+        "Post not found",
+        "Tag user not found",
+        "User in view list not found",
+      ],
+    },
+    reactToPost: {
+      badRequest: [
+        "User id can not be empty",
+        "Post to react's id can not be empty",
+        "Reaction type can not be empty",
+      ],
+      notFound: ["User not found", "Post not found"],
+    },
+    sharePost: {
+      badRequest: [
+        "Post to share can not be empty",
+        "Who share post's id can not be empty",
+        "Where receive post's id can not be empty",
+        "Type of where to share can not be empty",
+        "You already share this post",
+      ],
+      notFound: ["User share post not found", "Post not found"],
+    },
+    toggleHidePostsFromUser: {
+      badRequest: [
+        "User id can not be empty",
+        "Id of user to hide post from can not be empty",
+      ],
+      notFound: ["User not found", "User to hide not found"],
+    },
+    getAllReactions: {
+      badRequest: ["Post id can not be empty"],
+      notFound: ["Post not found"],
+    },
+    getReactionsByType: {
+      badRequest: ["Post id can not be empty"],
+      notFound: ["Post not found"],
+    },
+    getUserFeed: {
+      badRequest: ["User id can not be empty"],
+      notFound: ["User not found"],
+    },
+    getUserPosts: {
+      badRequest: [
+        "User to get posts' id can not be empty",
+        "Current user's id can not be empty",
+      ],
+      notFound: ["User not found", "Current user not found"],
+    },
+    searchPost: {
+      badRequest: ["Keyword can not be empty"],
+    },
+  },
 }

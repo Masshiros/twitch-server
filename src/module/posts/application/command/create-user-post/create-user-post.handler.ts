@@ -41,7 +41,7 @@ export class CreateUserPostHandler {
       if (!userId || userId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "userId",
@@ -51,7 +51,7 @@ export class CreateUserPostHandler {
       if (!content || content.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Post content can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "content",
@@ -61,33 +61,14 @@ export class CreateUserPostHandler {
       if (!visibility) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Post visibility can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "visibility",
           },
         })
       }
-      if (!images) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
-          info: {
-            errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
-            field: "images",
-          },
-        })
-      }
-      if (!taggedUserIds) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
-          info: {
-            errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
-            field: "taggedUserIds",
-          },
-        })
-      }
+
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new CommandError({
@@ -113,13 +94,13 @@ export class CreateUserPostHandler {
         })
       }
       console.log(taggedUserIds.length)
-      if (taggedUserIds.length > 0) {
+      if (taggedUserIds && taggedUserIds.length > 0) {
         await Promise.all(
           taggedUserIds.map(async (id) => {
             const taggedUser = await this.userRepository.findById(id)
             if (!taggedUser) {
               throw new CommandError({
-                code: CommandErrorCode.BAD_REQUEST,
+                code: CommandErrorCode.NOT_FOUND,
                 message: "Tag user not found",
                 info: {
                   errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -129,7 +110,7 @@ export class CreateUserPostHandler {
           }),
         )
       }
-      if (images.length > 0) {
+      if (images && images.length > 0) {
         await this.imageService.uploadMultiImages(
           images,
           Folder.image.user_post,
@@ -184,7 +165,7 @@ export class CreateUserPostHandler {
                 const user = await this.userRepository.findById(e.friendId)
                 if (!user) {
                   throw new CommandError({
-                    code: CommandErrorCode.BAD_REQUEST,
+                    code: CommandErrorCode.NOT_FOUND,
                     message: "User in view list not found",
                     info: {
                       errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -211,7 +192,7 @@ export class CreateUserPostHandler {
                 const user = await this.userRepository.findById(userId)
                 if (!user) {
                   throw new CommandError({
-                    code: CommandErrorCode.BAD_REQUEST,
+                    code: CommandErrorCode.NOT_FOUND,
                     message: "User in view list not found",
                     info: {
                       errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
