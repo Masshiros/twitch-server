@@ -9,6 +9,8 @@ export class PostReactionMapper {
   // Convert Prisma PostReaction to Domain PostReactions
   static toDomain(prismaPostReaction: PrismaPostReaction): PostReactions {
     return new PostReactions({
+      id: prismaPostReaction.groupPostId,
+      groupPostId: prismaPostReaction.groupPostId,
       userId: prismaPostReaction.userId,
       postId: prismaPostReaction.postId,
       type: this.mapPrismaToDomainEnum(prismaPostReaction.type),
@@ -18,6 +20,8 @@ export class PostReactionMapper {
   // Convert Domain PostReactions to Prisma PostReaction format
   static toPersistence(domainPostReaction: PostReactions): PrismaPostReaction {
     return {
+      id: domainPostReaction.id,
+      groupPostId: domainPostReaction.groupPostId,
       userId: domainPostReaction.userId,
       postId: domainPostReaction.postId,
       type: this.mapDomainToPrismaEnum(domainPostReaction.type),

@@ -6,15 +6,15 @@ import { EUserPostVisibility } from "../enum/posts.enum"
 
 interface PostCreationProps {
   userId: string
-  groupId?: string
   content: string
   visibility?: EUserPostVisibility
   totalViewCount?: number
   postReactions?: PostReactions[]
 }
 interface PostReactionsCreationProps {
+  groupPostId?: string
   userId: string
-  postId: string
+  postId?: string
   type: EReactionType
 }
 
@@ -32,6 +32,7 @@ export class PostFactory {
   }
   static createCreation(props: PostReactionsCreationProps): PostReactions {
     return new PostReactions({
+      groupPostId: props.groupPostId,
       userId: props.userId,
       postId: props.postId,
       type: props.type,

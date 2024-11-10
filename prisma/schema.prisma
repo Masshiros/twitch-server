@@ -46,6 +46,7 @@ model User {
   receivedNotifications NotificationUser[]
   postReactions         PostReaction[]
   userPosts             Post[]
+  posts       GroupPost[]
   taggedUsers           PostTaggedUser[]
   tokens                Token[]
   userCategories        UsersCategories[]        @relation("Users")
@@ -55,6 +56,7 @@ model User {
   reverseFriends        Friend[]                 @relation("UserFriendsReverse")
   sentFriendRequest     FriendRequest[]          @relation("SentFriendRequests")
   receivedFriendRequest FriendRequest[]          @relation("ReceivedFriendRequests")
+  membershipRequests MemberRequest[]
 
 
   @@index([isLive])
@@ -340,7 +342,7 @@ model Post {
   createdAt       DateTime                 @default(now())
   updatedAt       DateTime                 @default(now()) @updatedAt
   deletedAt       DateTime?
-  reactions       PostReaction[]           @relation("UserPostReactions")
+  reactions       PostReaction[]           @relation()
   // group           Group?                   @relation(fields: [groupId], references: [id])
   user            User                     @relation(fields: [userId], references: [id])
   taggedUsers     PostTaggedUser[]
@@ -386,16 +388,19 @@ model UserPostViewPermission {
 }
 
 model PostReaction {
+  id              String                   @id @default(uuid())
   userId    String
-  postId    String
+  postId       String?      
+  groupPostId  String?
   type      EReactionType
   createdAt DateTime      @default(now())
   deletedAt DateTime?
   updatedAt DateTime      @default(now()) @updatedAt
-  post      Post          @relation("UserPostReactions", fields: [postId], references: [id], onDelete: Cascade)
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post?          @relation(fields: [postId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
+  groupPost GroupPost?     @relation(fields: [groupPostId], references: [id])
 
-  @@id([userId, postId])
+
   @@map("postReactions")
 }
 
@@ -418,33 +423,94 @@ model Group {
   name        String
   description String
   visibility  EGroupVisibility
-  // privacy     
-  joinLink    String?
+  privacy     EGroupPrivacy
   createdAt   DateTime         @default(now())
   deletedAt   DateTime?
   updatedAt   DateTime         @default(now()) @updatedAt
+  rules       GroupRule[]
   members     GroupMember[]
+  memberRequests MemberRequest[]
   owner       User             @relation("GroupOwner", fields: [ownerId], references: [id])
-  // posts       Post[]
+  posts       GroupPost[]
+  inviteLinks GroupInviteLink[]
 
   @@map("groups")
+}
+model GroupInviteLink {
+  id            String    @id @default(uuid())
+  groupId       String
+  link          String    @unique
+  expiresAt     DateTime
+  maxUses       Int
+  currentUses   Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  group         Group     @relation(fields: [groupId], references: [id])
+
+
+  @@map("groupInviteLinks")
+}
+
+model MemberRequest {
+  id          String        @id @default(uuid())
+  groupId     String
+  userId      String
+  status      EGroupRequestStatus
+  requestedAt DateTime      @default(now())
+  reviewedAt  DateTime?
+  comment     String?
+  
+  group       Group         @relation(fields: [groupId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
+
+  @@map("memberRequests")
 }
 
 model GroupMember {
   groupId   String
-  userId    String
+  memberId    String
   joinedAt  DateTime   @default(now())
   role      EGroupRole
   createdAt DateTime   @default(now())
   deletedAt DateTime?
   updatedAt DateTime   @default(now()) @updatedAt
   group     Group      @relation(fields: [groupId], references: [id])
-  user      User       @relation(fields: [userId], references: [id])
+  member      User       @relation(fields: [memberId], references: [id])
 
-  @@id([groupId, userId])
+  @@id([groupId, memberId])
   @@map("groupMembers")
 }
+model GroupRule {
+  id          String   @id @default(uuid())
+  groupId     String
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  deletedAt   DateTime?
 
+  group       Group    @relation(fields: [groupId], references: [id])
+
+  @@map("groupRules")
+}
+model GroupPost {
+  id          String         @id @default(uuid())
+  groupId     String
+  userId      String
+  content     String
+  totalViewCount  Int        @default(0)
+  status      EGroupPostStatus    @default(PENDING)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @default(now()) @updatedAt
+  deletedAt   DateTime?
+
+  group       Group          @relation(fields: [groupId], references: [id])
+  user        User           @relation(fields: [userId], references: [id])
+  reactions   PostReaction[] @relation()
+  
+
+  @@map("groupPosts")
+}
 
 enum ENotification {
   USER
@@ -466,6 +532,20 @@ enum EGroupVisibility {
   PUBLIC
   PRIVATE
   HIDDEN
+}
+enum EGroupPrivacy {
+  VISIBLE
+  HIDDEN
+}
+enum EGroupRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+enum EGroupPostStatus {
+  PENDING
+  APPROVED
+  DECLINED
 }
 
 enum EGroupRole {

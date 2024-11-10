@@ -524,20 +524,14 @@ export class PostsRepository implements IPostsRepository {
     try {
       const existReact = await this.prismaService.postReaction.findUnique({
         where: {
-          userId_postId: {
-            userId: reaction.userId,
-            postId: reaction.postId,
-          },
+          id: reaction.id,
         },
       })
       const data = PostReactionMapper.toPersistence(reaction)
       if (existReact) {
         await this.prismaService.postReaction.update({
           where: {
-            userId_postId: {
-              userId: reaction.userId,
-              postId: reaction.postId,
-            },
+            id: reaction.id,
           },
           data,
         })
@@ -564,19 +558,13 @@ export class PostsRepository implements IPostsRepository {
     try {
       const existReact = await this.prismaService.postReaction.findUnique({
         where: {
-          userId_postId: {
-            userId: reaction.userId,
-            postId: reaction.postId,
-          },
+          id: reaction.id,
         },
       })
       if (existReact) {
         await this.prismaService.postReaction.delete({
           where: {
-            userId_postId: {
-              userId: reaction.userId,
-              postId: reaction.postId,
-            },
+            id: reaction.id,
           },
         })
       }

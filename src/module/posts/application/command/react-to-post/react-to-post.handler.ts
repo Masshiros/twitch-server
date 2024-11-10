@@ -72,6 +72,7 @@ export class ReactToPostHandler {
         userId,
         type: reactionType,
       })
+      // TODO(group): will be here when finish groupPost
       if (!reaction) {
         throw new CommandError({
           code: CommandErrorCode.INTERNAL_SERVER_ERROR,
@@ -82,6 +83,7 @@ export class ReactToPostHandler {
         })
       }
       await this.postRepository.addOrUpdateReactionToPost(reaction)
+      // TODO(notify): Add notify here
     } catch (err) {
       if (
         err instanceof DomainError ||
