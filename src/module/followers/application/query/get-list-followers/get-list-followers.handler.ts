@@ -36,7 +36,7 @@ export class GetListFollowersQueryHandler {
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "Follower not found",
           info: {
             errorCode: QueryErrorDetailCode.USER_NOT_FOUND,

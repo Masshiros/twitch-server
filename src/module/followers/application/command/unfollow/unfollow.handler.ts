@@ -33,7 +33,7 @@ export class UnfollowCommandHandler {
       const sourceUser = await this.userRepository.findById(sourceUserId)
       if (!sourceUser) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Follower not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -53,7 +53,7 @@ export class UnfollowCommandHandler {
         await this.userRepository.findById(destinationUserId)
       if (!destinationUser) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User to follow not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

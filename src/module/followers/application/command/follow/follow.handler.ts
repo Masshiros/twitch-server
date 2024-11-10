@@ -33,7 +33,7 @@ export class FollowCommandHandler {
       const sourceUser = await this.userRepository.findById(sourceUserId)
       if (!sourceUser) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Follower not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -43,7 +43,7 @@ export class FollowCommandHandler {
       if (!destinationUserId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "User id can not be empty",
+          message: "User to follow's id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
           },
@@ -53,7 +53,7 @@ export class FollowCommandHandler {
         await this.userRepository.findById(destinationUserId)
       if (!destinationUser) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User to follow not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

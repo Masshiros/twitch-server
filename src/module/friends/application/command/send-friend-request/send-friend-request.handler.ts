@@ -23,7 +23,7 @@ export class SendFriendRequestHandler {
       if (!senderId || senderId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Sender id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "senderId",
@@ -33,7 +33,7 @@ export class SendFriendRequestHandler {
       if (!receiverId || receiverId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Receiver id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "receiverId",
@@ -52,7 +52,7 @@ export class SendFriendRequestHandler {
       ])
       if (!sender) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Sender not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -61,7 +61,7 @@ export class SendFriendRequestHandler {
       }
       if (!receiver) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Receiver not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

@@ -24,7 +24,7 @@ export class GetMutualFriendsHandler {
       if (!userId || userId.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: " Data from client can not be empty",
+          message: "User to get mutual friends' id can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "userId",
@@ -34,7 +34,7 @@ export class GetMutualFriendsHandler {
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
@@ -44,7 +44,7 @@ export class GetMutualFriendsHandler {
       if (!currentUserId || currentUserId.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: " Data from client can not be empty",
+          message: "Current user id can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "currentUserId",
@@ -54,7 +54,7 @@ export class GetMutualFriendsHandler {
       const currentUser = await this.userRepository.findById(currentUserId)
       if (!currentUser) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "currentUser not found",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,

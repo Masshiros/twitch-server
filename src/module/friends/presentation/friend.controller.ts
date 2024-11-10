@@ -10,6 +10,7 @@ import {
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
+import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
@@ -41,6 +42,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Send friend request to user",
     description: "Current user send friend request to another user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.sendFriendRequest.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.sendFriendRequest.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.SEND_FRIEND_REQUEST)
@@ -60,6 +65,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Accept friend request to user",
     description: "Current user accept friend request from another user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.acceptFriendRequest.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.acceptFriendRequest.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.ACCEPT_FRIEND_REQUEST)
@@ -82,6 +91,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Reject friend request to user",
     description: "Current user reject friend request from another user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.rejectFriendRequest.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.rejectFriendRequest.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.REJECT_FRIEND_REQUEST)
@@ -104,6 +117,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Get list friend requests ",
     description: "Current user get list friend requests ",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.getListFriendRequest.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.getListFriendRequest.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.GET_LIST_FRIEND_REQUESTS)
@@ -119,6 +136,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Get list friend",
     description: "Current user get list friends of other user ",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.getListFriend.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.getListFriend.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.GET_LIST_FRIENDS)
@@ -138,6 +159,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Get My List Friend",
     description: "Current user get his/her list friends",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.getListFriend.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.getListFriend.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.GET_LIST_FRIENDS)
@@ -156,6 +181,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Get mutual friends",
     description: "Current user get mutual friends with other user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.getMutualFriends.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.getMutualFriends.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.GET_MUTUAL_FRIENDS)
@@ -175,6 +204,10 @@ export class FriendController {
   @ApiOperationDecorator({
     summary: "Remove friend ",
     description: "Current user want to remove friend ",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.friends.removeFriend.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.friends.removeFriend.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.friend.REMOVE_FRIEND)

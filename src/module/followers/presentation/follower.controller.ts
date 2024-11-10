@@ -1,6 +1,7 @@
 import { Controller, Param, Post } from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
 import { SuccessMessages } from "libs/constants/success"
+import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
@@ -21,6 +22,9 @@ export class FollowerController {
   @ApiOperationDecorator({
     summary: "Follow a user",
     description: "User want to follow another user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.followers.follow.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.followers.follow.notFound,
     type: FollowRequestDto,
     auth: true,
   })
@@ -39,6 +43,9 @@ export class FollowerController {
   @ApiOperationDecorator({
     summary: "Unfollow a user",
     description: "User want to unfollow another user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.followers.unfollow.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.followers.unfollow.notFound,
     type: UnfollowRequestDto,
     auth: true,
   })
@@ -57,6 +64,10 @@ export class FollowerController {
   @ApiOperationDecorator({
     summary: "Get followers",
     description: "Get list followers of current user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.followers.getListFollowers.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.followers.getListFollowers.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.followers.GET_LIST_FOLLOWERS)
@@ -70,6 +81,10 @@ export class FollowerController {
   @ApiOperationDecorator({
     summary: "Get following",
     description: "Get list following of current user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.followers.getListFollowings.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.followers.getListFollowings.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.followers.GET_LIST_FOLLOWINGS)

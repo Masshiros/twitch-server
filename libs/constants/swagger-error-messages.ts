@@ -168,4 +168,90 @@ export const SwaggerErrorMessages = {
       notFound: ["Category not found", "Tag with id: <tag_id> not found"],
     },
   },
+  followers: {
+    follow: {
+      badRequest: [
+        "User id can not be empty",
+        "User to follow's id can not be empty",
+      ],
+      notFound: ["Follower not found", "User to follow not found"],
+    },
+    unfollow: {
+      badRequest: [
+        "User id can not be empty",
+        "User to follow's id can not be empty",
+      ],
+      notFound: ["Follower not found", "User to follow not found"],
+    },
+    getListFollowers: {
+      badRequest: ["User id can not be empty"],
+      notFound: ["Follower not found", "User not found"],
+    },
+    getListFollowings: {
+      badRequest: ["User id can not be empty"],
+      notFound: ["Follower not found", "User not found"],
+    },
+  },
+  friends: {
+    sendFriendRequest: {
+      badRequest: [
+        "Sender id can not be empty",
+        "Receiver id can not be empty",
+        "You can not send friend request to yourself",
+        "Already friend",
+        "Cannot send request",
+      ],
+      notFound: ["Sender not found", "Receiver not found"],
+    },
+    removeFriend: {
+      badRequest: [
+        "User id can not be empty",
+        "Friend id can not be empty",
+        "You are not friend with this person",
+      ],
+      notFound: ["User not found", "Friend not found"],
+    },
+    rejectFriendRequest: {
+      badRequest: [
+        "Sender id can not be empty",
+        "Receiver id can not be empty",
+        "Already friend",
+      ],
+      notFound: [
+        "Sender not found",
+        "Receiver not found",
+        "Friend request not found",
+      ],
+    },
+    acceptFriendRequest: {
+      badRequest: [
+        "Sender id can not be empty",
+        "Receiver id can not be empty",
+        "Already friend",
+      ],
+      notFound: [
+        "Sender not found",
+        "Receiver not found",
+        "Friend request not found",
+      ],
+    },
+    getListFriend: {
+      badRequest: [
+        "User to get friend's list's id can not be empty",
+        "Current user id from client can not be empty",
+      ],
+      notFound: ["User not found", "Current user not found"],
+    },
+    getListFriendRequest: {
+      badRequest: ["Receiver Id can not be empty"],
+      notFound: ["Receiver not found"],
+    },
+    getMutualFriends: {
+      badRequest: [
+        "User to get mutual friends' id can not be empty",
+        "Current user id can not be empty",
+      ],
+      notFound: ["User not found", "currentUser not found"],
+    },
+  },
 }

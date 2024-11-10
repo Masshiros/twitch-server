@@ -27,7 +27,7 @@ export class GetListFriendRequestHandler {
       if (!receiverId || receiverId.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: " Data from client can not be empty",
+          message: " Receiver Id can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "receiverId",
@@ -37,7 +37,7 @@ export class GetListFriendRequestHandler {
       const receiver = await this.userRepository.findById(receiverId)
       if (!receiver) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "Receiver not found",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,

@@ -22,7 +22,7 @@ export class RemoveFriendHandler {
       if (!userId || userId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "userId",
@@ -32,7 +32,7 @@ export class RemoveFriendHandler {
       if (!friendId || friendId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Friend id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "friendId",
@@ -45,7 +45,7 @@ export class RemoveFriendHandler {
       ])
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -54,7 +54,7 @@ export class RemoveFriendHandler {
       }
       if (!friend) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Friend not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
