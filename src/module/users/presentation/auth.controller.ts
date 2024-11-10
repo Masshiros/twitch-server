@@ -137,14 +137,14 @@ export class AuthController {
     summary: "Resend confirmation email",
     description: "Resends the confirmation email to the user",
     type: null,
+    auth: true,
   })
   @ResponseMessage(SuccessMessages.auth.RESEND_CONFIRM_EMAIL)
   @Public()
   @Post("/resend-confirm-email")
-  async resendConfirmEmail() {
+  async resendConfirmEmail(@CurrentUser() user: UserAggregate) {
     const command = new ResendVerifyEmailCommand({
-      // TODO: implement current user - auth guard later
-      id: "be37bb0c-ed3c-46c8-9cec-63cff64c7d70",
+      id: user.id,
     })
 
     await this.authService.resendVerifyEmail(command)
