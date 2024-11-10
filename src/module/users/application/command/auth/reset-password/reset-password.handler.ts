@@ -83,7 +83,7 @@ export class ResetPasswordCommandHandler {
       const user = await this.userRepository.findById(sub)
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

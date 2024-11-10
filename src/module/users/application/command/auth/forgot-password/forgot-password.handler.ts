@@ -37,7 +37,7 @@ export class ForgotPasswordCommandHandler {
       const user = await this.userRepository.findByEmailOrPhone(emailOrPhone)
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

@@ -19,7 +19,7 @@ export class LogoutFromOneDeviceCommandHandler {
       if (!userId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "User id is required",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
           },
@@ -28,7 +28,7 @@ export class LogoutFromOneDeviceCommandHandler {
       if (!deviceId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Device id is required",
+          message: "Device id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
           },
@@ -47,7 +47,7 @@ export class LogoutFromOneDeviceCommandHandler {
       const device = await this.userRepository.getDevice(deviceId)
       if (!device) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Device not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

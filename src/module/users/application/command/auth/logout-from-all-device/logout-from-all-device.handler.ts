@@ -19,7 +19,7 @@ export class LogoutFromAllDeviceCommandHandler {
       if (!userId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "User id is required",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
           },

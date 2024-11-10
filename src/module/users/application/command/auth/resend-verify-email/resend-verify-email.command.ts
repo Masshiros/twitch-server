@@ -1,10 +1,10 @@
 export type ResendVerifyEmailCommandParams = {
-  id: string
+  email: string
 }
 export class ResendVerifyEmailCommand {
-  id: string
+  email: string
 
   constructor(params: ResendVerifyEmailCommandParams) {
-    this.id = params.id
+    this.email = params.email
   }
 }

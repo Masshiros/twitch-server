@@ -1,8 +1,9 @@
 import { Body, Controller, Param, Patch, Post, Response } from "@nestjs/common"
-import { ApiTags } from "@nestjs/swagger"
+import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
+import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { DecodedTokenPayload } from "libs/decorator/decoded_token_payload.decorator"
@@ -27,6 +28,7 @@ import { ConfirmEmailRequestDto } from "./http/dto/request/auth/confirm-email.re
 import { ForgotPasswordRequestDto } from "./http/dto/request/auth/forgot-password.request.dto"
 import { LogoutFromOneDeviceRequestDto } from "./http/dto/request/auth/logout-from-one-device.request.dto"
 import { RefreshTokenRequestDto } from "./http/dto/request/auth/refresh-token.request.dto"
+import { ResendConfirmEmailRequestDto } from "./http/dto/request/auth/resend-confirm-email.request.dto"
 import { ResetPasswordRequestDto } from "./http/dto/request/auth/reset-password.request.dto"
 import { SigninRequestDto } from "./http/dto/request/auth/signin.request.dto"
 import { SignupWithEmailRequestDto } from "./http/dto/request/auth/signup-with-email.request.dto"
@@ -44,7 +46,8 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Sign up with email",
     description: "Creates a new user with email and password",
-    type: null,
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.registerWithEmail.badRequest,
   })
   @ResponseMessage(SuccessMessages.auth.SIGNUP_EMAIL)
   @Public()
@@ -58,7 +61,8 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Sign up with phone",
     description: "Creates a new user with phone and password",
-    type: null,
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.registerWithPhone.badRequest,
   })
   @ResponseMessage(SuccessMessages.auth.SIGNUP_PHONE)
   @Public()
@@ -73,6 +77,8 @@ export class AuthController {
     summary: "Sign in",
     description: "Authenticates the user and returns a JWT token",
     type: SigninResponseDto,
+    listBadRequestErrorMessages: SwaggerErrorMessages.auth.login.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.auth.login.notFound,
   })
   @ResponseMessage(SuccessMessages.auth.SIGNIN)
   @Public()
@@ -105,6 +111,8 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Toggle 2FA",
     description: "Toggles Two-Factor Authentication for the user",
+    listBadRequestErrorMessages: SwaggerErrorMessages.auth.toggle2FA.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.auth.toggle2FA.notFound,
     type: null,
     auth: true,
   })
@@ -120,6 +128,9 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Confirm email",
     description: "Confirms the user's email address",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.confirmEmail.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.auth.confirmEmail.notFound,
     type: ConfirmEmailResponseDto,
   })
   @ResponseMessage(SuccessMessages.auth.CONFIRM_EMAIL)
@@ -136,15 +147,17 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Resend confirmation email",
     description: "Resends the confirmation email to the user",
-    type: null,
-    auth: true,
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.resendConfirmEmail.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.auth.resendConfirmEmail.notFound,
   })
   @ResponseMessage(SuccessMessages.auth.RESEND_CONFIRM_EMAIL)
   @Public()
   @Post("/resend-confirm-email")
-  async resendConfirmEmail(@CurrentUser() user: UserAggregate) {
+  async resendConfirmEmail(@Body() data: ResendConfirmEmailRequestDto) {
     const command = new ResendVerifyEmailCommand({
-      id: user.id,
+      email: data.email,
     })
 
     await this.authService.resendVerifyEmail(command)
@@ -153,6 +166,10 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Forgot password",
     description: "Initiates the forgot password process",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.forgotPassword.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.auth.forgotPassword.notFound,
     type: ForgotPasswordRequestDto,
   })
   @ResponseMessage(SuccessMessages.auth.FORGOT_PASSWORD)
@@ -167,6 +184,9 @@ export class AuthController {
     summary: "Reset password",
     description: "Reset password when user forgot",
     type: ResetPasswordRequestDto,
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.resetPassword.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.auth.resetPassword.notFound,
     params: [
       {
         name: "token",
@@ -189,6 +209,10 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Logout from all device",
     description: "Logout from all device",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.logoutFromAllDevice.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.auth.logoutFromAllDevice.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.auth.LOGOUT_FROM_ALL_DEVICE)
@@ -200,6 +224,10 @@ export class AuthController {
   @ApiOperationDecorator({
     summary: "Logout from current logged in device",
     description: "Logout from this device which user login",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.logoutFromOneDevice.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.auth.logoutFromOneDevice.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.auth.LOGOUT)
@@ -219,6 +247,10 @@ export class AuthController {
     summary: "Logout from specific device",
     description: "Logout from the device that user choose",
     type: LogoutFromOneDeviceRequestDto,
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.logoutFromOneDevice.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.auth.logoutFromOneDevice.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.auth.LOGOUT)

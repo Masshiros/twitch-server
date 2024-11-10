@@ -18,6 +18,7 @@ import { plainToInstance } from "class-transformer"
 import { Request as ExpressRequest, Response as ExpressResponse } from "express"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
+import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
@@ -71,6 +72,9 @@ export class UserController {
     type: null,
     summary: "Delete a user",
     description: "Delete a user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.deleteUser.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.deleteUser.notFound,
     auth: true,
   })
   @Permission([Permissions.Users.Delete])
@@ -84,7 +88,8 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Update user bio",
     description: "Updates the bio and display name of the user",
-    type: null,
+    listBadRequestErrorMessages: SwaggerErrorMessages.user.updateBio.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.updateBio.notFound,
     auth: true,
   })
   @Permission([Permissions.Users.Update])
@@ -103,7 +108,10 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Update username",
     description: "Updates the username of the user",
-    type: null,
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.updateUsername.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.updateUsername.notFound,
     auth: true,
   })
   @Permission([Permissions.Users.Update])
@@ -122,6 +130,10 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Add profile picture",
     description: "Add profile picture of the user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.updateProfilePicture.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.updateProfilePicture.notFound,
     type: null,
     auth: true,
     fileFieldName: "picture",

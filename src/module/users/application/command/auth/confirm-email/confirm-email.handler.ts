@@ -34,7 +34,7 @@ export class ConfirmEmailCommandHandler {
       const user = await this.userRepository.findByUsername(username)
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

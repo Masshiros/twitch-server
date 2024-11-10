@@ -20,13 +20,13 @@ export class ResendVerifyEmailCommandHandler {
     private readonly emailService: NodemailerService,
   ) {}
   async execute(command: ResendVerifyEmailCommand): Promise<void> {
-    const { id } = command
+    const { email } = command
 
     // verify current user
-    const user = await this.userRepository.findById(id)
+    const user = await this.userRepository.findByEmailOrPhone(email)
     if (!user) {
       throw new CommandError({
-        code: CommandErrorCode.BAD_REQUEST,
+        code: CommandErrorCode.NOT_FOUND,
         message: "User not found",
         info: {
           errorCode: CommandErrorDetailCode.USER_NOT_FOUND,

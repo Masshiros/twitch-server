@@ -48,7 +48,7 @@ export class SignupWithEmailCommandHandler
       if (await this.userRepository.findByUsername(name)) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Username is unavailable",
+          message: "Username already exist",
           info: {
             errorCode: CommandErrorDetailCode.USERNAME_EXIST,
           },
