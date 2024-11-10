@@ -11,16 +11,67 @@ export abstract class IGroupRepository {
   findGroupById: (groupId: string) => Promise<Group | null>
   updateGroup: (group: Group) => Promise<void>
   deleteGroup: (group: Group) => Promise<void>
+  getAllUserGroups: (
+    userId: string,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ) => Promise<Group[]>
+
   // group -posts
-  addPost: (post: GroupPost) => Promise<void>
+  addPost: (
+    post: GroupPost,
+    taggedUserIds?: string[] | null,
+    taggedGroup?: Group[] | null,
+  ) => Promise<void>
   findPostById: (postId: string) => Promise<GroupPost | null>
-  updatePost: (post: GroupPost) => Promise<void>
+  updatePost: (
+    post: GroupPost,
+    taggedUserIds?: string[] | null,
+    taggedGroup?: Group[] | null,
+  ) => Promise<void>
   deletePost: (post: GroupPost) => Promise<void>
+  getGroupPosts: (
+    group: Group,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ) => Promise<GroupPost[]>
   // group request member
   addRequest: (request: MemberRequest) => Promise<void>
   findRequestById: (requestId: string) => Promise<MemberRequest | null>
   updateRequest: (request: MemberRequest) => Promise<void>
   deleteRequest: (request: MemberRequest) => Promise<void>
+  getGroupMemberRequest: (
+    group: Group,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ) => Promise<MemberRequest[]>
   // group member
   addMember: (member: GroupMember) => Promise<void>
   findMemberById: (
@@ -29,6 +80,20 @@ export abstract class IGroupRepository {
   ) => Promise<GroupMember | null>
   updateMember: (member: GroupMember) => Promise<void>
   deleteMember: (member: GroupMember) => Promise<void>
+  getGroupMembers: (
+    group: Group,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ) => Promise<GroupMember[]>
   // group invite link
   addInviteLink: (inviteLink: GroupInviteLink) => Promise<void>
   findInviteLinkById: (linkId: string) => Promise<GroupInviteLink | null>
@@ -38,4 +103,18 @@ export abstract class IGroupRepository {
   findRuleById: (ruleId: string) => Promise<GroupRule | null>
   updateRule: (rule: GroupRule) => Promise<void>
   deleteRule: (rule: GroupRule) => Promise<void>
+  getGroupRules: (
+    group: Group,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ) => Promise<GroupRule[]>
 }

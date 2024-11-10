@@ -17,6 +17,7 @@ export class PostMapper {
       totalViewCount: prismaPost.totalViewCount,
       createdAt: prismaPost.createdAt,
       updatedAt: prismaPost.updatedAt,
+      deletedAt: prismaPost.deletedAt,
     })
   }
 

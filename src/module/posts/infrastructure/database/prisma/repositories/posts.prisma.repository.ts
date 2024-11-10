@@ -214,7 +214,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
       if (!posts) {
-        return null
+        return []
       }
       const ids = posts.map((post) => post.id)
       const queryPost = await this.prismaService.post.findMany({
@@ -222,13 +222,13 @@ export class PostsRepository implements IPostsRepository {
         orderBy: { [orderBy]: order },
       })
       if (!queryPost) {
-        return null
+        return []
       }
       const result = queryPost.map((e) => {
         const post = PostMapper.toDomain(e)
         return post
       })
-      return result ?? null
+      return result ?? []
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)
