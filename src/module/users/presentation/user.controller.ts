@@ -179,6 +179,8 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Get user by ID",
     description: "Fetches a user by the given ID",
+    listBadRequestErrorMessages: SwaggerErrorMessages.user.getUser.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.getUser.notFound,
     type: GetUserResponseDto,
   })
   @ResponseMessage(SuccessMessages.user.GET_ONE_USER)
@@ -217,6 +219,7 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Get all users",
     description: "Fetches a paginated list of users with optional filters",
+
     type: GetUserResponseDto,
   })
   @ResponseMessage(SuccessMessages.user.GET_ALL_USERS)
@@ -258,6 +261,10 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Toggle activate user",
     description: "Activate or deactivate user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.toggleActivate.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.toggleActivate.notFound,
     type: ToggleActivateRequestDto,
   })
   @Permission([Permissions.Users.Create])
@@ -319,6 +326,10 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Assign roles to user",
     description: "Assign roles to user in admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.assignRoleToUser.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.assignRoleToUser.notFound,
     auth: true,
   })
   // @Permission([])
@@ -336,6 +347,10 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Assign permissions to user",
     description: "Assign permissions to user in admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.assignPermissionToRole.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.assignPermissionToRole.notFound,
     auth: true,
   })
   // @Permission([])
@@ -378,6 +393,9 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Get user's role",
     description: "Get all roles of specific user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.getUserRole.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.getUserRole.notFound,
     auth: true,
   })
   // @Permission([])
@@ -412,6 +430,10 @@ export class UserController {
   @ApiOperationDecorator({
     summary: "Get user's permission",
     description: "Get all permissions of specific user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.getUserPermission.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.getUserPermission.notFound,
     auth: true,
   })
   // @Permission([])

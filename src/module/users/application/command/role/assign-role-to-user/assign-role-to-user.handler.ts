@@ -19,7 +19,7 @@ export class AssignRoleToUserHandler {
       if (!userId || userId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "User Id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -28,7 +28,7 @@ export class AssignRoleToUserHandler {
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "User not found",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
@@ -42,7 +42,7 @@ export class AssignRoleToUserHandler {
 
         if (!role) {
           throw new CommandError({
-            code: CommandErrorCode.BAD_REQUEST,
+            code: CommandErrorCode.NOT_FOUND,
             message: "Role not found",
             info: {
               errorCode: CommandErrorDetailCode.NOT_FOUND,

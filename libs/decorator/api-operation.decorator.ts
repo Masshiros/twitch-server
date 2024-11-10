@@ -7,6 +7,7 @@ import {
   ApiConsumes,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -21,6 +22,8 @@ interface ApiOperationDecoratorOptions {
   description: string
   params?: { name: string; description: string; example?: any }[]
   queries?: { name: string; description: string; example?: any }[]
+  listBadRequestErrorMessages?: string[]
+  listNotFoundErrorMessages?: string[]
   auth?: boolean
   fileFieldName?: string
   isArrayOfFile?: boolean
@@ -32,6 +35,8 @@ export function ApiOperationDecorator({
   params,
   queries,
   auth = false,
+  listBadRequestErrorMessages,
+  listNotFoundErrorMessages,
   fileFieldName,
 }: ApiOperationDecoratorOptions) {
   const decorators = [
@@ -42,7 +47,30 @@ export function ApiOperationDecorator({
     }),
     ApiUnauthorizedResponse({ description: "Token is invalid" }),
     ApiForbiddenResponse({ description: "Do not have permissions" }),
-    ApiBadRequestResponse({ description: "Invalid data" }),
+    ApiBadRequestResponse({
+      description: "Domain error",
+      schema: {
+        type: "object",
+        properties: {
+          message: {
+            type: "string",
+            example: listBadRequestErrorMessages,
+          },
+        },
+      },
+    }),
+    ApiNotFoundResponse({
+      description: "Domain not found data",
+      schema: {
+        type: "object",
+        properties: {
+          message: {
+            type: "string",
+            example: listNotFoundErrorMessages,
+          },
+        },
+      },
+    }),
     ApiUnprocessableEntityResponse({ description: "Invalid data" }),
     ApiInternalServerErrorResponse({
       description: "Internal server error, please try later",

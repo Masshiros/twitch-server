@@ -19,7 +19,7 @@ export class AssignPermissionToRoleHandler {
       if (!roleId || roleId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Role id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -28,7 +28,7 @@ export class AssignPermissionToRoleHandler {
       const role = await this.userRepository.getRoleById(roleId)
       if (!role) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Role not found",
           info: {
             errorCode: CommandErrorDetailCode.NOT_FOUND,
@@ -43,7 +43,7 @@ export class AssignPermissionToRoleHandler {
         const permission = await this.userRepository.getPermissionById(e)
         if (!permission) {
           throw new CommandError({
-            code: CommandErrorCode.BAD_REQUEST,
+            code: CommandErrorCode.NOT_FOUND,
             message: "Permission not found",
             info: {
               errorCode: CommandErrorDetailCode.NOT_FOUND,
