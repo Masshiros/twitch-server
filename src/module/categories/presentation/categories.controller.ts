@@ -11,6 +11,7 @@ import {
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
+import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
@@ -68,6 +69,10 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Get category",
     description: "Get category by id",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.category.getCategoryById.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.category.getCategoryById.notFound,
     type: CategoryResponseDto,
   })
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORY_BY_ID)
@@ -83,6 +88,10 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Get category",
     description: "Get category by slug",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.category.getCategoryBySlug.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.category.getCategoryBySlug.notFound,
     type: CategoryResponseDto,
   })
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORY_BY_SLUG)
@@ -98,6 +107,10 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Get categories",
     description: "Get categories by tag",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.category.getCategoriesByTag.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.category.getCategoriesByTag.notFound,
     type: CategoryResponseDto,
   })
   @ResponseMessage(SuccessMessages.categories.GET_CATEGORIES_BY_TAG)
@@ -113,6 +126,8 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Create category",
     description: "Create category",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.category.createCategory.badRequest,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.categories.CREATE_CATEGORY)
@@ -125,6 +140,10 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Delete category",
     description: "Delete category",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.category.deleteCategory.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.category.deleteCategory.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.categories.DELETE_CATEGORY)
@@ -137,6 +156,10 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Update category",
     description: "Update category",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.category.updateCategory.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.category.updateCategory.notFound,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.categories.UPDATE_CATEGORY)
@@ -179,6 +202,8 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Delete tag",
     description: "Delete tag",
+    listBadRequestErrorMessages: SwaggerErrorMessages.tag.deleteTag.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.tag.deleteTag.badRequest,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.tags.DELETE_TAG)
@@ -191,6 +216,8 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Update tag",
     description: "Update tag",
+    listBadRequestErrorMessages: SwaggerErrorMessages.tag.updateTag.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.tag.updateTag.badRequest,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.tags.UPDATE_TAG)
@@ -203,6 +230,10 @@ export class CategoriesController {
   @ApiOperationDecorator({
     summary: "Assign tags to category",
     description: "Assign tags to category",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.tag.assignTagsToCategory.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.tag.assignTagsToCategory.badRequest,
     auth: true,
   })
   @ResponseMessage(SuccessMessages.tags.ASSIGN_TAGS_TO_CATEGORY)

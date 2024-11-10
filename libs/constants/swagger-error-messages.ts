@@ -126,4 +126,46 @@ export const SwaggerErrorMessages = {
       notFound: ["User not found"],
     },
   },
+  category: {
+    getCategoryById: {
+      badRequest: ["Id can not be empty"],
+      notFound: ["Category not found"],
+    },
+    getCategoryBySlug: {
+      badRequest: ["Slug can not be empty"],
+      notFound: ["Category not found"],
+    },
+    getCategoriesByTag: {
+      badRequest: ["Data from client can not be empty"],
+      notFound: ["Tag not found"],
+    },
+    createCategory: {
+      badRequest: ["Category name can not be empty", "Image can not be empty"],
+    },
+    deleteCategory: {
+      badRequest: ["Id can not be empty"],
+      notFound: ["Category not found"],
+    },
+    updateCategory: {
+      badRequest: ["Id can not be empty"],
+      notFound: ["Category not found"],
+    },
+  },
+  tag: {
+    createTag: {
+      badRequest: ["Tag name can not be empty"],
+    },
+    deleteTag: {
+      badRequest: ["Tag id can not be empty"],
+      notFound: ["Tag not found"],
+    },
+    updateTag: {
+      badRequest: ["Tag id can not be empty"],
+      notFound: ["Tag not found"],
+    },
+    assignTagsToCategory: {
+      badRequest: ["Category id can not be empty"],
+      notFound: ["Category not found", "Tag with id: <tag_id> not found"],
+    },
+  },
 }

@@ -18,7 +18,7 @@ export class AssignTagsToCategoryHandler {
       if (!categoryId) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Id can not be empty",
+          message: "Category id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
           },
@@ -27,7 +27,7 @@ export class AssignTagsToCategoryHandler {
       const category = await this.categoryRepository.getCategoryById(categoryId)
       if (!category) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Category not found",
           info: {
             errorCode: CommandErrorDetailCode.NOT_FOUND,
@@ -40,7 +40,7 @@ export class AssignTagsToCategoryHandler {
 
           if (!tag) {
             throw new CommandError({
-              code: CommandErrorCode.BAD_REQUEST,
+              code: CommandErrorCode.NOT_FOUND,
               message: `Tag with id: ${e} not found`,
               info: {
                 errorCode: CommandErrorDetailCode.NOT_FOUND,

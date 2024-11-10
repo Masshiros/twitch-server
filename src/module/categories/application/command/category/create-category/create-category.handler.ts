@@ -23,7 +23,7 @@ export class CreateCategoryHandler {
       if (!name || name.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Category name can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -32,7 +32,7 @@ export class CreateCategoryHandler {
       if (!image || image.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Image can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.ID_CAN_NOT_BE_EMPTY,
           },

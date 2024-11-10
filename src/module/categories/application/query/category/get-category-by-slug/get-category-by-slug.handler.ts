@@ -18,7 +18,7 @@ export class GetCategoryBySlugHandler {
       if (!slug) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Slug can not be empty",
           info: {
             errorCode: QueryErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },

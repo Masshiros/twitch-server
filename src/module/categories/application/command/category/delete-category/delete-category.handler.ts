@@ -31,7 +31,7 @@ export class DeleteCategoryHandler {
       const category = await this.categoryRepository.getCategoryById(categoryId)
       if (!category) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
+          code: CommandErrorCode.NOT_FOUND,
           message: "Category not found",
           info: {
             errorCode: CommandErrorDetailCode.NOT_FOUND,

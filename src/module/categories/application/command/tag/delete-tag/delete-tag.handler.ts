@@ -17,8 +17,8 @@ export class DeleteTagHandler {
     try {
       if (!tagId || tagId.length === 0) {
         throw new CommandError({
-          code: CommandErrorCode.NOT_FOUND,
-          message: "Data from client can not be empty",
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Tag id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },

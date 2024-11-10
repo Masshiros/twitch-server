@@ -30,7 +30,7 @@ export class GetCategoriesByTagHandler {
       const tag = await this.categoriesRepository.getTagById(tagId)
       if (!tag) {
         throw new QueryError({
-          code: QueryErrorCode.BAD_REQUEST,
+          code: QueryErrorCode.NOT_FOUND,
           message: "Tag not found",
         })
       }
