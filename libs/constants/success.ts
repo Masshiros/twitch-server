@@ -81,4 +81,7 @@ export const SuccessMessages = {
     SHARE_POST: "Share post successfully",
     SEARCH_POST: "Search post successfully",
   },
+  groups: {
+    CREATE_GROUP: "Create new group successfully",
+  },
 }

@@ -339,4 +339,16 @@ export const SwaggerErrorMessages = {
       badRequest: ["Keyword can not be empty"],
     },
   },
+  groups: {
+    createGroup: {
+      badRequest: [
+        "Group name can not be empty",
+        "Group visibility can not be empty",
+        "OwnerId can not be empty",
+        "Cannot create group",
+        "Cannot create post",
+      ],
+      notFound: ["Owner not found", "Friend not found"],
+    },
+  },
 }

@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common"
 import { Prisma } from "@prisma/client"
 import {
   InfrastructureError,
@@ -21,6 +22,7 @@ import { GroupPostMapper } from "../mapper/group-post.prisma.mapper"
 import { GroupRuleMapper } from "../mapper/group-rule.mapper"
 import { GroupMapper } from "../mapper/group.prisma.mapper"
 
+@Injectable()
 export class GroupPrismaRepository implements IGroupRepository {
   constructor(private readonly prismaService: PrismaService) {}
   async addGroup(group: Group): Promise<void> {

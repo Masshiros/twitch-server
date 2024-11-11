@@ -18,7 +18,7 @@ export class CreateGroupCommand {
     this.name = params.name
     this.privacy = params.privacy
     this.visibility = params.visibility ?? EGroupVisibility.PUBLIC
-    this.friendIds = params.friendIds
+    this.friendIds = params.friendIds ?? []
     this.ownerId = params.ownerId
   }
 }

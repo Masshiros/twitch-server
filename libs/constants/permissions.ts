@@ -13,6 +13,7 @@ export class Permissions {
   public static Reactions = createPermissions("Reactions")
   public static Friends = createPermissions("Friends")
   public static FriendRequests = createPermissions("FriendRequests")
+  public static Groups = createPermissions("Groups")
 }
 
 function createPermissions(resource: string) {

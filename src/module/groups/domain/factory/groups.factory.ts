@@ -55,8 +55,8 @@ interface GroupInvitationCreationsProps {
   groupId: string
   invitedUserId: string
   inviterId: string
-  status: EInvitationStatus
-  expiredAt: Date
+  status?: EInvitationStatus
+  expiredAt?: Date
 }
 export class GroupFactory {
   static createGroupPost(props: GroupPostCreationsProps): GroupPost {
@@ -121,13 +121,15 @@ export class GroupFactory {
   static createGroupInvitation(
     props: GroupInvitationCreationsProps,
   ): GroupInvitation {
+    const createdAt = new Date()
+    const expiredAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000)
     return new GroupInvitation({
       groupId: props.groupId,
       invitedUserId: props.invitedUserId,
       inviterId: props.inviterId,
       status: props.status,
-      expiredAt: props.expiredAt,
-      createdAt: new Date(),
+      createdAt: createdAt,
+      expiredAt: expiredAt,
     })
   }
 }

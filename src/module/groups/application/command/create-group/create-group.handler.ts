@@ -81,6 +81,30 @@ export class CreateGroupHandler {
         await Promise.all(
           friendIds.map(async (f) => {
             const friend = await this.userRepository.findById(f)
+            if (!friend) {
+              throw new CommandError({
+                code: CommandErrorCode.NOT_FOUND,
+                message: "Friend not found",
+                info: {
+                  errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
+                },
+              })
+            }
+            const invitation = await GroupFactory.createGroupInvitation({
+              groupId: group.id,
+              invitedUserId: friend.id,
+              inviterId: owner.id,
+            })
+            if (!invitation) {
+              throw new CommandError({
+                code: CommandErrorCode.BAD_REQUEST,
+                message: "Cannot create post",
+                info: {
+                  errorCode: CommandErrorDetailCode.SOMETHING_WRONG_HAPPEN,
+                },
+              })
+            }
+            await this.groupRepository.addInvitation(invitation)
           }),
         )
       }
