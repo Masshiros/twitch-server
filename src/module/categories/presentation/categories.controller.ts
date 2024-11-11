@@ -7,7 +7,10 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common"
+import { FileInterceptor } from "@nestjs/platform-express"
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
@@ -16,6 +19,7 @@ import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
+import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
 import { CategoriesService } from "../application/categories.service"
 import { CreateCategoryCommand } from "../application/command/category/create-category/create-category.command"
 import { DeleteCategoryCommand } from "../application/command/category/delete-category/delete-category.command"
@@ -129,12 +133,17 @@ export class CategoriesController {
     listBadRequestErrorMessages:
       SwaggerErrorMessages.category.createCategory.badRequest,
     auth: true,
+    fileFieldName: "image",
   })
   @ResponseMessage(SuccessMessages.categories.CREATE_CATEGORY)
   @Permission([Permissions.Categories.Create])
+  @UseInterceptors(FileInterceptor("image"))
   @Post("")
-  async createCategory(@Body() body: CreateCategoryRequestDto) {
-    const command = new CreateCategoryCommand(body)
+  async createCategory(
+    @Body() body: CreateCategoryRequestDto,
+    @UploadedFile(new FileValidationPipe()) image: Express.Multer.File,
+  ) {
+    const command = new CreateCategoryCommand({ ...body, image })
     await this.service.createCategory(command)
   }
   @ApiOperationDecorator({

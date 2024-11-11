@@ -1,4 +1,5 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { Folder } from "libs/constants/folder"
 import {
   CommandError,
   CommandErrorCode,
@@ -9,6 +10,8 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { CategoriesFactory } from "src/module/categories/domain/factory/categories.factory"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { CategoriesRedisRepository } from "src/module/categories/infrastructure/database/redis/categories.redis.repository"
+import { ImageService } from "src/module/image/application/image.service"
+import { EImage } from "src/module/image/domain/enum/image.enum"
 import { CreateCategoryCommand } from "./create-category.command"
 
 @CommandHandler(CreateCategoryCommand)
@@ -16,6 +19,7 @@ export class CreateCategoryHandler {
   constructor(
     private readonly categoryRepository: ICategoriesRepository,
     private readonly categoryCacheRepository: CategoriesRedisRepository,
+    private readonly imageService: ImageService,
   ) {}
   async execute(command: CreateCategoryCommand): Promise<void> {
     const { name, image, applicableTo } = command
@@ -29,7 +33,7 @@ export class CreateCategoryHandler {
           },
         })
       }
-      if (!image || image.length === 0) {
+      if (!image) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message: "Image can not be empty",
@@ -38,12 +42,25 @@ export class CreateCategoryHandler {
           },
         })
       }
-
       const category = CategoriesFactory.createCategory({
         name,
-        image,
+
         applicableTo,
       })
+      // handle image
+      await this.imageService.uploadImage(
+        image,
+        Folder.image.category,
+        category.id,
+        EImage.CATEGORY,
+      )
+      const cateImage = await this.imageService.getImageByApplicableId(
+        category.id,
+      )
+      if (cateImage.length > 0) {
+        category.image = cateImage[0].url ?? ""
+      }
+
       await Promise.all([
         this.categoryRepository.addCategory(category),
         this.categoryCacheRepository.invalidateCache(),

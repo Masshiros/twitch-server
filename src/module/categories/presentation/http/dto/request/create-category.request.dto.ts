@@ -9,10 +9,11 @@ export class CreateCategoryRequestDto {
   name: string
 
   @ApiProperty({
-    description: "Image URL for the category",
-    example: "https://example.com/image.png",
+    description: "Image to upload",
+    type: "string",
+    format: "binary",
   })
-  image: string
+  image: Express.Multer.File
 
   @ApiProperty({
     description: "The applicable category type",

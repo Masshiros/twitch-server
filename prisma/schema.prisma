@@ -183,6 +183,7 @@ model RolePermission {
 enum EImage{
   USER
   POST
+  CATEGORY
 }
 model Image{
   id             String @id @default(uuid())
