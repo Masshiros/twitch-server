@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common"
 import { CqrsModule } from "@nestjs/cqrs"
+import { ImageModule } from "src/module/image/application/image.module"
 import { CategoriesFactory } from "../domain/factory/categories.factory"
 import { CategoriesDatabaseModule } from "../infrastructure/database/categories.database.module"
 import { CategoriesController } from "../presentation/categories.controller"
@@ -41,6 +42,11 @@ const queryHandlers = [
     ...commandHandlers,
     ...queryHandlers,
   ],
-  imports: [CqrsModule, CategoriesFactory, CategoriesDatabaseModule],
+  imports: [
+    CqrsModule,
+    CategoriesFactory,
+    CategoriesDatabaseModule,
+    ImageModule,
+  ],
 })
 export class CategoriesModule {}

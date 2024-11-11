@@ -7,6 +7,7 @@ import { Roles } from "libs/constants/roles"
 import { TokenPayload } from "src/common/interface"
 import NodemailerService from "src/integration/email/nodemailer/nodemailer.service"
 import { Role } from "src/module/users/domain/entity/roles.entity"
+import { EUserStatus } from "src/module/users/domain/enum/user-status.enum"
 import { EmailTemplate } from "src/module/users/domain/value-object/email-template.vo"
 import {
   CommandError,
@@ -117,7 +118,7 @@ export class SignupWithEmailCommandHandler
         emailVerifyToken: otp,
         roles: [userRole],
       })
-
+      user.status = EUserStatus.UNVERIFIED
       // send email
       const template = new EmailTemplate(
         emailConfig.confirmEmail.subject,

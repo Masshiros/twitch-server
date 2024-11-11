@@ -33,7 +33,7 @@ export class UserMapper {
   static toPersistence(domainUser: UserAggregate): PrismaUser {
     return {
       id: domainUser.id,
-
+      status: domainUser.status,
       name: domainUser.name,
       displayName: domainUser.displayName,
       slug: domainUser.slug,

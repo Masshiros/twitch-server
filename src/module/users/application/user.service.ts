@@ -1,7 +1,5 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
-import { ConfirmEmailCommand } from "./command/auth/confirm-email/confirm-email.command"
-import { ToggleTwoFaCommand } from "./command/auth/toggle-two-fa/toggle-two-fa.command"
 import { AssignPermissionToRoleCommand } from "./command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "./command/user/add-profile-picture/add-profile-picture.command"

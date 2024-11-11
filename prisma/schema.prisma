@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 // user
+enum EUserStatus{
+  VERIFIED
+  UNVERIFIED
+  BANNED
+}
 model User {
   id                    String                   @id @default(uuid())
   name                  String                   @unique
@@ -15,6 +20,7 @@ model User {
   email                 String                   @unique
   password              String
   phoneNumber           String
+  status                EUserStatus              
   dob                   DateTime
   emailVerifyToken      String                   @default("")
   phoneVerifyToken      String                   @default("")

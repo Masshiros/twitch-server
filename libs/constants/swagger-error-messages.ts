@@ -74,6 +74,10 @@ export const SwaggerErrorMessages = {
       badRequest: ["User id can not be empty", "Device id can not be empty"],
       notFound: ["User not found", "Device not found"],
     },
+    forgetUsername: {
+      badRequest: ["Email can not be empty"],
+      notFound: ["User not found"],
+    },
   },
   user: {
     deleteUser: {

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { ConfirmEmailCommand } from "./command/auth/confirm-email/confirm-email.command"
+import { ForgetUsernameCommand } from "./command/auth/forget-username/forget-username.command"
 import { ForgotPasswordCommand } from "./command/auth/forgot-password/forgot-password.command"
 import { LogoutFromAllDeviceCommand } from "./command/auth/logout-from-all-device/logout-from-all-device.command"
 import { LogoutFromOneDeviceCommand } from "./command/auth/logout-from-one-device/logout-from-one-device.command"
@@ -49,6 +50,9 @@ export class AuthService {
     return this.commandBus.execute(command)
   }
   logoutFromOneDevice(command: LogoutFromOneDeviceCommand) {
+    return this.commandBus.execute(command)
+  }
+  forgetUsername(command: ForgetUsernameCommand) {
     return this.commandBus.execute(command)
   }
 }

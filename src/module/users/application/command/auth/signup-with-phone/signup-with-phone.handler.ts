@@ -7,6 +7,7 @@ import {
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { EUserStatus } from "src/module/users/domain/enum/user-status.enum"
 import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { mailRegex, passwordRegex, phoneRegex } from "utils/constants"
@@ -102,6 +103,7 @@ export class SignupWithPhoneCommandHandler
         name,
         dob,
       })
+      user.status = EUserStatus.UNVERIFIED
 
       await this.userRepository.createUser(user)
     } catch (err) {

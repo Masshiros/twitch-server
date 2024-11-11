@@ -12,4 +12,8 @@ export const emailConfig = {
     subject: "Your Email Verification Code",
     body: "Please enter this code to verify your email: {{code}}",
   },
+  forgetUsername: {
+    subject: "Your Username From Twitch",
+    body: "This is your username: {{username}}",
+  },
 }

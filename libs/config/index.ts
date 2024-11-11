@@ -7,6 +7,8 @@ export class EnvironmentVariables {
   @IsOptional()
   APP_PORT?: number
   @IsOptional()
+  FRONTEND_PORT?: number
+  @IsOptional()
   APP_HOST?: string
   @IsNotEmpty()
   HASH_SALT_LENGTH?: number
@@ -73,7 +75,8 @@ export function validate(config: Record<string, unknown>) {
 }
 const config = {
   APP_NAME: process.env.APP_NAME || "twitch-server",
-  APP_PORT: +process.env.APP_PORT || 3000,
+  APP_PORT: +process.env.APP_PORT || 3300,
+  FRONTEND_PORT: +process.env.FRONTEND_PORT || 3000,
   APP_HOST: process.env.APP_HOST || "localhost",
   HASH_SALT_LENGTH: +process.env.HASH_SALT_LENGTH || 10,
   DATABASE_HOST: process.env.DATABASE_HOST,

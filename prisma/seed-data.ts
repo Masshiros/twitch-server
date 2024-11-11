@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { Permissions } from "../libs/constants/permissions"
 import { Roles } from "../libs/constants/roles"
+import { EUserStatus } from "../src/module/users/domain/enum/user-status.enum"
 import { hashPassword } from "../utils/encrypt"
 
 const prisma = new PrismaClient()
@@ -128,6 +129,7 @@ async function main() {
       password: await hashPassword("strongPassword123@@AA"), // Replace with hashed password
       phoneNumber: "0123456789",
       dob: new Date("1980-01-01T00:00:00.000Z"), // ISO8601 format
+      status: EUserStatus.VERIFIED,
     },
   })
   console.log(`Admin user created: ${defaultAdmin.email}`)

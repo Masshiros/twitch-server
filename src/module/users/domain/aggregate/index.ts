@@ -17,6 +17,7 @@ import { type LoginHistory } from "../entity/login-histories.entity"
 import { Permission } from "../entity/permissions.entity"
 import { Role } from "../entity/roles.entity"
 import { type Token } from "../entity/tokens.entity"
+import { EUserStatus } from "../enum/user-status.enum"
 
 interface UserAggregateProps {
   name: string
@@ -35,7 +36,7 @@ interface UserAggregateProps {
   is2FA?: boolean
   view?: number
   bio?: string
-
+  status?: EUserStatus
   lastUsernameChangeAt?: Date
   thumbnail?: string
   devices?: Device[]
@@ -109,6 +110,8 @@ export class UserAggregate extends BaseAggregate {
   @Expose()
   private _bio?: string
 
+  private _status: EUserStatus
+
   @Type(() => Date)
   @IsOptional()
   @Expose()
@@ -140,6 +143,7 @@ export class UserAggregate extends BaseAggregate {
     this._password = props.password ?? ""
     this._phoneNumber = props.phoneNumber ?? ""
     this._dob = props.dob
+    this._status = props.status ?? EUserStatus.UNVERIFIED
     this._emailVerifyToken = props.emailVerifyToken ?? ""
     this._phoneVerifyToken = props.phoneVerifyToken ?? ""
     this._forgotPasswordToken = props.forgotPasswordToken ?? ""
@@ -217,7 +221,12 @@ export class UserAggregate extends BaseAggregate {
   set dob(value: Date) {
     this._dob = value
   }
-
+  get status(): EUserStatus {
+    return this._status
+  }
+  set status(value: EUserStatus) {
+    this._status = value
+  }
   get emailVerifyToken(): string {
     return this._emailVerifyToken
   }

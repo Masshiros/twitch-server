@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from "@nestjs/swagger"
 import { IsBoolean, IsOptional } from "class-validator"
 import { JwtPayload } from "jsonwebtoken"
 import { tokenType } from "libs/constants/enum"
+import { EUserStatus } from "src/module/users/domain/enum/user-status.enum"
 
 export class UserFilters {
   @ApiPropertyOptional({
@@ -30,4 +31,5 @@ export interface TokenPayload extends JwtPayload {
   role?: string[]
   permission?: string[]
   tokenType: tokenType
+  status?: EUserStatus
 }

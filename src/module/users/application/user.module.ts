@@ -10,6 +10,7 @@ import { AuthController } from "../presentation/auth.controller"
 import { UserController } from "../presentation/user.controller"
 import { AuthService } from "./auth.service"
 import { ConfirmEmailCommandHandler } from "./command/auth/confirm-email/confirm-email.handler"
+import { ForgetUsernameHandler } from "./command/auth/forget-username/forget-username.handler"
 import { ForgotPasswordCommandHandler } from "./command/auth/forgot-password/forgot-password.handler"
 import { LogoutFromAllDeviceCommandHandler } from "./command/auth/logout-from-all-device/logout-from-all-device.handler"
 import { LogoutFromOneDeviceCommandHandler } from "./command/auth/logout-from-one-device/logout-from-one-device.handler"
@@ -58,6 +59,7 @@ const commandHandlers = [
   RefreshTokenCommandHandler,
   AssignRoleToUserHandler,
   AssignPermissionToRoleHandler,
+  ForgetUsernameHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,

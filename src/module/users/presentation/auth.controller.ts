@@ -13,6 +13,7 @@ import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { TokenPayload } from "src/common/interface"
 import { AuthService } from "../application/auth.service"
 import { ConfirmEmailCommand } from "../application/command/auth/confirm-email/confirm-email.command"
+import { ForgetUsernameCommand } from "../application/command/auth/forget-username/forget-username.command"
 import { ForgotPasswordCommand } from "../application/command/auth/forgot-password/forgot-password.command"
 import { LogoutFromAllDeviceCommand } from "../application/command/auth/logout-from-all-device/logout-from-all-device.command"
 import { LogoutFromOneDeviceCommand } from "../application/command/auth/logout-from-one-device/logout-from-one-device.command"
@@ -25,6 +26,7 @@ import { SignupWithPhoneCommand } from "../application/command/auth/signup-with-
 import { ToggleTwoFaCommand } from "../application/command/auth/toggle-two-fa/toggle-two-fa.command"
 import { UserAggregate } from "../domain/aggregate"
 import { ConfirmEmailRequestDto } from "./http/dto/request/auth/confirm-email.request.dto"
+import { ForgetUsernameRequestDto } from "./http/dto/request/auth/forget-username.request.dto"
 import { ForgotPasswordRequestDto } from "./http/dto/request/auth/forgot-password.request.dto"
 import { LogoutFromOneDeviceRequestDto } from "./http/dto/request/auth/logout-from-one-device.request.dto"
 import { RefreshTokenRequestDto } from "./http/dto/request/auth/refresh-token.request.dto"
@@ -178,6 +180,21 @@ export class AuthController {
   async forgotPassword(@Body() body: ForgotPasswordRequestDto) {
     const command = new ForgotPasswordCommand(body)
     await this.authService.forgotPassword(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Forget username",
+    description: "Send email of forgot username to user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.auth.forgetUsername.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.auth.forgetUsername.notFound,
+  })
+  @ResponseMessage(SuccessMessages.auth.FORGET_USERNAME)
+  @Public()
+  @Post("/forget-username")
+  async forgetUsername(@Body() body: ForgetUsernameRequestDto) {
+    const command = new ForgetUsernameCommand(body)
+    await this.authService.forgetUsername(command)
   }
 
   @ApiOperationDecorator({

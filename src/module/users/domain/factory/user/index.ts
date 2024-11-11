@@ -7,6 +7,7 @@ import { ExternalLink } from "../../entity/external-links.entity"
 import { LoginHistory } from "../../entity/login-histories.entity"
 import { Role } from "../../entity/roles.entity"
 import { Token } from "../../entity/tokens.entity"
+import { EUserStatus } from "../../enum/user-status.enum"
 
 export type CreateUserAggregateParams = {
   id?: string
@@ -17,6 +18,7 @@ export type CreateUserAggregateParams = {
   password?: string
   phoneNumber?: string
   dob?: Date
+  status?: EUserStatus
   emailVerifyToken?: string
   phoneVerifyToken?: string
   forgotPasswordToken?: string
@@ -50,6 +52,7 @@ export class UserFactory {
         password: (await hashPassword(params.password)) ?? "",
         phoneNumber: params.phoneNumber ?? "",
         dob: params.dob ?? new Date(),
+        status: params.status ?? EUserStatus.UNVERIFIED,
         emailVerifyToken: (await hashToken(params.emailVerifyToken)) ?? "",
         phoneVerifyToken: params.phoneVerifyToken ?? "",
         forgotPasswordToken: params.forgotPasswordToken ?? "",

@@ -13,6 +13,7 @@ import { TokenPayload } from "src/common/interface"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { Device } from "src/module/users/domain/entity/devices.entity"
 import { LoginHistory } from "src/module/users/domain/entity/login-histories.entity"
+import { EUserStatus } from "src/module/users/domain/enum/user-status.enum"
 import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { comparePassword, generateDeviceId } from "utils/encrypt"
@@ -89,16 +90,16 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         })
       }
       // validate user email verify
-      if (userAggregate.emailVerifyToken !== "") {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message:
-            "Your account has not been verified. Please check your gmail to verify your account",
-          info: {
-            errorCode: CommandErrorDetailCode.EMAIL_IS_NOT_VERIFIED,
-          },
-        })
-      }
+      // if (userAggregate.emailVerifyToken !== "") {
+      //   throw new CommandError({
+      //     code: CommandErrorCode.BAD_REQUEST,
+      //     message:
+      //       "Your account has not been verified. Please check your gmail to verify your account",
+      //     info: {
+      //       errorCode: CommandErrorDetailCode.EMAIL_IS_NOT_VERIFIED,
+      //     },
+      //   })
+      // }
       // new device
 
       // generate device Id
@@ -128,6 +129,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         deviceId: device.id,
         role: userRole.map((role) => role.name),
         permission: userPermission.map((e) => e.name),
+        status: userAggregate.status,
       }
       const refreshTokenPayload: TokenPayload = {
         sub: userAggregate.id,
@@ -137,6 +139,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         deviceId: device.id,
         role: userRole.map((role) => role.name),
         permission: userPermission.map((e) => e.name),
+        status: userAggregate.status,
       }
 
       const [accessToken, refreshToken] = await Promise.all([
