@@ -1,9 +1,11 @@
+import { GroupInvitation } from "../entity/group-invitations.entity"
 import { GroupInviteLink } from "../entity/group-invite-links.entity"
 import { GroupMember } from "../entity/group-members.entity"
 import { GroupPost } from "../entity/group-posts.entity"
 import { GroupRule } from "../entity/group-rule.entity"
 import { Group } from "../entity/groups.entity"
 import { MemberRequest } from "../entity/member-requests.entity"
+import { EInvitationStatus } from "../enum/group-invitation-status.enum"
 import { EGroupPostStatus } from "../enum/group-post-status.enum"
 import { EGroupPrivacy } from "../enum/group-privacy.enum"
 import { EGroupRequestStatus } from "../enum/group-request-status.enum"
@@ -20,9 +22,9 @@ interface GroupPostCreationsProps {
 interface GroupCreationsProps {
   ownerId: string
   name: string
-  description: string
+  description?: string
   visibility: EGroupVisibility
-  privacy: EGroupPrivacy
+  privacy?: EGroupPrivacy
 }
 interface GroupInviteLinkCreationsProps {
   groupId: string
@@ -48,6 +50,13 @@ interface GroupRuleCreationsProps {
   groupId: string
   content: string
   title: string
+}
+interface GroupInvitationCreationsProps {
+  groupId: string
+  invitedUserId: string
+  inviterId: string
+  status: EInvitationStatus
+  expiredAt: Date
 }
 export class GroupFactory {
   static createGroupPost(props: GroupPostCreationsProps): GroupPost {
@@ -106,6 +115,19 @@ export class GroupFactory {
       title: props.title,
       groupId: props.groupId,
       content: props.content,
+      createdAt: new Date(),
+    })
+  }
+  static createGroupInvitation(
+    props: GroupInvitationCreationsProps,
+  ): GroupInvitation {
+    return new GroupInvitation({
+      groupId: props.groupId,
+      invitedUserId: props.invitedUserId,
+      inviterId: props.inviterId,
+      status: props.status,
+      expiredAt: props.expiredAt,
+      createdAt: new Date(),
     })
   }
 }

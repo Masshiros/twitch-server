@@ -8,7 +8,6 @@ import { EGroupPrivacy } from "src/module/groups/domain/enum/group-privacy.enum"
 import { EGroupVisibility } from "src/module/groups/domain/enum/group-visibility.enum"
 
 export class GroupMapper {
-  // Convert Prisma Group to Domain GroupAggregate
   static toDomain(prismaGroup: PrismaGroup): Group {
     return new Group({
       id: prismaGroup.id,

@@ -1,3 +1,4 @@
+import { GroupInvitation } from "../entity/group-invitations.entity"
 import { GroupInviteLink } from "../entity/group-invite-links.entity"
 import { GroupMember } from "../entity/group-members.entity"
 import { GroupPost } from "../entity/group-posts.entity"
@@ -117,4 +118,21 @@ export abstract class IGroupRepository {
       order?: "asc" | "desc"
     },
   ) => Promise<GroupRule[]>
+  // invitation
+  addInvitation: (invitation: GroupInvitation) => Promise<void>
+  getInvitationById: (id: string) => Promise<GroupInvitation | null>
+  getGroupInvitation: (
+    group: Group,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ) => Promise<GroupInvitation[]>
 }

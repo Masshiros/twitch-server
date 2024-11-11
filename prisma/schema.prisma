@@ -56,7 +56,9 @@ model User {
   reverseFriends        Friend[]                 @relation("UserFriendsReverse")
   sentFriendRequest     FriendRequest[]          @relation("SentFriendRequests")
   receivedFriendRequest FriendRequest[]          @relation("ReceivedFriendRequests")
-  membershipRequests MemberRequest[]
+  membershipRequests    MemberRequest[]
+  sentInvitations       GroupInvitation[]    @relation("InviterUser")
+  receivedInvitations   GroupInvitation[]    @relation("InvitedUser")
 
 
   @@index([isLive])
@@ -421,7 +423,7 @@ model Group {
   id          String           @id @default(uuid())
   ownerId     String
   name        String
-  description String
+  description String?
   visibility  EGroupVisibility
   privacy     EGroupPrivacy
   createdAt   DateTime         @default(now())
@@ -433,6 +435,7 @@ model Group {
   owner       User             @relation("GroupOwner", fields: [ownerId], references: [id])
   posts       GroupPost[]
   inviteLinks GroupInviteLink[]
+  invitations GroupInvitation[]
 
   @@map("groups")
 }
@@ -511,7 +514,22 @@ model GroupPost {
 
   @@map("groupPosts")
 }
+model GroupInvitation{
+  id          String       @id @default(uuid())
+  groupId     String
+  invitedUserId String
+  inviterId   String
+  status      EInvitationStatus 
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime       @default(now()) @updatedAt
+  deletedAt   DateTime?
+  expiredAt   DateTime?
+  group       Group        @relation(fields: [groupId], references: [id])
+  invitedUser   User           @relation("InvitedUser", fields: [invitedUserId], references: [id])
+  inviter       User           @relation("InviterUser", fields: [inviterId], references: [id])
 
+  @@map("groupInvitations")
+}
 enum ENotification {
   USER
   LIVESTREAM
@@ -573,3 +591,10 @@ enum ESharedType{
   CHAT 
   GROUP
 }
+enum EInvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+

@@ -4,6 +4,7 @@ import {
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
 import { PrismaService } from "prisma/prisma.service"
+import { GroupInvitation } from "src/module/groups/domain/entity/group-invitations.entity"
 import { GroupInviteLink } from "src/module/groups/domain/entity/group-invite-links.entity"
 import { GroupMember } from "src/module/groups/domain/entity/group-members.entity"
 import { GroupPost } from "src/module/groups/domain/entity/group-posts.entity"
@@ -12,6 +13,7 @@ import { Group } from "src/module/groups/domain/entity/groups.entity"
 import { MemberRequest } from "src/module/groups/domain/entity/member-requests.entity"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { handlePrismaError } from "utils/prisma-error"
+import { GroupInvitationMapper } from "../mapper/group-invitation.prisma.mapper"
 import { GroupInviteLinkMapper } from "../mapper/group-invite-link.prisma.mapper"
 import { MemberRequestMapper } from "../mapper/group-member-request.mapper"
 import { GroupMemberMapper } from "../mapper/group-member.prisma.mapper"
@@ -827,7 +829,7 @@ export class GroupPrismaRepository implements IGroupRepository {
       if (!rules) {
         return []
       }
-      const ids = rules.map((post) => post.id)
+      const ids = rules.map((e) => e.id)
       const queryRule = await this.prismaService.groupRule.findMany({
         where: { id: { in: ids } },
         orderBy: { [orderBy]: order },
@@ -838,6 +840,78 @@ export class GroupPrismaRepository implements IGroupRepository {
       const result = queryRule.map((e) => {
         const rule = GroupRuleMapper.toDomain(e)
         return rule
+      })
+      return result ?? []
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async addInvitation(invitation: GroupInvitation): Promise<void> {
+    try {
+      const existData = await this.prismaService.groupInvitation.findUnique({
+        where: { id: invitation.id },
+      })
+      if (existData) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+          message: "Already exist this data",
+        })
+      }
+      await this.prismaService.groupInvitation.create({
+        data: GroupInvitationMapper.toPersistence(invitation),
+      })
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async getInvitationById(id: string): Promise<GroupInvitation | null> {
+    try {
+      const invitation = await this.prismaService.groupInvitation.findUnique({
+        where: { id },
+      })
+      return invitation ? GroupInvitationMapper.toDomain(invitation) : null
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async getGroupInvitation(
+    group: Group,
+    {
+      limit,
+      offset,
+      orderBy,
+      order,
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ): Promise<GroupInvitation[]> {
+    try {
+      const invitations = await this.prismaService.groupInvitation.findMany({
+        where: { deletedAt: null, groupId: group.id },
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
+        select: {
+          id: true,
+        },
+      })
+      if (!invitations) {
+        return []
+      }
+      const ids = invitations.map((e) => e.id)
+      const queryInvitation = await this.prismaService.groupInvitation.findMany(
+        {
+          where: { id: { in: ids } },
+          orderBy: { [orderBy]: order },
+        },
+      )
+      if (!queryInvitation) {
+        return []
+      }
+      const result = queryInvitation.map((e) => {
+        return GroupInvitationMapper.toDomain(e)
       })
       return result ?? []
     } catch (error) {
