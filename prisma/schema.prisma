@@ -190,6 +190,7 @@ enum EImage{
   USER
   POST
   CATEGORY
+  GROUP
 }
 model Image{
   id             String @id @default(uuid())

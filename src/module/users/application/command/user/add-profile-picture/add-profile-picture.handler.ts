@@ -24,7 +24,7 @@ export class AddProfilePictureHandler {
       if (!userId || userId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "User id can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -33,7 +33,7 @@ export class AddProfilePictureHandler {
       if (!picture) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Data from client can not be empty",
+          message: "Picture can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },

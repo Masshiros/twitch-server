@@ -6,10 +6,11 @@ import { PostsDatabaseModule } from "src/module/posts/infrastructure/database/po
 import { UserDatabaseModule } from "src/module/users/infrastructure/database/user.database.module"
 import { GroupDatabaseModule } from "../infrastructure/database/group.database.module"
 import { GroupsController } from "../presentation/groups.controller"
+import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
 import { GroupsService } from "./groups.service"
 
-const commandHandlers = [CreateGroupHandler]
+const commandHandlers = [CreateGroupHandler, AddCoverImageHandler]
 const queryHandlers = []
 @Module({
   controllers: [GroupsController],

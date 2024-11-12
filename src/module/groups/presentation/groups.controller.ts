@@ -1,4 +1,12 @@
-import { Body, Controller, Post } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from "@nestjs/common"
+import { FileInterceptor } from "@nestjs/platform-express"
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
@@ -7,15 +15,19 @@ import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
+import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { AddCoverImageCommand } from "../application/command/add-cover-image/add-cover-image.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
 import { GroupsService } from "../application/groups.service"
+import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 
 @ApiTags("groups")
 @Controller("groups")
 export class GroupsController {
   constructor(private readonly service: GroupsService) {}
+  // post: create group
   @ApiOperationDecorator({
     summary: "Create a group",
     description: "Current logged in user create a new group",
@@ -38,5 +50,33 @@ export class GroupsController {
     })
     // console.log(command)
     await this.service.createGroup(command)
+  }
+  // post: add cover image
+  @ApiOperationDecorator({
+    summary: "Add cover image to a group",
+    description: "Add a cover image to group by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.addCoverImage.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.addCoverImage.notFound,
+    auth: true,
+    fileFieldName: "image",
+  })
+  @Permission([Permissions.Groups.Update])
+  @ResponseMessage(SuccessMessages.groups.ADD_COVER_IMAGE)
+  @UseInterceptors(FileInterceptor("image"))
+  @Post("/:groupId/cover-image")
+  async addCoverImage(
+    @Param("groupId") param: string,
+    @Body() data: AddCoverImageRequestDto,
+    @UploadedFile(new FileValidationPipe()) image: Express.Multer.File,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new AddCoverImageCommand({
+      userId: user.id,
+      image: image,
+      groupId: param,
+    })
+    await this.service.addCoverImage(command)
   }
 }

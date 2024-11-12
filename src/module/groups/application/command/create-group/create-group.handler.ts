@@ -6,6 +6,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { EGroupRole } from "src/module/groups/domain/enum/group-role.enum"
 import { GroupFactory } from "src/module/groups/domain/factory/groups.factory"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
@@ -67,6 +68,12 @@ export class CreateGroupHandler {
         visibility,
         ownerId,
       })
+      const member = GroupFactory.createGroupMember({
+        groupId: group.id,
+        memberId: ownerId,
+        joinedAt: new Date(),
+        role: EGroupRole.ADMIN,
+      })
       if (!group) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
@@ -76,7 +83,25 @@ export class CreateGroupHandler {
           },
         })
       }
+      if (!member) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Cannot create member",
+          info: {
+            errorCode: CommandErrorDetailCode.SOMETHING_WRONG_HAPPEN,
+          },
+        })
+      }
       await this.groupRepository.addGroup(group)
+      const existMember = await this.groupRepository.findMemberById(
+        member.groupId,
+        member.memberId,
+      )
+      if (existMember) {
+        await this.groupRepository.deleteMember(member)
+      }
+      await this.groupRepository.addMember(member)
+
       if (friendIds) {
         await Promise.all(
           friendIds.map(async (f) => {
