@@ -19,6 +19,7 @@ export const SwaggerErrorMessages = {
         "Password can not be empty",
         "Invalid email, email must be in format xxx@yyyy.zzz",
         "Invalid password, it must have at least 8 characters, at least one uppercase letter, one lowercase letter, one number and one special character",
+        "Username can only contain alphanumeric characters (letters and numbers, no spaces) and must be at least 4 characters long",
       ],
     },
     registerWithPhone: {
@@ -373,6 +374,16 @@ export const SwaggerErrorMessages = {
         "You do not have permission to do this action",
       ],
       notFound: ["Group not found", "User not found"],
+    },
+    inviteMembers: {
+      badRequest: [
+        "User id can not be empty",
+        "Group id can not be empty",
+        "List friend ids can not be empty",
+        "You are not a member of this group",
+        "You do not have permission to do this action",
+      ],
+      notFound: ["Group not found", "User not found", "Friend not found"],
     },
   },
 }

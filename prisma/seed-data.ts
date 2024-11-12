@@ -124,7 +124,7 @@ async function main() {
   // 4. Create the default admin user
   const defaultAdmin = await prisma.user.create({
     data: {
-      name: "Admin User",
+      name: "admin1",
       displayName: "Admin",
       slug: "admin",
       email: "nguahoang2003@gmail.com",
@@ -149,6 +149,66 @@ async function main() {
       },
     })
     console.log(`Role '${Roles.Admin}' assigned to user: ${defaultAdmin.email}`)
+  }
+  // 6. Create the default admin user
+  const defaultAdmin2 = await prisma.user.create({
+    data: {
+      name: "admin2",
+      displayName: "Admin 2",
+      slug: "admin-2",
+      email: "phatvu080903@gmail.com",
+      password: await hashPassword("strongPassword123@@AA"), // Replace with hashed password
+      phoneNumber: "0123456789",
+      dob: new Date("1980-01-01T00:00:00.000Z"), // ISO8601 format
+      status: EUserStatus.VERIFIED,
+    },
+  })
+  console.log(`Admin user created: ${defaultAdmin2.email}`)
+
+  // 7. Assign 'Admin' role to the default user
+  const adminRole2 = await prisma.role.findUnique({
+    where: { name: Roles.Admin },
+  })
+
+  if (adminRole2) {
+    await prisma.userRole.create({
+      data: {
+        userId: defaultAdmin2.id,
+        roleId: adminRole2.id,
+      },
+    })
+    console.log(
+      `Role '${Roles.Admin}' assigned to user: ${defaultAdmin2.email}`,
+    )
+  }
+  // 8. Create a default user with 'User' role
+  const defaultUser = await prisma.user.create({
+    data: {
+      name: "user1",
+      displayName: "User",
+      slug: "user",
+      email: "minhthien2340a@gmail.com",
+      password: await hashPassword("regularUserPass123!"),
+      phoneNumber: "0987654321",
+      dob: new Date("1990-01-01T00:00:00.000Z"),
+      status: EUserStatus.VERIFIED,
+    },
+  })
+  console.log(`User created: ${defaultUser.email}`)
+
+  // Assign 'User' role to the default user
+  const userRole = await prisma.role.findUnique({
+    where: { name: Roles.User },
+  })
+
+  if (userRole) {
+    await prisma.userRole.create({
+      data: {
+        userId: defaultUser.id,
+        roleId: userRole.id,
+      },
+    })
+    console.log(`Role '${Roles.User}' assigned to user: ${defaultUser.email}`)
   }
 
   console.log("Seeding completed.")

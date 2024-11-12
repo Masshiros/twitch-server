@@ -45,6 +45,17 @@ export class SignupWithEmailCommandHandler
           },
         })
       }
+      if (!/^[a-zA-Z0-9]{4,}$/.test(name)) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message:
+            "Username can only contain alphanumeric characters (letters and numbers, no spaces) and must be at least 4 characters long",
+          info: {
+            errorCode: CommandErrorDetailCode.INVALID_USER_NAME,
+          },
+        })
+      }
+
       // validate user name exist
       if (await this.userRepository.findByUsername(name)) {
         throw new CommandError({
