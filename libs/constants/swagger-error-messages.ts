@@ -396,5 +396,16 @@ export const SwaggerErrorMessages = {
       ],
       notFound: ["Group not found", "User not found", "Invitation not found"],
     },
+    rejectInvitation: {
+      badRequest: [
+        "User id can not be empty",
+        "Group id can not be empty",
+        "You already accepted the invitation",
+        "You already rejected the invitation",
+        "Your invitation has expired",
+        "Invitation status is not valid for acceptance: <status>",
+      ],
+      notFound: ["Group not found", "User not found", "Invitation not found"],
+    },
   },
 }

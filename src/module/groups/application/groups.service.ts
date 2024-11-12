@@ -5,6 +5,7 @@ import { AddCoverImageCommand } from "./command/add-cover-image/add-cover-image.
 import { AddDescriptionCommand } from "./command/add-description/add-description.command"
 import { CreateGroupCommand } from "./command/create-group/create-group.command"
 import { InviteMembersCommand } from "./command/invite-members/invite-members.command"
+import { RejectInvitationCommand } from "./command/reject-invitation/reject-invitation.command"
 
 @Injectable()
 export class GroupsService {
@@ -25,6 +26,9 @@ export class GroupsService {
     return this.commandBus.execute(command)
   }
   async acceptInvitation(command: AcceptInvitationCommand) {
+    return this.commandBus.execute(command)
+  }
+  async rejectInvitation(command: RejectInvitationCommand) {
     return this.commandBus.execute(command)
   }
 }

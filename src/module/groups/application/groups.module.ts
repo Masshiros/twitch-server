@@ -11,6 +11,7 @@ import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.
 import { AddDescriptionHandler } from "./command/add-description/add-description.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
 import { InviteMembersHandler } from "./command/invite-members/invite-members.handler"
+import { RejectInvitationHandler } from "./command/reject-invitation/reject-imvitation.handler"
 import { GroupsService } from "./groups.service"
 
 const commandHandlers = [
@@ -19,6 +20,7 @@ const commandHandlers = [
   AddDescriptionHandler,
   InviteMembersHandler,
   AcceptInvitationHandler,
+  RejectInvitationHandler,
 ]
 const queryHandlers = []
 @Module({

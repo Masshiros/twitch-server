@@ -22,6 +22,7 @@ import { AddCoverImageCommand } from "../application/command/add-cover-image/add
 import { AddDescriptionCommand } from "../application/command/add-description/add-description.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
 import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
+import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
 import { GroupsService } from "../application/groups.service"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
@@ -157,5 +158,29 @@ export class GroupsController {
       userId: user.id,
     })
     await this.service.acceptInvitation(command)
+  }
+  // POST: Reject invitation
+  @ApiOperationDecorator({
+    summary: "Reject an invitation",
+    description: "Reject an invitation by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.rejectInvitation.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.rejectInvitation.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.REJECT_INVITATION)
+  @Post("/:groupId/reject-invitation")
+  async rejectInvitation(
+    @Param("groupId") param: string,
+
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new RejectInvitationCommand({
+      groupId: param,
+      userId: user.id,
+    })
+    await this.service.rejectInvitation(command)
   }
 }
