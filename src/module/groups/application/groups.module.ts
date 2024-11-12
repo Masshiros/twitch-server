@@ -7,10 +7,15 @@ import { UserDatabaseModule } from "src/module/users/infrastructure/database/use
 import { GroupDatabaseModule } from "../infrastructure/database/group.database.module"
 import { GroupsController } from "../presentation/groups.controller"
 import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.handler"
+import { AddDescriptionHandler } from "./command/add-description/add-description.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
 import { GroupsService } from "./groups.service"
 
-const commandHandlers = [CreateGroupHandler, AddCoverImageHandler]
+const commandHandlers = [
+  CreateGroupHandler,
+  AddCoverImageHandler,
+  AddDescriptionHandler,
+]
 const queryHandlers = []
 @Module({
   controllers: [GroupsController],

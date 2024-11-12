@@ -18,9 +18,11 @@ import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { AddCoverImageCommand } from "../application/command/add-cover-image/add-cover-image.command"
+import { AddDescriptionCommand } from "../application/command/add-description/add-description.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
 import { GroupsService } from "../application/groups.service"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
+import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 
 @ApiTags("groups")
@@ -78,5 +80,30 @@ export class GroupsController {
       groupId: param,
     })
     await this.service.addCoverImage(command)
+  }
+  // post: add description
+  @ApiOperationDecorator({
+    summary: "Add description to a group",
+    description: "Add a description to group by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.addDescription.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.addDescription.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Update])
+  @ResponseMessage(SuccessMessages.groups.ADD_DESCRIPTION)
+  @Post("/:groupId/description")
+  async addDescription(
+    @Param("groupId") param: string,
+    @Body() data: AddDescriptionRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new AddDescriptionCommand({
+      groupId: param,
+      description: data.description,
+      userId: user.id,
+    })
+    await this.service.addDescription(command)
   }
 }

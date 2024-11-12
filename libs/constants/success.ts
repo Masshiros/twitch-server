@@ -85,5 +85,6 @@ export const SuccessMessages = {
   groups: {
     CREATE_GROUP: "Create new group successfully",
     ADD_COVER_IMAGE: "Add group's cover image successfully",
+    ADD_DESCRIPTION: "Add group's description successfully",
   },
 }

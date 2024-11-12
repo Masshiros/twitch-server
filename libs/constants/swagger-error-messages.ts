@@ -364,5 +364,15 @@ export const SwaggerErrorMessages = {
       ],
       notFound: ["Group not found", "User not found"],
     },
+    addDescription: {
+      badRequest: [
+        "User id can not be empty",
+        "Group id can not be empty",
+        "Description can not be empty",
+        "You are not member of this group",
+        "You do not have permission to do this action",
+      ],
+      notFound: ["Group not found", "User not found"],
+    },
   },
 }

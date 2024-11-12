@@ -91,8 +91,8 @@ export class GroupPrismaRepository implements IGroupRepository {
       }
       foundGroup = GroupMapper.toPersistence(group)
       const updatedGroup = await this.prismaService.group.update({
-        where: { id: group.id },
-        data: group,
+        where: { id: foundGroup.id },
+        data: foundGroup,
       })
       if (!updatedGroup) {
         throw new InfrastructureError({
