@@ -5,6 +5,7 @@ import { EUserStatus } from "../src/module/users/domain/enum/user-status.enum"
 import { hashPassword } from "../utils/encrypt"
 
 const prisma = new PrismaClient()
+
 async function resetDatabase() {
   console.log("Truncating all tables...")
 
@@ -33,6 +34,7 @@ async function resetDatabase() {
 
   console.log("All tables truncated.")
 }
+
 async function main() {
   await resetDatabase()
   console.log("Start seeding ...")

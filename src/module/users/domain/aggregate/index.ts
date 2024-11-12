@@ -49,6 +49,7 @@ interface UserAggregateProps {
   updatedAt?: Date
   deletedAt?: Date
 }
+
 export class UserAggregate extends BaseAggregate {
   @IsString()
   @Expose()
@@ -166,6 +167,7 @@ export class UserAggregate extends BaseAggregate {
     this._updatedAt = props.updatedAt || new Date()
     this._deletedAt = props.deletedAt
   }
+
   // Getters and Setters
 
   get name(): string {
@@ -175,9 +177,11 @@ export class UserAggregate extends BaseAggregate {
   set name(value: string) {
     this._name = value
   }
+
   get displayName(): string {
     return this._displayName
   }
+
   set displayName(value: string) {
     this._displayName = value
   }
@@ -221,12 +225,15 @@ export class UserAggregate extends BaseAggregate {
   set dob(value: Date) {
     this._dob = value
   }
+
   get status(): EUserStatus {
     return this._status
   }
+
   set status(value: EUserStatus) {
     this._status = value
   }
+
   get emailVerifyToken(): string {
     return this._emailVerifyToken
   }
@@ -242,15 +249,19 @@ export class UserAggregate extends BaseAggregate {
   set phoneVerifyToken(value: string) {
     this._phoneVerifyToken = value
   }
+
   get forgotPasswordToken(): string {
     return this._forgotPasswordToken
   }
+
   set forgotPasswordToken(value: string) {
     this._forgotPasswordToken = value
   }
+
   get otpToken(): string {
     return this._otpToken
   }
+
   set otpToken(value: string) {
     this._otpToken = value
   }
@@ -262,6 +273,7 @@ export class UserAggregate extends BaseAggregate {
   set isLive(value: boolean) {
     this._isLive = value
   }
+
   get isActive(): boolean {
     return this._isActive
   }
@@ -269,6 +281,7 @@ export class UserAggregate extends BaseAggregate {
   set isActive(value: boolean) {
     this._isActive = value
   }
+
   get is2FA(): boolean {
     return this._is2FA
   }
@@ -292,12 +305,15 @@ export class UserAggregate extends BaseAggregate {
   set bio(value: string | undefined) {
     this._bio = value
   }
+
   get lastUsernameChangeAt(): Date {
     return this._lastUsernameChangeAt
   }
+
   set lastUsernameChangeAt(value: Date) {
     this._lastUsernameChangeAt = value
   }
+
   get thumbnail(): string | undefined {
     return this._thumbnail
   }
@@ -305,9 +321,11 @@ export class UserAggregate extends BaseAggregate {
   set thumbnail(value: string | undefined) {
     this._thumbnail = value
   }
+
   get devices(): Device[] {
     return this._devices
   }
+
   set devices(value: Device | undefined) {
     const existingDevice = this._devices.find(
       (device) => device.userAgent === value.userAgent,
@@ -317,29 +335,38 @@ export class UserAggregate extends BaseAggregate {
     }
     this._devices.push(value)
   }
+
   get loginHistories(): LoginHistory[] {
     return this._loginHistories
   }
+
   set loginHistories(value: LoginHistory | undefined) {
     this._loginHistories.push(value)
   }
+
   get tokens(): Token[] {
     return this._tokens
   }
+
   set tokens(value: Token | undefined) {
     this._tokens.push(value)
   }
+
   get roles(): Role[] {
     return this._roles
   }
+
   set roles(value: Role[] | undefined) {
     this._roles = value
   }
+
   get permissions(): Permission[] {
     return this._permissions
   }
+
   set permissions(value: Permission[] | undefined) {
     this._permissions = value
   }
+
   // TODO: Update later
 }

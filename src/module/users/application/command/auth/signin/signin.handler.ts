@@ -120,6 +120,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
       // permission
       const userPermission =
         await this.userRepository.getUserPermissions(userAggregate)
+      console.log(userAggregate)
       // jwt
       const accessTokenPayload: TokenPayload = {
         sub: userAggregate.id,

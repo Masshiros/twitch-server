@@ -1,6 +1,4 @@
 import { CommandHandler } from "@nestjs/cqrs"
-import config from "libs/config"
-import { tokenType } from "libs/constants/enum"
 import {
   CommandError,
   CommandErrorCode,
@@ -8,11 +6,10 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
-import { TokenPayload } from "src/common/interface"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { compareToken } from "utils/encrypt"
+import { EUserStatus } from "../../../../domain/enum/user-status.enum"
 import { ConfirmEmailCommand } from "./confirm-email.command"
-import { ConfirmEmailCommandResult } from "./confirm-email.result"
 
 @CommandHandler(ConfirmEmailCommand)
 export class ConfirmEmailCommandHandler {
@@ -78,6 +75,7 @@ export class ConfirmEmailCommandHandler {
       //   deviceId: "device-id"
       //   // add others later
       // }
+      user.status = EUserStatus.VERIFIED
       user.emailVerifyToken = ""
       await this.userRepository.update(user)
       // const [accessToken, refreshToken] = await Promise.all([

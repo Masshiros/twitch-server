@@ -50,6 +50,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async createUser(user: UserAggregate): Promise<void> {
     try {
       const data = UserMapper.toPersistence(user)
@@ -68,6 +69,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async isEmailExisted(email: string): Promise<boolean> {
     try {
       const user = await this.prismaService.user.findFirst({
@@ -90,6 +92,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async isPhoneExisted(phone: string): Promise<boolean> {
     try {
       if (
@@ -113,6 +116,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async findById(id: string): Promise<UserAggregate | null> {
     try {
       const user = await this.prismaService.user.findFirst({
@@ -137,6 +141,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async findByOtp(otp: string): Promise<UserAggregate | null> {
     try {
       const hashedOtp = await hashToken(otp)
@@ -162,6 +167,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async findByEmail(email: string): Promise<UserAggregate | null> {
     try {
       const user = await this.prismaService.user.findFirst({
@@ -185,6 +191,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async findByPhone(phone: string): Promise<UserAggregate | null> {
     try {
       const user = await this.prismaService.user.findFirst({
@@ -208,6 +215,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async findByEmailOrPhone(
     emailOrPhone: string,
   ): Promise<UserAggregate | null> {
@@ -233,6 +241,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async findByUsername(username: string): Promise<UserAggregate | null> {
     try {
       const user = await this.prismaService.user.findFirst({
@@ -256,6 +265,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async update(user: UserAggregate): Promise<void> {
     try {
       const { id } = user
@@ -293,6 +303,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async updatePassword(
     id: string,
     oldPassword: string,
@@ -338,6 +349,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   // async updateToken(user: UserAggregate): Promise<void> {
   //   try {
   //     const tokens = await this.prismaService.token.findMany({
@@ -422,6 +434,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async generateToken(
     payload: TokenPayload,
     options: JwtSignOptions,
@@ -441,6 +454,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async decodeToken(
     token: string,
     options: JwtVerifyOptions,
@@ -461,6 +475,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async storeToken(token: string, options: JwtVerifyOptions): Promise<void> {
     try {
       const { sub, deviceId } = await this.jwtService.verifyAsync<TokenPayload>(
@@ -501,6 +516,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async deleteToken(token: string) {
     try {
       const tokenFound = await this.prismaService.token.findFirst({
@@ -520,6 +536,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async deleteTokenByDevice(deviceId: string) {
     try {
       const token = await this.prismaService.token.findFirst({
@@ -539,6 +556,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async deleteUserToken(userId: string) {
     try {
       await this.prismaService.token.deleteMany({ where: { userId } })
@@ -555,6 +573,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async createOrUpdateDevice(device: Device): Promise<void> {
     try {
       const existingDevice = await this.prismaService.device.findFirst({
@@ -591,6 +610,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async deleteDevice(deviceId: string): Promise<void> {
     try {
       await this.prismaService.device.delete({
@@ -609,6 +629,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async deleteUserDevice(userId: string): Promise<void> {
     try {
       await this.prismaService.device.deleteMany({ where: { userId } })
@@ -626,6 +647,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getDevice(deviceId: string): Promise<Device> {
     try {
       const device = await this.prismaService.device.findFirst({
@@ -648,6 +670,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getAllDevices(userId: string): Promise<Device[] | null> {
     try {
       const devicesList = await this.prismaService.device.findMany({
@@ -689,6 +712,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getLoginHistories(userId: string): Promise<LoginHistory[] | null> {
     try {
       const histories = await this.prismaService.loginHistory.findMany({
@@ -713,6 +737,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async deleteLoginHistory(id: string): Promise<void> {
     try {
       await this.prismaService.loginHistory.delete({ where: { id: id } })
@@ -729,6 +754,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getAllRolesWithPagination({
     limit,
     offset = 0,
@@ -780,6 +806,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getRoleByName(name: string): Promise<Role | null> {
     try {
       const role = await this.prismaService.role.findUnique({ where: { name } })
@@ -800,6 +827,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getRoleById(id: string): Promise<Role | null> {
     try {
       const role = await this.prismaService.role.findUnique({ where: { id } })
@@ -820,6 +848,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async assignRoleToUser(role: Role, user: UserAggregate): Promise<void> {
     try {
       const existingUser = await this.prismaService.user.findFirst({
@@ -864,6 +893,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async removeRoleFromUser(role: Role, user: UserAggregate): Promise<void> {
     try {
       await this.prismaService.userRole.deleteMany({
@@ -882,6 +912,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async assignPermissionToRole(
     role: Role,
     permission: Permission,
@@ -930,6 +961,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async removePermissionFromRole(
     role: Role,
     permission: Permission,
@@ -951,6 +983,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getUserRoles(user: UserAggregate): Promise<Role[] | null> {
     try {
       const userRoles = await this.prismaService.userRole.findMany({
@@ -986,6 +1019,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getAllPermissionsWithPagination({
     limit,
     offset = 0,
@@ -1037,6 +1071,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getPermissionById(id: string): Promise<Permission | null> {
     try {
       const permission = await this.prismaService.permission.findUnique({
@@ -1059,6 +1094,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getRolePermissions(role: Role): Promise<Permission[] | null> {
     try {
       const rolePermission = await this.prismaService.rolePermission.findMany({
@@ -1093,6 +1129,7 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+
   async getUserPermissions(user: UserAggregate): Promise<Permission[] | null> {
     try {
       const roles = await this.getUserRoles(user)

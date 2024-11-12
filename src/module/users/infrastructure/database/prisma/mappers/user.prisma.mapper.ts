@@ -1,11 +1,28 @@
 import { type User as PrismaUser } from "@prisma/client"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { EUserStatus } from "src/module/users/domain/enum/user-status.enum"
 
 export class UserMapper {
+  static mapPrismaStatusToDomainStatus(
+    status: PrismaUser["status"],
+  ): EUserStatus {
+    switch (status) {
+      case "BANNED":
+        return EUserStatus.BANNED
+      case "VERIFIED":
+        return EUserStatus.VERIFIED
+      case "UNVERIFIED":
+        return EUserStatus.UNVERIFIED
+      default:
+        throw new Error(`Unknown status: ${status}`)
+    }
+  }
+
   static toDomain(prismaUser: PrismaUser): UserAggregate {
     return new UserAggregate(
       {
         name: prismaUser.name,
+        status: UserMapper.mapPrismaStatusToDomainStatus(prismaUser.status),
         displayName: prismaUser.displayName,
         slug: prismaUser.slug,
         email: prismaUser.email,
