@@ -9,12 +9,14 @@ import { GroupsController } from "../presentation/groups.controller"
 import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.handler"
 import { AddDescriptionHandler } from "./command/add-description/add-description.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
+import { InviteMembersHandler } from "./command/invite-members/invite-members.handler"
 import { GroupsService } from "./groups.service"
 
 const commandHandlers = [
   CreateGroupHandler,
   AddCoverImageHandler,
   AddDescriptionHandler,
+  InviteMembersHandler,
 ]
 const queryHandlers = []
 @Module({

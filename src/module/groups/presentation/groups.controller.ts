@@ -20,10 +20,12 @@ import { UserAggregate } from "src/module/users/domain/aggregate"
 import { AddCoverImageCommand } from "../application/command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "../application/command/add-description/add-description.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
+import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
 import { GroupsService } from "../application/groups.service"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
+import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
 
 @ApiTags("groups")
 @Controller("groups")
@@ -105,5 +107,30 @@ export class GroupsController {
       userId: user.id,
     })
     await this.service.addDescription(command)
+  }
+  // Post: Invite members
+  @ApiOperationDecorator({
+    summary: "Add description to a group",
+    description: "Add a description to group by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.inviteMembers.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.inviteMembers.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Update])
+  @ResponseMessage(SuccessMessages.groups.INVITE_MEMBERS)
+  @Post("/:groupId/invite")
+  async inviteMembers(
+    @Param("groupId") param: string,
+    @Body() data: InviteMembersRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new InviteMembersCommand({
+      userId: user.id,
+      friendIds: data.friendIds,
+      groupId: param,
+    })
+    await this.service.inviteMembers(command)
   }
 }

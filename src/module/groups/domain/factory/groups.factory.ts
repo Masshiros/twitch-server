@@ -127,7 +127,7 @@ export class GroupFactory {
       groupId: props.groupId,
       invitedUserId: props.invitedUserId,
       inviterId: props.inviterId,
-      status: props.status,
+      status: props.status ?? EInvitationStatus.PENDING,
       createdAt: createdAt,
       expiredAt: expiredAt,
     })

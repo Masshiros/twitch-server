@@ -1,4 +1,5 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EGroupRole } from "@prisma/client"
 import {
   CommandError,
   CommandErrorCode,
@@ -6,20 +7,19 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
-import { EGroupRole } from "src/module/groups/domain/enum/group-role.enum"
+import { GroupFactory } from "src/module/groups/domain/factory/groups.factory"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
-import { ImageService } from "src/module/image/application/image.service"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { AddDescriptionCommand } from "./add-description.command"
+import { InviteMembersCommand } from "./invite-members.command"
 
-@CommandHandler(AddDescriptionCommand)
-export class AddDescriptionHandler {
+@CommandHandler(InviteMembersCommand)
+export class InviteMembersHandler {
   constructor(
     private readonly groupRepository: IGroupRepository,
     private readonly userRepository: IUserRepository,
   ) {}
-  async execute(command: AddDescriptionCommand) {
-    const { groupId, userId, description } = command
+  async execute(command: InviteMembersCommand) {
+    const { groupId, userId, friendIds } = command
     try {
       if (!userId || userId.length === 0) {
         throw new CommandError({
@@ -39,15 +39,16 @@ export class AddDescriptionHandler {
           },
         })
       }
-      if (!description || description.length === 0) {
+      if (!friendIds || friendIds.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Description can not be empty",
+          message: "List friend ids can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
         })
       }
+
       const group = await this.groupRepository.findGroupById(groupId)
       if (!group) {
         throw new CommandError({
@@ -81,18 +82,40 @@ export class AddDescriptionHandler {
           },
         })
       }
-      if (member.role !== EGroupRole.ADMIN) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "You do not have permission to do this action",
-          info: {
-            errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-          },
-        })
-      }
-      group.description = description
-      group.updatedAt = new Date()
-      await this.groupRepository.updateGroup(group)
+      // if (member.role !== EGroupRole.ADMIN) {
+      //   throw new CommandError({
+      //     code: CommandErrorCode.BAD_REQUEST,
+      //     message: "You do not have permission to do this action",
+      //     info: {
+      //       errorCode: CommandErrorDetailCode.UNAUTHORIZED,
+      //     },
+      //   })
+      // }
+      const invitations = await Promise.all(
+        friendIds.map(async (f) => {
+          const friend = await this.userRepository.findById(f)
+          if (!friend) {
+            throw new CommandError({
+              code: CommandErrorCode.NOT_FOUND,
+              message: "Friend not found",
+              info: {
+                errorCode: CommandErrorDetailCode.NOT_FOUND,
+              },
+            })
+          }
+          const invitation = GroupFactory.createGroupInvitation({
+            groupId: group.id,
+            invitedUserId: friend.id,
+            inviterId: userId,
+          })
+          return invitation
+        }),
+      )
+      await Promise.all(
+        invitations.map((e) => {
+          this.groupRepository.addInvitation(e)
+        }),
+      )
     } catch (error) {
       if (
         error instanceof DomainError ||

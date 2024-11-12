@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { AddCoverImageCommand } from "./command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "./command/add-description/add-description.command"
 import { CreateGroupCommand } from "./command/create-group/create-group.command"
+import { InviteMembersCommand } from "./command/invite-members/invite-members.command"
 
 @Injectable()
 export class GroupsService {
@@ -17,6 +18,9 @@ export class GroupsService {
     return this.commandBus.execute(command)
   }
   async addDescription(command: AddDescriptionCommand) {
+    return this.commandBus.execute(command)
+  }
+  async inviteMembers(command: InviteMembersCommand) {
     return this.commandBus.execute(command)
   }
 }
