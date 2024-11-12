@@ -63,7 +63,7 @@ export class ForgotPasswordCommandHandler {
         emailConfig.passwordReset.subject,
         emailConfig.passwordReset.body,
       )
-      const resetLink = `http://${config.APP_HOST}:${config.FRONTEND_PORT}/user/reset-password?reset-password=${forgotToken}`
+      const resetLink = `http://${config.APP_HOST}:${config.FRONTEND_PORT}/user/reset-password?reset_token=${forgotToken}`
       const formattedTemplate = EmailTemplate.withResetLink(template, resetLink)
       await Promise.all([
         this.userRepository.update(user),
