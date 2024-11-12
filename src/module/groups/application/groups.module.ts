@@ -6,6 +6,7 @@ import { PostsDatabaseModule } from "src/module/posts/infrastructure/database/po
 import { UserDatabaseModule } from "src/module/users/infrastructure/database/user.database.module"
 import { GroupDatabaseModule } from "../infrastructure/database/group.database.module"
 import { GroupsController } from "../presentation/groups.controller"
+import { AcceptInvitationHandler } from "./command/accept-invitation/accept-invitation.handler"
 import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.handler"
 import { AddDescriptionHandler } from "./command/add-description/add-description.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
@@ -17,6 +18,7 @@ const commandHandlers = [
   AddCoverImageHandler,
   AddDescriptionHandler,
   InviteMembersHandler,
+  AcceptInvitationHandler,
 ]
 const queryHandlers = []
 @Module({

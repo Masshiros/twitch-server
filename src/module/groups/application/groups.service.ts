@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
+import { AcceptInvitationCommand } from "./command/accept-invitation/accept-invitation.command"
 import { AddCoverImageCommand } from "./command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "./command/add-description/add-description.command"
 import { CreateGroupCommand } from "./command/create-group/create-group.command"
@@ -21,6 +22,9 @@ export class GroupsService {
     return this.commandBus.execute(command)
   }
   async inviteMembers(command: InviteMembersCommand) {
+    return this.commandBus.execute(command)
+  }
+  async acceptInvitation(command: AcceptInvitationCommand) {
     return this.commandBus.execute(command)
   }
 }

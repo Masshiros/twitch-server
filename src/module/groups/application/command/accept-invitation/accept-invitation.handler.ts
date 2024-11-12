@@ -1,5 +1,4 @@
 import { CommandHandler } from "@nestjs/cqrs"
-import { EGroupRole } from "@prisma/client"
 import {
   CommandError,
   CommandErrorCode,
@@ -7,19 +6,21 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { EInvitationStatus } from "src/module/groups/domain/enum/group-invitation-status.enum"
+import { EGroupRole } from "src/module/groups/domain/enum/group-role.enum"
 import { GroupFactory } from "src/module/groups/domain/factory/groups.factory"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { InviteMembersCommand } from "./invite-members.command"
+import { AcceptInvitationCommand } from "./accept-invitation.command"
 
-@CommandHandler(InviteMembersCommand)
-export class InviteMembersHandler {
+@CommandHandler(AcceptInvitationCommand)
+export class AcceptInvitationHandler {
   constructor(
     private readonly groupRepository: IGroupRepository,
     private readonly userRepository: IUserRepository,
   ) {}
-  async execute(command: InviteMembersCommand) {
-    const { groupId, userId, friendIds } = command
+  async execute(command: AcceptInvitationCommand) {
+    const { groupId, userId } = command
     try {
       if (!userId || userId.length === 0) {
         throw new CommandError({
@@ -39,16 +40,6 @@ export class InviteMembersHandler {
           },
         })
       }
-      if (!friendIds || friendIds.length === 0) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "List user ids to invite can not be empty",
-          info: {
-            errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
-          },
-        })
-      }
-
       const group = await this.groupRepository.findGroupById(groupId)
       if (!group) {
         throw new CommandError({
@@ -69,54 +60,54 @@ export class InviteMembersHandler {
           },
         })
       }
-      const member = await this.groupRepository.findMemberById(
-        group.id,
-        user.id,
-      )
-      if (!member) {
+      const invitation =
+        await this.groupRepository.getLatestInvitationByUserAndGroup(
+          userId,
+          groupId,
+        )
+      if (!invitation) {
         throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "You are not member of this group",
-          info: {
-            errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-          },
+          code: CommandErrorCode.NOT_FOUND,
+          message: "Invitation not found",
+          info: { errorCode: CommandErrorDetailCode.NOT_FOUND },
         })
       }
-      // if (member.role !== EGroupRole.ADMIN) {
-      //   throw new CommandError({
-      //     code: CommandErrorCode.BAD_REQUEST,
-      //     message: "You do not have permission to do this action",
-      //     info: {
-      //       errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-      //     },
-      //   })
-      // }
-      const invitations = await Promise.all(
-        friendIds.map(async (f) => {
-          const friend = await this.userRepository.findById(f)
-          if (!friend) {
-            throw new CommandError({
-              code: CommandErrorCode.NOT_FOUND,
-              message: "User not found",
-              info: {
-                errorCode: CommandErrorDetailCode.NOT_FOUND,
-              },
-            })
-          }
-          const invitation = GroupFactory.createGroupInvitation({
-            groupId: group.id,
-            invitedUserId: friend.id,
-            inviterId: userId,
-          })
-          return invitation
-        }),
-        // TODO(notifi): Send notifcation to users
-      )
-      await Promise.all(
-        invitations.map((e) => {
-          this.groupRepository.addInvitation(e)
-        }),
-      )
+      if (invitation.expiredAt && invitation.expiredAt < new Date()) {
+        invitation.status = EInvitationStatus.EXPIRED
+      }
+      if (invitation.status === EInvitationStatus.PENDING) {
+        invitation.status = EInvitationStatus.ACCEPTED
+        const member = GroupFactory.createGroupMember({
+          groupId: group.id,
+          memberId: user.id,
+          role: EGroupRole.MEMBER,
+          joinedAt: new Date(),
+        })
+        return await Promise.all([
+          this.groupRepository.updateInvitation(invitation),
+          this.groupRepository.addMember(member),
+        ])
+      } else if (invitation.status === EInvitationStatus.ACCEPTED) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: `You already accept the invitation`,
+        })
+      } else if (invitation.status === EInvitationStatus.DECLINED) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: `You already reject the invitation`,
+        })
+      } else if (invitation.status === EInvitationStatus.EXPIRED) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: `Your invitation has been expired`,
+        })
+      } else {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: `Invitation status is not valid for acceptance: ${invitation.status}`,
+        })
+      }
     } catch (error) {
       if (
         error instanceof DomainError ||

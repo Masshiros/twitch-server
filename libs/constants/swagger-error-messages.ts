@@ -379,11 +379,22 @@ export const SwaggerErrorMessages = {
       badRequest: [
         "User id can not be empty",
         "Group id can not be empty",
-        "List friend ids can not be empty",
+        "List user ids to invite can not be empty",
         "You are not a member of this group",
         "You do not have permission to do this action",
       ],
-      notFound: ["Group not found", "User not found", "Friend not found"],
+      notFound: ["Group not found", "User not found"],
+    },
+    acceptInvitation: {
+      badRequest: [
+        "User id can not be empty",
+        "Group id can not be empty",
+        "You already accepted the invitation",
+        "You already rejected the invitation",
+        "Your invitation has expired",
+        "Invitation status is not valid for acceptance: <status>",
+      ],
+      notFound: ["Group not found", "User not found", "Invitation not found"],
     },
   },
 }

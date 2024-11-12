@@ -135,4 +135,9 @@ export abstract class IGroupRepository {
       order?: "asc" | "desc"
     },
   ) => Promise<GroupInvitation[]>
+  getLatestInvitationByUserAndGroup: (
+    userId: string,
+    groupId: string,
+  ) => Promise<GroupInvitation | null>
+  updateInvitation: (invitation: GroupInvitation) => Promise<void>
 }

@@ -17,6 +17,7 @@ import { Permission } from "libs/decorator/permission.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { AcceptInvitationCommand } from "../application/command/accept-invitation/accept-invitation.command"
 import { AddCoverImageCommand } from "../application/command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "../application/command/add-description/add-description.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
@@ -132,5 +133,29 @@ export class GroupsController {
       groupId: param,
     })
     await this.service.inviteMembers(command)
+  }
+  // POST: Accept invitation
+  @ApiOperationDecorator({
+    summary: "Accept an invitation",
+    description: "Accept an invitation by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.acceptInvitation.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.acceptInvitation.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.ACCEPT_INVITATION)
+  @Post("/:groupId/accept-invitation")
+  async acceptInvitation(
+    @Param("groupId") param: string,
+
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new AcceptInvitationCommand({
+      groupId: param,
+      userId: user.id,
+    })
+    await this.service.acceptInvitation(command)
   }
 }

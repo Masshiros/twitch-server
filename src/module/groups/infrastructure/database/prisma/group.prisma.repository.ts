@@ -920,6 +920,52 @@ export class GroupPrismaRepository implements IGroupRepository {
       this.handleDatabaseError(error)
     }
   }
+  async getLatestInvitationByUserAndGroup(
+    userId: string,
+    groupId: string,
+  ): Promise<GroupInvitation | null> {
+    try {
+      const invitation = await this.prismaService.groupInvitation.findFirst({
+        where: { invitedUserId: userId, groupId },
+        orderBy: { createdAt: "desc" },
+      })
+      if (!invitation) {
+        return null
+      }
+      return GroupInvitationMapper.toDomain(invitation)
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async updateInvitation(invitation: GroupInvitation): Promise<void> {
+    try {
+      const existingInvitation =
+        await this.prismaService.groupInvitation.findUnique({
+          where: { id: invitation.id },
+        })
+      if (!existingInvitation) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.NOT_FOUND,
+          message: "Invitation not found",
+        })
+      }
+      const data = GroupInvitationMapper.toPersistence(invitation)
+      const updatedInvitation = await this.prismaService.groupInvitation.update(
+        {
+          where: { id: invitation.id },
+          data,
+        },
+      )
+      if (!updatedInvitation) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.BAD_REQUEST,
+          message: "Update operation not work",
+        })
+      }
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
   private handleDatabaseError(error: any) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       handlePrismaError(error)
