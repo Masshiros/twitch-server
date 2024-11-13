@@ -1,16 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { Expose, Type } from "class-transformer"
-import { PostInfoResponseDto } from "./common/post-info.response.dto"
-import { UserResponseDto } from "./common/user.response.dto"
+import { PostResponseDto } from "./common/post.response.dto"
 
 export class GetUserFeedResponseDto {
-  @ApiProperty({ type: UserResponseDto, description: "User details" })
+  @ApiProperty({
+    type: [PostResponseDto],
+    description:
+      "List of user posts, each with user details and post information",
+  })
   @Expose()
-  @Type(() => UserResponseDto)
-  user: UserResponseDto
-
-  @ApiProperty({ type: [PostInfoResponseDto], description: "List of posts" })
-  @Expose()
-  @Type(() => PostInfoResponseDto)
-  posts: PostInfoResponseDto[]
+  @Type(() => PostResponseDto)
+  posts: PostResponseDto[]
 }
