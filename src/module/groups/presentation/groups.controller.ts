@@ -26,6 +26,7 @@ import { AddDescriptionCommand } from "../application/command/add-description/ad
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
 import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
 import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
+import { RejectRequestCommand } from "../application/command/reject-request/reject-request.command"
 import { RequestToJoinGroupCommand } from "../application/command/request-to-join-group/request-to-join-group.command"
 import { GroupsService } from "../application/groups.service"
 import { GetGroupQuery } from "../application/query/get-group/get-group.query"
@@ -38,6 +39,7 @@ import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.d
 import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
 import { GetManageGroupRequestDto } from "./http/dto/request/get-manage-group.request.dto"
 import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
+import { RejectRequestRequestDto } from "./http/dto/request/reject-request.request.dto"
 import { GetGroupResponseDto } from "./http/dto/response/get-group.response.dto"
 import { GetJoinedGroupResponseDto } from "./http/dto/response/get-joined-group.response.dto"
 import { GetManageGroupResponseDto } from "./http/dto/response/get-manage-group.response.dto"
@@ -230,7 +232,11 @@ export class GroupsController {
       SwaggerErrorMessages.groups.acceptRequest.notFound,
     auth: true,
   })
-  @Permission([Permissions.Groups.Read])
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
   @ResponseMessage(SuccessMessages.groups.ACCEPT_REQUEST)
   @Post("/:groupId/accept-request")
   async acceptRequest(
@@ -244,6 +250,35 @@ export class GroupsController {
       requestUserId: data.requestUserId,
     })
     await this.service.acceptRequest(command)
+  }
+  // Post: Reject request
+  @ApiOperationDecorator({
+    summary: "Reject user to join a group",
+    description: "Reject user to join a group by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.rejectRequest.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.rejectRequest.notFound,
+    auth: true,
+  })
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
+  @ResponseMessage(SuccessMessages.groups.REJECT_REQUEST)
+  @Post("/:groupId/reject-request")
+  async rejectRequest(
+    @Param("groupId") param: string,
+    @Body() data: RejectRequestRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new RejectRequestCommand({
+      groupId: param,
+      userId: user.id,
+      requestUserId: data.requestUserId,
+    })
+    await this.service.rejectRequest(command)
   }
   // GET: get group
   @ApiOperationDecorator({

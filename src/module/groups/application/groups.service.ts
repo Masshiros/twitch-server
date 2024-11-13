@@ -7,6 +7,7 @@ import { AddDescriptionCommand } from "./command/add-description/add-description
 import { CreateGroupCommand } from "./command/create-group/create-group.command"
 import { InviteMembersCommand } from "./command/invite-members/invite-members.command"
 import { RejectInvitationCommand } from "./command/reject-invitation/reject-invitation.command"
+import { RejectRequestCommand } from "./command/reject-request/reject-request.command"
 import { RequestToJoinGroupCommand } from "./command/request-to-join-group/request-to-join-group.command"
 import { GetGroupQuery } from "./query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "./query/get-joined-groups/get-joined-groups.query"
@@ -49,6 +50,9 @@ export class GroupsService {
     return this.commandBus.execute(command)
   }
   async acceptRequest(command: AcceptRequestCommand) {
+    return this.commandBus.execute(command)
+  }
+  async rejectRequest(command: RejectRequestCommand) {
     return this.commandBus.execute(command)
   }
 }
