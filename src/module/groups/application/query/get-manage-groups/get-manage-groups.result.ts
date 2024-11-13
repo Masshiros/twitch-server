@@ -1,8 +1,8 @@
 import { GroupResult } from "../common/group.result"
 
-export class GetJoinedGroupResult {
+export class GetManageGroupResult {
   groups: {
     info: GroupResult
-    joinedAt: string
+    createdAt: string
   }[]
 }

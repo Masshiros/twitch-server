@@ -1,16 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { GroupResponseDto } from "./common/group.response.dto"
 
-export class GetJoinedGroupResponseDto {
-  @ApiProperty({
-    description:
-      "List of groups the user has joined, including group info and join date.",
-    type: () => [JoinedGroupInfo],
-  })
-  groups: JoinedGroupInfo[]
-}
-
-class JoinedGroupInfo {
+class ManageGroupInfo {
   @ApiProperty({
     description: "Information about the group.",
     type: GroupResponseDto,
@@ -21,5 +12,13 @@ class JoinedGroupInfo {
     description: "The date the user joined the group.",
     type: String,
   })
-  joinedAt: string
+  createdAt: string
+}
+export class GetManageGroupResponseDto {
+  @ApiProperty({
+    description:
+      "List of groups the user has joined, including group info and join date.",
+    type: () => [ManageGroupInfo],
+  })
+  groups: ManageGroupInfo[]
 }

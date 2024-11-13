@@ -423,5 +423,9 @@ export const SwaggerErrorMessages = {
       badRequest: ["User id can not be empty"],
       notFound: ["User not found"],
     },
+    getManageGroups: {
+      badRequest: ["User id can not be empty"],
+      notFound: ["User not found"],
+    },
   },
 }

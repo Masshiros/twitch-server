@@ -87,6 +87,7 @@ export const SuccessMessages = {
     CREATE_GROUP: "Create new group successfully",
     GET_GROUP: "Get group successfully",
     GET_JOINED_GROUP: "Get my joined group successfully",
+    GET_MANAGE_GROUP: "Get my manage group successfully",
     ADD_COVER_IMAGE: "Add group's cover image successfully",
     ADD_DESCRIPTION: "Add group's description successfully",
     INVITE_MEMBERS: "Invite members to group successfully",

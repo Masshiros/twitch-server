@@ -28,13 +28,16 @@ import { RejectInvitationCommand } from "../application/command/reject-invitatio
 import { GroupsService } from "../application/groups.service"
 import { GetGroupQuery } from "../application/query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "../application/query/get-joined-groups/get-joined-groups.query"
+import { GetManageGroupQuery } from "../application/query/get-manage-groups/get-manage-groups.query"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
+import { GetManageGroupRequestDto } from "./http/dto/request/get-manage-group.request.dto"
 import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
 import { GetGroupResponseDto } from "./http/dto/response/get-group.response.dto"
 import { GetJoinedGroupResponseDto } from "./http/dto/response/get-joined-group.response.dto"
+import { GetManageGroupResponseDto } from "./http/dto/response/get-manage-group.response.dto"
 
 @ApiTags("groups")
 @Controller("groups")
@@ -236,5 +239,30 @@ export class GroupsController {
     query.limit = data.limit ?? 5
     query.offset = data.page ? (data.page - 1) * data.limit : null
     return await this.service.getJoinedGroup(query)
+  }
+  // GET: Get manage group
+  @ApiOperationDecorator({
+    summary: "Get manage group",
+    description: "Get manage group by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.getManageGroups.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.getManageGroups.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.GET_MANAGE_GROUP)
+  @Get("/me/manage-group")
+  async getManageGroup(
+    @Query() data: GetManageGroupRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetManageGroupResponseDto> {
+    const query = new GetManageGroupQuery({
+      ...data,
+      userId: user.id,
+    })
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return await this.service.getManageGroup(query)
   }
 }

@@ -9,17 +9,17 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { GetJoinedGroupQuery } from "./get-joined-groups.query"
-import { GetJoinedGroupResult } from "./get-joined-groups.result"
+import { GetManageGroupQuery } from "./get-manage-groups.query"
+import { GetManageGroupResult } from "./get-manage-groups.result"
 
-@QueryHandler(GetJoinedGroupQuery)
-export class GetJoinedGroupHandler {
+@QueryHandler(GetManageGroupQuery)
+export class GetManageGroupHandler {
   constructor(
     private readonly groupRepository: IGroupRepository,
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
   ) {}
-  async execute(query: GetJoinedGroupQuery): Promise<GetJoinedGroupResult> {
+  async execute(query: GetManageGroupQuery): Promise<GetManageGroupResult> {
     const { userId, limit, offset, order, orderBy } = query
     try {
       if (!userId || userId.length === 0) {
@@ -47,13 +47,12 @@ export class GetJoinedGroupHandler {
         orderBy,
         order,
       })
+      const manageGroups = groups.filter((g) => g.ownerId === userId)
 
       const result = await Promise.all(
-        groups.map(async (g) => {
-          const [groupCoverImage, member] = await Promise.all([
-            this.imageService.getImageByApplicableId(g.id),
-            this.groupRepository.findMemberById(g.id, user.id),
-          ])
+        manageGroups.map(async (g) => {
+          const groupCoverImage =
+            await this.imageService.getImageByApplicableId(g.id)
 
           return {
             info: {
@@ -61,7 +60,7 @@ export class GetJoinedGroupHandler {
               name: g.name,
               coverImage: groupCoverImage[0]?.url ?? "",
             },
-            joinedAt: member.joinedAt.toISOString().split("T")[0],
+            createdAt: g.createdAt.toISOString().split("T")[0],
           }
         }),
       )
