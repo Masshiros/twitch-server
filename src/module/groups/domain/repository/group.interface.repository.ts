@@ -73,6 +73,10 @@ export abstract class IGroupRepository {
       order?: "asc" | "desc"
     },
   ) => Promise<MemberRequest[]>
+  getLatestMemberRequest: (
+    group: Group,
+    userId: string,
+  ) => Promise<MemberRequest>
   // group member
   addMember: (member: GroupMember) => Promise<void>
   findMemberById: (

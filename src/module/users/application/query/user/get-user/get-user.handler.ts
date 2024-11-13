@@ -69,6 +69,7 @@ export class GetUserQueryHandler {
       const userCategories = await this.categoryRepository.getUserCategories(
         targetUserAggregate.id,
       )
+      console.log(targetUserAggregate)
       const categoryNames = userCategories.map((e) => e.name)
       if (images.length > 0) {
         return {

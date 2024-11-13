@@ -125,12 +125,13 @@ export class UserController {
     if (!userResult) {
       return null
     }
+    // console.log(userResult)
 
     const result: GetUserResponseDto = {
       id: userResult.user.id,
       email: userResult.user.email,
       phone: userResult.user.phone,
-      username: userResult.user.username,
+      username: userResult.user.name,
       displayName: userResult.user.displayName,
       bio: userResult.user.bio,
       thumbnail: userResult.user.thumbnail,

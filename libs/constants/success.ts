@@ -94,5 +94,7 @@ export const SuccessMessages = {
     ACCEPT_INVITATION: "Accept invitation successfully",
     REJECT_INVITATION: "Reject invitation successfully",
     REQUEST_TO_JOIN_GROUP: "Request to join this group successfully",
+    ACCEPT_REQUEST: "Accept member request successfully",
+    REJECT_REQUEST: "Reject member request successfully",
   },
 }

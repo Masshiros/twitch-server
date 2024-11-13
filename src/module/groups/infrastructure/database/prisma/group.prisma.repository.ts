@@ -505,30 +505,47 @@ export class GroupPrismaRepository implements IGroupRepository {
       order?: "asc" | "desc"
     },
   ): Promise<MemberRequest[]> {
-    const requests = await this.prismaService.memberRequest.findMany({
-      where: { groupId: group.id },
-      ...(offset !== null ? { skip: offset } : {}),
-      ...(limit !== null ? { take: limit } : {}),
-      select: {
-        id: true,
-      },
-    })
-    if (!requests) {
-      return []
+    try {
+      const requests = await this.prismaService.memberRequest.findMany({
+        where: { groupId: group.id },
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
+        select: {
+          id: true,
+        },
+      })
+      if (!requests) {
+        return []
+      }
+      const ids = requests.map((e) => e.id)
+      const queryRequests = await this.prismaService.memberRequest.findMany({
+        where: { id: { in: ids } },
+        orderBy: { [orderBy]: order },
+      })
+      if (!queryRequests) {
+        return []
+      }
+      const result = queryRequests.map((e) => {
+        const request = MemberRequestMapper.toDomain(e)
+        return request
+      })
+      return result ?? []
+    } catch (error) {
+      this.handleDatabaseError(error)
     }
-    const ids = requests.map((e) => e.id)
-    const queryRequests = await this.prismaService.memberRequest.findMany({
-      where: { id: { in: ids } },
-      orderBy: { [orderBy]: order },
-    })
-    if (!queryRequests) {
-      return []
+  }
+  async getLatestMemberRequest(
+    group: Group,
+    userId: string,
+  ): Promise<MemberRequest> {
+    try {
+      const memberRequests = await this.prismaService.memberRequest.findMany({
+        where: { userId: userId, groupId: group.id },
+      })
+      return MemberRequestMapper.toDomain(memberRequests[0])
+    } catch (error) {
+      this.handleDatabaseError(error)
     }
-    const result = queryRequests.map((e) => {
-      const request = MemberRequestMapper.toDomain(e)
-      return request
-    })
-    return result ?? []
   }
   async addMember(member: GroupMember): Promise<void> {
     try {
