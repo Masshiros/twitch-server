@@ -12,6 +12,7 @@ import { AddDescriptionHandler } from "./command/add-description/add-description
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
 import { InviteMembersHandler } from "./command/invite-members/invite-members.handler"
 import { RejectInvitationHandler } from "./command/reject-invitation/reject-imvitation.handler"
+import { RequestToJoinGroupHandler } from "./command/request-to-join-group/request-to-join-group.handler"
 import { GroupsService } from "./groups.service"
 import { GetGroupHandler } from "./query/get-group/get-group.handler"
 import { GetJoinedGroupHandler } from "./query/get-joined-groups/get-joined-groups.handler"
@@ -24,6 +25,7 @@ const commandHandlers = [
   InviteMembersHandler,
   AcceptInvitationHandler,
   RejectInvitationHandler,
+  RequestToJoinGroupHandler,
 ]
 const queryHandlers = [
   GetGroupHandler,

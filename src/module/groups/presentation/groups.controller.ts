@@ -25,6 +25,7 @@ import { AddDescriptionCommand } from "../application/command/add-description/ad
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
 import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
 import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
+import { RequestToJoinGroupCommand } from "../application/command/request-to-join-group/request-to-join-group.command"
 import { GroupsService } from "../application/groups.service"
 import { GetGroupQuery } from "../application/query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "../application/query/get-joined-groups/get-joined-groups.query"
@@ -192,6 +193,30 @@ export class GroupsController {
       userId: user.id,
     })
     await this.service.rejectInvitation(command)
+  }
+  // Post: Request to join group
+  @ApiOperationDecorator({
+    summary: "Send request to a group",
+    description: "Send request to a group by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.requestToJoinGroup.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.requestToJoinGroup.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.REQUEST_TO_JOIN_GROUP)
+  @Post("/:groupId/request-to-join-group")
+  async sendRequest(
+    @Param("groupId") param: string,
+
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new RequestToJoinGroupCommand({
+      groupId: param,
+      userId: user.id,
+    })
+    await this.service.requestToJoinGroup(command)
   }
   // GET: get group
   @ApiOperationDecorator({
