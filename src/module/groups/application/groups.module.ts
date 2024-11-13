@@ -7,6 +7,7 @@ import { UserDatabaseModule } from "src/module/users/infrastructure/database/use
 import { GroupDatabaseModule } from "../infrastructure/database/group.database.module"
 import { GroupsController } from "../presentation/groups.controller"
 import { AcceptInvitationHandler } from "./command/accept-invitation/accept-invitation.handler"
+import { AcceptRequestHandler } from "./command/accept-request/accept-request.handler"
 import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.handler"
 import { AddDescriptionHandler } from "./command/add-description/add-description.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
@@ -26,6 +27,7 @@ const commandHandlers = [
   AcceptInvitationHandler,
   RejectInvitationHandler,
   RequestToJoinGroupHandler,
+  AcceptRequestHandler,
 ]
 const queryHandlers = [
   GetGroupHandler,

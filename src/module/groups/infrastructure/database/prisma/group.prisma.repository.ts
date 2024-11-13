@@ -539,10 +539,13 @@ export class GroupPrismaRepository implements IGroupRepository {
     userId: string,
   ): Promise<MemberRequest> {
     try {
-      const memberRequests = await this.prismaService.memberRequest.findMany({
+      const memberRequest = await this.prismaService.memberRequest.findFirst({
         where: { userId: userId, groupId: group.id },
+        orderBy: { requestedAt: "desc" },
       })
-      return MemberRequestMapper.toDomain(memberRequests[0])
+
+      if (!memberRequest) return null
+      return MemberRequestMapper.toDomain(memberRequest) ?? null
     } catch (error) {
       this.handleDatabaseError(error)
     }

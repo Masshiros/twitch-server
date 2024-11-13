@@ -420,6 +420,21 @@ export const SwaggerErrorMessages = {
       ],
       notFound: ["Group not found", "User not found"],
     },
+    acceptRequest: {
+      badRequest: [
+        "User id can not be empty",
+        "Request user id can not be empty",
+        "Group id can not be empty",
+        "You already approved this request",
+        "You already declined this request",
+      ],
+      notFound: [
+        "Group not found",
+        "User not found",
+        "Request user not found",
+        "You have not requested to join this group",
+      ],
+    },
     getGroup: {
       badRequest: ["User id can not be empty", "Group id can not be empty"],
       notFound: [

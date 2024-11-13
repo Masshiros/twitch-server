@@ -20,6 +20,7 @@ import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { AcceptInvitationCommand } from "../application/command/accept-invitation/accept-invitation.command"
+import { AcceptRequestCommand } from "../application/command/accept-request/accept-request.command"
 import { AddCoverImageCommand } from "../application/command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "../application/command/add-description/add-description.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
@@ -30,6 +31,7 @@ import { GroupsService } from "../application/groups.service"
 import { GetGroupQuery } from "../application/query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "../application/query/get-joined-groups/get-joined-groups.query"
 import { GetManageGroupQuery } from "../application/query/get-manage-groups/get-manage-groups.query"
+import { AcceptRequestRequestDto } from "./http/dto/request/accept-request.request.dto"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
@@ -217,6 +219,31 @@ export class GroupsController {
       userId: user.id,
     })
     await this.service.requestToJoinGroup(command)
+  }
+  // Post: Accept request
+  @ApiOperationDecorator({
+    summary: "Accept user to join a group",
+    description: "Accept user to join a group by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.acceptRequest.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.acceptRequest.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.ACCEPT_REQUEST)
+  @Post("/:groupId/accept-request")
+  async acceptRequest(
+    @Param("groupId") param: string,
+    @Body() data: AcceptRequestRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new AcceptRequestCommand({
+      userId: user.id,
+      groupId: param,
+      requestUserId: data.requestUserId,
+    })
+    await this.service.acceptRequest(command)
   }
   // GET: get group
   @ApiOperationDecorator({
