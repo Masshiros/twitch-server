@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   UploadedFile,
@@ -24,10 +25,12 @@ import { CreateGroupCommand } from "../application/command/create-group/create-g
 import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
 import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
 import { GroupsService } from "../application/groups.service"
+import { GetGroupQuery } from "../application/query/get-group/get-group.query"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
+import { GetGroupResponseDto } from "./http/dto/response/get-group.response.dto"
 
 @ApiTags("groups")
 @Controller("groups")
@@ -182,5 +185,27 @@ export class GroupsController {
       userId: user.id,
     })
     await this.service.rejectInvitation(command)
+  }
+  // GET: get group
+  @ApiOperationDecorator({
+    summary: "Get a group",
+    description: "Get a group by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.getGroup.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.groups.getGroup.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.GET_GROUP)
+  @Get("/:groupId")
+  async getGroup(
+    @Param("groupId") param: string,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetGroupResponseDto> {
+    const query = new GetGroupQuery({
+      groupId: param,
+      userId: user.id,
+    })
+    return await this.service.getGroup(query)
   }
 }

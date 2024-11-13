@@ -407,5 +407,13 @@ export const SwaggerErrorMessages = {
       ],
       notFound: ["Group not found", "User not found", "Invitation not found"],
     },
+    getGroup: {
+      badRequest: ["User id can not be empty", "Group id can not be empty"],
+      notFound: [
+        "Group not found",
+        "User not found",
+        "Group is private. You do not have permission to view the content.",
+      ],
+    },
   },
 }

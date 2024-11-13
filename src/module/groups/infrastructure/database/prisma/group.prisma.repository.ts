@@ -388,7 +388,7 @@ export class GroupPrismaRepository implements IGroupRepository {
       const ids = posts.map((post) => post.id)
       const queryPost = await this.prismaService.groupPost.findMany({
         where: { id: { in: ids } },
-        orderBy: { [orderBy]: order },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!queryPost) {
         return []
@@ -834,7 +834,7 @@ export class GroupPrismaRepository implements IGroupRepository {
       const ids = rules.map((e) => e.id)
       const queryRule = await this.prismaService.groupRule.findMany({
         where: { id: { in: ids } },
-        orderBy: { [orderBy]: order },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!queryRule) {
         return []
