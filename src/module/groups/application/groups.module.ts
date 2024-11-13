@@ -14,6 +14,7 @@ import { InviteMembersHandler } from "./command/invite-members/invite-members.ha
 import { RejectInvitationHandler } from "./command/reject-invitation/reject-imvitation.handler"
 import { GroupsService } from "./groups.service"
 import { GetGroupHandler } from "./query/get-group/get-group.handler"
+import { GetJoinedGroupHandler } from "./query/get-joined-groups/get-joined-groups.handler"
 
 const commandHandlers = [
   CreateGroupHandler,
@@ -23,7 +24,7 @@ const commandHandlers = [
   AcceptInvitationHandler,
   RejectInvitationHandler,
 ]
-const queryHandlers = [GetGroupHandler]
+const queryHandlers = [GetGroupHandler, GetJoinedGroupHandler]
 @Module({
   controllers: [GroupsController],
   providers: [GroupsService, ...commandHandlers, ...queryHandlers],

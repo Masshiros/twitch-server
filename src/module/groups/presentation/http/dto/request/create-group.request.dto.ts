@@ -1,4 +1,3 @@
-import { Optional } from "@nestjs/common"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Transform } from "class-transformer"
 import {
@@ -28,11 +27,12 @@ export class CreateGroupRequestDto {
   @ApiPropertyOptional({
     description: "Privacy of the group",
     enum: EGroupPrivacy,
+    default: EGroupPrivacy.VISIBLE,
     required: false,
   })
+  @IsOptional()
   @IsEnum(EGroupPrivacy)
-  @Optional()
-  privacy: EGroupPrivacy
+  privacy?: EGroupPrivacy
 
   @ApiPropertyOptional({
     description: "IDs of friends to add to group",

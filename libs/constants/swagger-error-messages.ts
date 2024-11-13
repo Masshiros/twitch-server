@@ -415,5 +415,9 @@ export const SwaggerErrorMessages = {
         "Group is private. You do not have permission to view the content.",
       ],
     },
+    getJoinedGroups: {
+      badRequest: ["User id can not be empty"],
+      notFound: ["User not found"],
+    },
   },
 }

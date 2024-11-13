@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common"
@@ -26,11 +27,14 @@ import { InviteMembersCommand } from "../application/command/invite-members/invi
 import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
 import { GroupsService } from "../application/groups.service"
 import { GetGroupQuery } from "../application/query/get-group/get-group.query"
+import { GetJoinedGroupQuery } from "../application/query/get-joined-groups/get-joined-groups.query"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
+import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
 import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
 import { GetGroupResponseDto } from "./http/dto/response/get-group.response.dto"
+import { GetJoinedGroupResponseDto } from "./http/dto/response/get-joined-group.response.dto"
 
 @ApiTags("groups")
 @Controller("groups")
@@ -207,5 +211,30 @@ export class GroupsController {
       userId: user.id,
     })
     return await this.service.getGroup(query)
+  }
+  // GET: Get joined group
+  @ApiOperationDecorator({
+    summary: "Get joined group",
+    description: "Get joined group by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.getJoinedGroups.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.getJoinedGroups.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.GET_JOINED_GROUP)
+  @Get("/me/joined-group")
+  async getJoinedGroup(
+    @Query() data: GetJoinedGroupsRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetJoinedGroupResponseDto> {
+    const query = new GetJoinedGroupQuery({
+      ...data,
+      userId: user.id,
+    })
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return await this.service.getJoinedGroup(query)
   }
 }

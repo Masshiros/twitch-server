@@ -7,6 +7,7 @@ import { CreateGroupCommand } from "./command/create-group/create-group.command"
 import { InviteMembersCommand } from "./command/invite-members/invite-members.command"
 import { RejectInvitationCommand } from "./command/reject-invitation/reject-invitation.command"
 import { GetGroupQuery } from "./query/get-group/get-group.query"
+import { GetJoinedGroupQuery } from "./query/get-joined-groups/get-joined-groups.query"
 
 @Injectable()
 export class GroupsService {
@@ -33,6 +34,9 @@ export class GroupsService {
     return this.commandBus.execute(command)
   }
   async getGroup(query: GetGroupQuery) {
+    return this.queryBus.execute(query)
+  }
+  async getJoinedGroup(query: GetJoinedGroupQuery) {
     return this.queryBus.execute(query)
   }
 }
