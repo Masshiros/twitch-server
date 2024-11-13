@@ -5,6 +5,7 @@ import {
   QueryErrorDetailCode,
 } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
@@ -18,6 +19,7 @@ export class GetUserQueryHandler {
     private readonly userRepository: IUserRepository,
     private readonly userFactory: UserFactory,
     private readonly imageService: ImageService,
+    private readonly categoryRepository: ICategoriesRepository,
   ) {}
   async execute(
     query: GetUserQuery,
@@ -63,16 +65,27 @@ export class GetUserQueryHandler {
       // get user image
       const images: any[] | null =
         await this.imageService.getImageByApplicableId(targetUserAggregate.id)
+      // get user categories
+      const userCategories = await this.categoryRepository.getUserCategories(
+        targetUserAggregate.id,
+      )
+      const categoryNames = userCategories.map((e) => e.name)
       if (images.length > 0) {
         return {
           user: targetUserAggregate,
+          categoryNames,
           image: {
             url: images[0].url || "",
             publicId: images[0].publicId || "",
           },
         }
       }
-      return { user: targetUserAggregate, image: { url: "", publicId: "" } }
+
+      return {
+        user: targetUserAggregate,
+        categoryNames,
+        image: { url: "", publicId: "" },
+      }
     } catch (err) {
       console.error(err.stack)
       if (err instanceof QueryError || err instanceof InfrastructureError) {

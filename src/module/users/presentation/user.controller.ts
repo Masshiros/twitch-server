@@ -21,10 +21,12 @@ import { SuccessMessages } from "libs/constants/success"
 import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
+import { DecodedTokenPayload } from "libs/decorator/decoded_token_payload.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
+import { TokenPayload } from "src/common/interface"
 import { AssignPermissionToRoleCommand } from "../application/command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "../application/command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "../application/command/user/add-profile-picture/add-profile-picture.command"
@@ -103,7 +105,45 @@ export class UserController {
     command.id = user.id
     await this.userService.updateBio(command)
   }
+  // GET: who am i
+  @ApiOperationDecorator({
+    type: null,
+    summary: "Who am i",
+    description: "Who am i",
+    listBadRequestErrorMessages: SwaggerErrorMessages.user.getUser.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.getUser.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Users.Read])
+  @ResponseMessage(SuccessMessages.user.GET_ONE_USER)
+  @Get("/who-am-i")
+  async whoAmI(@CurrentUser() user: UserAggregate) {
+    const query = new GetUserQuery({ id: user.id })
+    const userResult = await this.userService.getUser(query)
+    if (!userResult) {
+      return null
+    }
 
+    const result: GetUserResponseDto = {
+      id: userResult.user.id,
+      email: userResult.user.email,
+      phone: userResult.user.phone,
+      username: userResult.user.username,
+      displayName: userResult.user.displayName,
+      bio: userResult.user.bio,
+      thumbnail: userResult.user.thumbnail,
+      isLive: userResult.user.isLive,
+      categoryNames: userResult.categoryNames,
+      image: userResult.image
+        ? {
+            url: userResult.image.url,
+            publicId: userResult.image.publicId,
+          }
+        : undefined,
+    }
+
+    return result
+  }
   // PATCH: Update Username
   @ApiOperationDecorator({
     summary: "Update username",
@@ -204,6 +244,7 @@ export class UserController {
       bio: userResult.user.bio,
       thumbnail: userResult.user.thumbnail,
       isLive: userResult.user.isLive,
+      categoryNames: userResult.categoryNames,
       image: userResult.image
         ? {
             url: userResult.image.url,

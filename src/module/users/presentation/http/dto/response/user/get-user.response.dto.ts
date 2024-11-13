@@ -29,6 +29,8 @@ export class GetUserResponseDto {
 
   @Expose()
   thumbnail?: string
+  @Expose()
+  categoryNames?: string[]
 
   @Expose()
   isLive: boolean
