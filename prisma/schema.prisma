@@ -192,11 +192,16 @@ enum EImage{
   CATEGORY
   GROUP
 }
+enum EImageType{
+  THUMBNAIL
+  AVATAR
+}
 model Image{
   id             String @id @default(uuid())
   url            String 
   publicId       String @unique
   applicableType EImage
+  imageType      EImageType?
   applicableId   String
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @default(now()) @updatedAt

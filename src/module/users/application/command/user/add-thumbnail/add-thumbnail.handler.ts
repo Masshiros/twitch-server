@@ -11,16 +11,16 @@ import { ImageService } from "src/module/image/application/image.service"
 import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { EImage } from "src/module/image/domain/enum/image.enum"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { AddProfilePictureCommand } from "./add-profile-picture.command"
+import { AddThumbnailCommand } from "./add-thumbnail.command"
 
-@CommandHandler(AddProfilePictureCommand)
-export class AddProfilePictureHandler {
+@CommandHandler(AddThumbnailCommand)
+export class AddThumbnailHandler {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
   ) {}
-  async execute(command: AddProfilePictureCommand): Promise<void> {
-    const { userId, picture } = command
+  async execute(command: AddThumbnailCommand): Promise<void> {
+    const { userId, thumbnail } = command
     try {
       if (!userId || userId.length === 0) {
         throw new CommandError({
@@ -31,10 +31,10 @@ export class AddProfilePictureHandler {
           },
         })
       }
-      if (!picture) {
+      if (!thumbnail) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Picture can not be empty",
+          message: "Thumbnail can not be empty",
           info: {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
           },
@@ -58,19 +58,27 @@ export class AddProfilePictureHandler {
         await Promise.all(
           userImage.map((i) => {
             // console.log(i.id)
-            if (i.imageType === EImageType.AVATAR) {
+            if (i.imageType === EImageType.THUMBNAIL) {
               this.imageService.removeImage(i)
             }
           }),
         )
       }
       await this.imageService.uploadImage(
-        picture,
+        thumbnail,
         Folder.image.user,
         userId,
         EImage.USER,
-        EImageType.AVATAR,
+        EImageType.THUMBNAIL,
       )
+      const savedThumbnail =
+        await this.imageService.getImageByApplicableId(userId)
+      savedThumbnail.map((e) => {
+        if (e.imageType === EImageType.THUMBNAIL) {
+          user.thumbnail = e.url
+        }
+      })
+      await this.userRepository.update(user)
     } catch (error) {
       if (
         error instanceof DomainError ||

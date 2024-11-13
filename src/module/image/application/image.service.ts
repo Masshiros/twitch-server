@@ -15,6 +15,7 @@ import {
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { Image } from "../domain/entity/image.entity"
+import { EImageType } from "../domain/enum/image-type.enum"
 import { EImage } from "../domain/enum/image.enum"
 import { IImageRepository } from "../domain/repository/image.interface.repository"
 
@@ -36,6 +37,7 @@ export class ImageService {
     folder: string,
     applicableId: string,
     applicableType: EImage,
+    imageType?: EImageType,
   ) {
     try {
       const uploadJobs = files.map((file) => {
@@ -47,6 +49,7 @@ export class ImageService {
             folder,
             applicableId,
             applicableType,
+            imageType,
           },
           children: [
             {
@@ -94,6 +97,7 @@ export class ImageService {
     folder: string,
     applicableId: string,
     applicableType: EImage,
+    imageType?: EImageType,
   ) {
     try {
       const [rootJob, failedUploadJobs] = await Promise.all([
@@ -105,6 +109,7 @@ export class ImageService {
             folder,
             applicableId,
             applicableType,
+            imageType,
           },
           children: [
             {

@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { AssignPermissionToRoleCommand } from "./command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "./command/user/add-profile-picture/add-profile-picture.command"
+import { AddThumbnailCommand } from "./command/user/add-thumbnail/add-thumbnail.command"
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "./command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
@@ -33,6 +34,9 @@ export class UserService {
     return this.commandBus.execute(updateUsernameCommand)
   }
   addProfilePicture(command: AddProfilePictureCommand) {
+    return this.commandBus.execute(command)
+  }
+  addThumbnail(command: AddThumbnailCommand) {
     return this.commandBus.execute(command)
   }
   updateProfilePicture(command: UpdateProfilePictureCommand) {

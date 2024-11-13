@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
 import { BaseEntity } from "src/common/entity"
+import { EImageType } from "../enum/image-type.enum"
 import { EImage } from "../enum/image.enum"
 
 interface ImageProps {
@@ -8,6 +9,7 @@ interface ImageProps {
   publicId: string // Cloudinary public_id for deletion
   applicableId: string
   applicableType: EImage
+  imageType: EImageType
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -17,6 +19,7 @@ export class Image extends BaseEntity {
   private _publicId: string // Cloudinary public_id for deletion
   private _applicableId: string
   private _applicableType: EImage
+  private _imageType: EImageType
   constructor(props: ImageProps) {
     super()
     this._id = props.id || randomUUID()
@@ -24,6 +27,7 @@ export class Image extends BaseEntity {
     this._publicId = props.publicId
     this._applicableId = props.applicableId
     this._applicableType = props.applicableType
+    this._imageType = props.imageType
     this._createdAt = props.createdAt
     this._updatedAt = props.updatedAt
     this._deletedAt = props.deletedAt
@@ -46,6 +50,12 @@ export class Image extends BaseEntity {
 
   get applicableType(): EImage {
     return this._applicableType
+  }
+  get imageType(): EImageType {
+    return this._imageType
+  }
+  set imageType(value: EImageType) {
+    this._imageType = value
   }
   set url(value: string) {
     this._url = value

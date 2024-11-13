@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
 import { Image } from "../entity/image.entity"
+import { EImageType } from "../enum/image-type.enum"
 import { EImage } from "../enum/image.enum"
 
 interface ImageCreationProps {
@@ -7,6 +8,7 @@ interface ImageCreationProps {
   publicId: string // Cloudinary public_id for deletion
   applicableId: string
   applicableType: EImage
+  imageType?: EImageType
 }
 
 export class ImageFactory {
@@ -17,6 +19,7 @@ export class ImageFactory {
       publicId: props.publicId,
       applicableId: props.applicableId,
       applicableType: props.applicableType,
+      imageType: props.imageType,
       createdAt: new Date(),
     })
   }

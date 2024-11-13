@@ -30,6 +30,7 @@ import { TokenPayload } from "src/common/interface"
 import { AssignPermissionToRoleCommand } from "../application/command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "../application/command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "../application/command/user/add-profile-picture/add-profile-picture.command"
+import { AddThumbnailCommand } from "../application/command/user/add-thumbnail/add-thumbnail.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
@@ -52,6 +53,7 @@ import { GetAllRolesRequestDto } from "./http/dto/request/role/get-all-roles.req
 import { GetUserPermissionsRequestDto } from "./http/dto/request/role/get-user-permissions.request.dto"
 import { GetUserRolesRequestDto } from "./http/dto/request/role/get-user-roles.request.dto"
 import { AddProfilePictureRequestDto } from "./http/dto/request/user/add-profile-picture.request.dto"
+import { AddThumbnailRequestDto } from "./http/dto/request/user/add-thumbnail.request.dto"
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
@@ -190,7 +192,30 @@ export class UserController {
     const command = new AddProfilePictureCommand({ userId: user.id, picture })
     await this.userService.addProfilePicture(command)
   }
-
+  // POST: Add thumbnail
+  @ApiOperationDecorator({
+    summary: "Add thumbnail",
+    description: "Add thumbnail of the user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.updateThumbnail.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.updateThumbnail.notFound,
+    type: null,
+    auth: true,
+    fileFieldName: "thumbnail",
+  })
+  @Permission([Permissions.Users.Update])
+  @ResponseMessage(SuccessMessages.user.ADD_THUMBNAIL)
+  @UseInterceptors(FileInterceptor("thumbnail"))
+  @Post("thumbnail/add")
+  async addThumbnail(
+    @Body() dto: AddThumbnailRequestDto,
+    @UploadedFile(new FileValidationPipe()) thumbnail: Express.Multer.File,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const command = new AddThumbnailCommand({ userId: user.id, thumbnail })
+    await this.userService.addThumbnail(command)
+  }
   // PATCH: Update profile picture
   // @ApiOperationDecorator({
   //   summary: "Update profile picture",

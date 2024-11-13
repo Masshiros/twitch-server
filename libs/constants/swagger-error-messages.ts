@@ -106,6 +106,10 @@ export const SwaggerErrorMessages = {
       badRequest: ["Data from client can not be empty", "Unauthorized"],
       notFound: ["User not found"],
     },
+    updateThumbnail: {
+      badRequest: ["Data from client can not be empty", "Unauthorized"],
+      notFound: ["User not found"],
+    },
     getUser: {
       badRequest: ["User id can not be empty"],
       notFound: ["User not found"],

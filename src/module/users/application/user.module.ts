@@ -25,6 +25,7 @@ import { ToggleTwoFaCommandHandler } from "./command/auth/toggle-two-fa/toggle-t
 import { AssignPermissionToRoleHandler } from "./command/role/assign-permission-to-role/assign-permission-to-role.handler"
 import { AssignRoleToUserHandler } from "./command/role/assign-role-to-user/assign-role-to-user.handler"
 import { AddProfilePictureHandler } from "./command/user/add-profile-picture/add-profile-picture.handler"
+import { AddThumbnailHandler } from "./command/user/add-thumbnail/add-thumbnail.handler"
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
@@ -47,6 +48,7 @@ const commandHandlers = [
   UpdateBioCommandHandler,
   UpdateUsernameCommandHandler,
   AddProfilePictureHandler,
+  AddThumbnailHandler,
   UpdateProfilePictureHandler,
   SignInCommandHandler,
   ToggleTwoFaCommandHandler,

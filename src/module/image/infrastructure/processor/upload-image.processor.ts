@@ -48,10 +48,12 @@ export class ImageUploadProcessor extends WorkerHost {
   async process(job: Job, token?: string): Promise<any> {
     let result
     try {
-      const { file, folder, applicableId, applicableType } = job.data
+      const { file, folder, applicableId, applicableType, imageType } = job.data
       result = await this.cloudinaryService.uploadImage(
         file,
-        `${folder}/${applicableId}`,
+        imageType
+          ? `${folder}/${imageType}/${applicableId}`
+          : `${folder}/${applicableId}`,
       )
       console.log(result)
       if (!result || result === null) {
@@ -68,6 +70,7 @@ export class ImageUploadProcessor extends WorkerHost {
         publicId: result.public_id,
         applicableId,
         applicableType,
+        imageType,
       })
       // Save the image in the repository
       await this.imageRepository.save(image)
