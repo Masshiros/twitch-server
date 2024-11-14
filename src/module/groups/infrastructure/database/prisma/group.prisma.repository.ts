@@ -700,22 +700,13 @@ export class GroupPrismaRepository implements IGroupRepository {
         where: { groupId: group.id, deletedAt: null },
         ...(offset !== null ? { skip: offset } : {}),
         ...(limit !== null ? { take: limit } : {}),
-        select: {
-          memberId: true,
-        },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!members) {
         return []
       }
-      const ids = members.map((member) => member.memberId)
-      const queryMember = await this.prismaService.groupMember.findMany({
-        where: { memberId: { in: ids } },
-        orderBy: { [orderBy]: order },
-      })
-      if (!queryMember) {
-        return []
-      }
-      const result = queryMember.map((e) => {
+
+      const result = members.map((e) => {
         const member = GroupMemberMapper.toDomain(e)
         return member
       })

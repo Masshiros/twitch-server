@@ -373,6 +373,10 @@ export const SwaggerErrorMessages = {
       ],
       notFound: ["Owner not found", "Friend not found"],
     },
+    getMembers: {
+      badRequest: ["User id can not be empty", "Group id can not be empty"],
+      notFound: ["User not found", "Group not found"],
+    },
     createGroupPost: {
       badRequest: [
         "User id can not be empty",

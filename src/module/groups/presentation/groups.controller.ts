@@ -36,6 +36,7 @@ import { GroupsService } from "../application/groups.service"
 import { GetGroupQuery } from "../application/query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "../application/query/get-joined-groups/get-joined-groups.query"
 import { GetManageGroupQuery } from "../application/query/get-manage-groups/get-manage-groups.query"
+import { GetMembersQuery } from "../application/query/get-members/get-members.query"
 import { GetPendingRequestsQuery } from "../application/query/get-pending-requests/get-pending-requests.query"
 import { AcceptRequestRequestDto } from "./http/dto/request/accept-request.request.dto"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
@@ -497,5 +498,25 @@ export class GroupsController {
       groupId,
     })
     await this.service.rejectGroupPost(command)
+  }
+  //get: get group's members
+  @ApiOperationDecorator({
+    summary: "Get group's members",
+    description: "Get group's members by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.getMembers.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.groups.getMembers.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Groups.Read])
+  @ResponseMessage(SuccessMessages.groups.GET_MEMBERS)
+  @Get("/group-member/:groupId")
+  async getGroupMembers(
+    @Param("groupId") groupId: string,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    // console.log(data)
+    const query = new GetMembersQuery({ groupId: groupId, userId: user.id })
+    return await this.service.getMembers(query)
   }
 }

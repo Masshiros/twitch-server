@@ -30,9 +30,12 @@ export class RefreshTokenCommandHandler {
           secret: config.JWT_SECRET_REFRESH_TOKEN,
         })
       const user = await this.userRepository.findById(sub)
-      const roles = await this.userRepository.getUserRoles(user)
+      const [roles, permissions] = await Promise.all([
+        this.userRepository.getUserRoles(user),
+        this.userRepository.getUserPermissions(user),
+      ])
+
       const roleNames = roles.map((r) => r.name)
-      const permissions = await this.userRepository.getUserPermissions(user)
       const permissionNames = permissions.map((p) => p.name)
       const accessTokenPayload: TokenPayload = {
         sub: user.id,
