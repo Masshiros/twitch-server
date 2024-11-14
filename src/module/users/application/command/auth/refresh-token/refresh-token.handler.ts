@@ -29,25 +29,30 @@ export class RefreshTokenCommandHandler {
         await this.userRepository.decodeToken(refreshToken, {
           secret: config.JWT_SECRET_REFRESH_TOKEN,
         })
+      const user = await this.userRepository.findById(sub)
+      const roles = await this.userRepository.getUserRoles(user)
+      const roleNames = roles.map((r) => r.name)
+      const permissions = await this.userRepository.getUserPermissions(user)
+      const permissionNames = permissions.map((p) => p.name)
       const accessTokenPayload: TokenPayload = {
-        sub,
-        email,
-        username,
+        sub: user.id,
+        email: user.email,
+        username: user.name,
         tokenType: tokenType.AccessToken,
         deviceId: deviceId,
-        role,
-        permission,
-        status,
+        role: roleNames,
+        permission: permissionNames,
+        status: user.status,
       }
       const refreshTokenPayload: TokenPayload = {
-        sub,
-        email,
-        username,
+        sub: user.id,
+        email: user.email,
+        username: user.name,
         tokenType: tokenType.RefreshToken,
         deviceId: deviceId,
-        role,
-        permission,
-        status,
+        role: roleNames,
+        permission: permissionNames,
+        status: user.status,
       }
       const [newAccessToken, newRefreshToken] = await Promise.all([
         this.userRepository.generateToken(accessTokenPayload, {
