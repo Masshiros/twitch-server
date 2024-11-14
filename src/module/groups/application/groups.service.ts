@@ -4,6 +4,7 @@ import { AcceptInvitationCommand } from "./command/accept-invitation/accept-invi
 import { AcceptRequestCommand } from "./command/accept-request/accept-request.command"
 import { AddCoverImageCommand } from "./command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "./command/add-description/add-description.command"
+import { CreateGroupPostCommand } from "./command/create-group-post/create-group-post.command"
 import { CreateGroupCommand } from "./command/create-group/create-group.command"
 import { InviteMembersCommand } from "./command/invite-members/invite-members.command"
 import { RejectInvitationCommand } from "./command/reject-invitation/reject-invitation.command"
@@ -57,6 +58,9 @@ export class GroupsService {
     return this.commandBus.execute(command)
   }
   async rejectRequest(command: RejectRequestCommand) {
+    return this.commandBus.execute(command)
+  }
+  async createGroupPost(command: CreateGroupPostCommand) {
     return this.commandBus.execute(command)
   }
 }

@@ -6,9 +6,10 @@ import {
   Post,
   Query,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from "@nestjs/common"
-import { FileInterceptor } from "@nestjs/platform-express"
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express"
 import { ApiTags } from "@nestjs/swagger"
 import { Permissions } from "libs/constants/permissions"
 import { SuccessMessages } from "libs/constants/success"
@@ -23,6 +24,7 @@ import { AcceptInvitationCommand } from "../application/command/accept-invitatio
 import { AcceptRequestCommand } from "../application/command/accept-request/accept-request.command"
 import { AddCoverImageCommand } from "../application/command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "../application/command/add-description/add-description.command"
+import { CreateGroupPostCommand } from "../application/command/create-group-post/create-group-post.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
 import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
 import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
@@ -36,6 +38,7 @@ import { GetPendingRequestsQuery } from "../application/query/get-pending-reques
 import { AcceptRequestRequestDto } from "./http/dto/request/accept-request.request.dto"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
+import { CreateGroupPostRequestDto } from "./http/dto/request/create-group-post.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
 import { GetManageGroupRequestDto } from "./http/dto/request/get-manage-group.request.dto"
@@ -131,8 +134,8 @@ export class GroupsController {
   }
   // Post: Invite members
   @ApiOperationDecorator({
-    summary: "Add description to a group",
-    description: "Add a description to group by admin",
+    summary: "Invite a person to join a group",
+    description: "Invite a person to join a group by member",
     listBadRequestErrorMessages:
       SwaggerErrorMessages.groups.inviteMembers.badRequest,
     listNotFoundErrorMessages:
@@ -396,5 +399,39 @@ export class GroupsController {
     query.limit = data.limit ?? 5
     query.offset = data.page ? (data.page - 1) * data.limit : null
     return await this.service.getPendingRequests(query)
+  }
+  // post: create group post
+  @ApiOperationDecorator({
+    summary: "Create group post",
+    description: "Create group post by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.createGroupPost.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.createGroupPost.notFound,
+    auth: true,
+    fileFieldName: "images",
+  })
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
+  @ResponseMessage(SuccessMessages.groups.CREATE_GROUP_POST)
+  @UseInterceptors(FilesInterceptor("images"))
+  @Post("/post")
+  async createGroupPost(
+    @Body() data: CreateGroupPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+    @Query("groupId") groupId: string,
+    @UploadedFiles() images: Express.Multer.File[],
+  ): Promise<void> {
+    // console.log(data)
+    const command = new CreateGroupPostCommand({
+      ...data,
+      images,
+      groupId,
+      userId: user.id,
+    })
+    await this.service.createGroupPost(command)
   }
 }

@@ -10,6 +10,7 @@ import { AcceptInvitationHandler } from "./command/accept-invitation/accept-invi
 import { AcceptRequestHandler } from "./command/accept-request/accept-request.handler"
 import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.handler"
 import { AddDescriptionHandler } from "./command/add-description/add-description.handler"
+import { CreateGroupPostHandler } from "./command/create-group-post/create-group-post.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
 import { InviteMembersHandler } from "./command/invite-members/invite-members.handler"
 import { RejectInvitationHandler } from "./command/reject-invitation/reject-imvitation.handler"
@@ -23,6 +24,7 @@ import { GetPendingRequestsHandler } from "./query/get-pending-requests/get-pend
 
 const commandHandlers = [
   CreateGroupHandler,
+  CreateGroupPostHandler,
   AddCoverImageHandler,
   AddDescriptionHandler,
   InviteMembersHandler,

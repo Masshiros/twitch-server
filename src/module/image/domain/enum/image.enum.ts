@@ -3,4 +3,5 @@ export enum EImage {
   POST = "post",
   CATEGORY = "category",
   GROUP = "group",
+  GROUP_POST = "group-post",
 }

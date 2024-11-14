@@ -4,5 +4,6 @@ export const Folder = {
     user_post: "image/user-post",
     category: "image/category",
     group: "image/group",
+    group_post: "image/group/post",
   },
 }

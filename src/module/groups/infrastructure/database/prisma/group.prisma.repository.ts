@@ -330,10 +330,11 @@ export class GroupPrismaRepository implements IGroupRepository {
         if (taggedUserIds && taggedUserIds.length > 0) {
           const taggedUsersData = taggedUserIds.map((taggedUserId) => ({
             postId: post.id,
+            groupId: post.groupId,
             taggedUserId,
           }))
 
-          await prisma.postTaggedUser.createMany({ data: taggedUsersData })
+          await prisma.groupPostTaggedUser.createMany({ data: taggedUsersData })
         }
         if (taggedGroup && taggedGroup.length > 0) {
           taggedGroup.map(async (e) => {

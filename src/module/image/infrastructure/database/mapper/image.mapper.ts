@@ -55,6 +55,8 @@ export class ImageMapper {
         return DomainApplicableType.CATEGORY
       case "GROUP":
         return DomainApplicableType.GROUP
+      case "GROUP_POST":
+        return DomainApplicableType.GROUP_POST
       default:
         throw new Error(`Unknown Prisma Enum value: ${prismaEnum}`)
     }
@@ -73,6 +75,8 @@ export class ImageMapper {
         return "CATEGORY"
       case DomainApplicableType.GROUP:
         return "GROUP"
+      case DomainApplicableType.GROUP_POST:
+        return "GROUP_POST"
       default:
         throw new Error(`Unknown Domain Enum value: ${domainEnum}`)
     }
