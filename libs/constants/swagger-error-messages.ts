@@ -391,6 +391,32 @@ export const SwaggerErrorMessages = {
         "Tag group not found",
       ],
     },
+    rejectGroupPost: {
+      badRequest: [
+        "User id can not be empty",
+        "Group id can not be empty",
+        "Group post id can not be empty",
+        "User not found",
+        "Group not found",
+        "Group post not found",
+        "You are not a member of this group",
+        "You do not have permission to do this action",
+      ],
+      notFound: ["User not found", "Group not found", "Group post not found"],
+    },
+    approveGroupPost: {
+      badRequest: [
+        "User id can not be empty",
+        "Group id can not be empty",
+        "Group post id can not be empty",
+        "User not found",
+        "Group not found",
+        "Group post not found",
+        "You are not a member of this group",
+        "You do not have permission to do this action",
+      ],
+      notFound: ["User not found", "Group not found", "Group post not found"],
+    },
 
     addCoverImage: {
       badRequest: [

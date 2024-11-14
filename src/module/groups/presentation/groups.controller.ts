@@ -24,9 +24,11 @@ import { AcceptInvitationCommand } from "../application/command/accept-invitatio
 import { AcceptRequestCommand } from "../application/command/accept-request/accept-request.command"
 import { AddCoverImageCommand } from "../application/command/add-cover-image/add-cover-image.command"
 import { AddDescriptionCommand } from "../application/command/add-description/add-description.command"
+import { ApproveGroupPostCommand } from "../application/command/approve-group-post/approve-group-post.command"
 import { CreateGroupPostCommand } from "../application/command/create-group-post/create-group-post.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
 import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
+import { RejectGroupPostCommand } from "../application/command/reject-group-post/reject-group-post.command"
 import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
 import { RejectRequestCommand } from "../application/command/reject-request/reject-request.command"
 import { RequestToJoinGroupCommand } from "../application/command/request-to-join-group/request-to-join-group.command"
@@ -38,12 +40,14 @@ import { GetPendingRequestsQuery } from "../application/query/get-pending-reques
 import { AcceptRequestRequestDto } from "./http/dto/request/accept-request.request.dto"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
+import { ApproveGroupPostRequestDto } from "./http/dto/request/approve-group-post.request.dto"
 import { CreateGroupPostRequestDto } from "./http/dto/request/create-group-post.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
 import { GetManageGroupRequestDto } from "./http/dto/request/get-manage-group.request.dto"
 import { GetPendingRequestsRequestDto } from "./http/dto/request/get-pending-requests.request.dto"
 import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
+import { RejectGroupPostRequestDto } from "./http/dto/request/reject-group-post.request.dto"
 import { RejectRequestRequestDto } from "./http/dto/request/reject-request.request.dto"
 import { GetGroupResponseDto } from "./http/dto/response/get-group.response.dto"
 import { GetJoinedGroupResponseDto } from "./http/dto/response/get-joined-group.response.dto"
@@ -433,5 +437,65 @@ export class GroupsController {
       userId: user.id,
     })
     await this.service.createGroupPost(command)
+  }
+  // post: approve group post
+  @ApiOperationDecorator({
+    summary: "Approve group post",
+    description: "Approve group post by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.approveGroupPost.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.approveGroupPost.notFound,
+    auth: true,
+  })
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
+  @ResponseMessage(SuccessMessages.groups.APPROVE_GROUP_POST)
+  @Post("/post-approve/:groupId")
+  async approveGroupPost(
+    @Query() data: ApproveGroupPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+    @Query("groupId") groupId: string,
+  ): Promise<void> {
+    // console.log(data)
+    const command = new ApproveGroupPostCommand({
+      ...data,
+      userId: user.id,
+      groupId,
+    })
+    await this.service.approveGroupPost(command)
+  }
+  // post: reject group post
+  @ApiOperationDecorator({
+    summary: "Reject group post",
+    description: "Reject group post by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.rejectGroupPost.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.rejectGroupPost.notFound,
+    auth: true,
+  })
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
+  @ResponseMessage(SuccessMessages.groups.APPROVE_GROUP_POST)
+  @Post("/post-reject/:groupId")
+  async rejectGroupPost(
+    @Query() data: RejectGroupPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+    @Query("groupId") groupId: string,
+  ): Promise<void> {
+    // console.log(data)
+    const command = new RejectGroupPostCommand({
+      ...data,
+      userId: user.id,
+      groupId,
+    })
+    await this.service.rejectGroupPost(command)
   }
 }

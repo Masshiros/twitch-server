@@ -87,6 +87,8 @@ export const SuccessMessages = {
   groups: {
     CREATE_GROUP: "Create new group successfully",
     CREATE_GROUP_POST: "Create new group post successfully",
+    APPROVE_GROUP_POST: "Approve group post successfully",
+    REJECT_GROUP_POST: "Reject group post successfully",
     GET_PENDING_REQUESTS: "Get pending requests successfully",
     GET_GROUP: "Get group successfully",
     GET_JOINED_GROUP: "Get my joined group successfully",

@@ -10,9 +10,11 @@ import { AcceptInvitationHandler } from "./command/accept-invitation/accept-invi
 import { AcceptRequestHandler } from "./command/accept-request/accept-request.handler"
 import { AddCoverImageHandler } from "./command/add-cover-image/add-cover-image.handler"
 import { AddDescriptionHandler } from "./command/add-description/add-description.handler"
+import { ApproveGroupPostHandler } from "./command/approve-group-post/approve-group-post.handler"
 import { CreateGroupPostHandler } from "./command/create-group-post/create-group-post.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
 import { InviteMembersHandler } from "./command/invite-members/invite-members.handler"
+import { RejectGroupPostHandler } from "./command/reject-group-post/reject-group-post.handler"
 import { RejectInvitationHandler } from "./command/reject-invitation/reject-imvitation.handler"
 import { RejectRequestHandler } from "./command/reject-request/reject-request.handler"
 import { RequestToJoinGroupHandler } from "./command/request-to-join-group/request-to-join-group.handler"
@@ -33,6 +35,8 @@ const commandHandlers = [
   RequestToJoinGroupHandler,
   AcceptRequestHandler,
   RejectRequestHandler,
+  RejectGroupPostHandler,
+  ApproveGroupPostHandler,
 ]
 const queryHandlers = [
   GetGroupHandler,
