@@ -135,7 +135,6 @@ export class UserController {
     if (!userResult.user.lastUsernameChangeAt) {
       allowedChangedUsername = true
       changedUsernameDaysLeft = 0
-      return
     }
 
     const nextAllowedChangeDate = new Date(userResult.user.lastUsernameChangeAt)
@@ -311,7 +310,6 @@ export class UserController {
     if (!userResult.user.lastUsernameChangeAt) {
       allowedChangedUsername = true
       changedUsernameDaysLeft = 0
-      return
     }
 
     const nextAllowedChangeDate = new Date(userResult.user.lastUsernameChangeAt)
