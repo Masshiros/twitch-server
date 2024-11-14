@@ -99,8 +99,7 @@ export class UpdateUsernameCommandHandler {
       )
       throw new CommandError({
         code: CommandErrorCode.BAD_REQUEST,
-        message:
-          "You can only change your username every 60 days. Try again in ${daysLeft} days",
+        message: `You can only change your username every 60 days. Try again in ${daysLeft} days`,
         info: {
           errorCode: CommandErrorDetailCode.USERNAME_CHANGE_INTERVAL_NOT_MET,
         },

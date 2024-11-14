@@ -23,6 +23,10 @@ export class GetUserResponseDto {
   @Expose()
   @Type(() => ImageResponseDto)
   image?: ImageResponseDto
+  @Expose()
+  allowedChangedUsername?: boolean
+  @Expose()
+  changedUsernameDaysLeft?: number
 
   @Expose()
   bio?: string

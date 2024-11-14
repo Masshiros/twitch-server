@@ -128,12 +128,34 @@ export class UserController {
       return null
     }
     // console.log(userResult)
+    const DAYS_LIMIT = 60
+    const currentDate = new Date()
+    let allowedChangedUsername: boolean
+    let changedUsernameDaysLeft: number
+    if (!userResult.user.lastUsernameChangeAt) {
+      allowedChangedUsername = true
+      changedUsernameDaysLeft = 0
+      return
+    }
 
+    const nextAllowedChangeDate = new Date(userResult.user.lastUsernameChangeAt)
+    nextAllowedChangeDate.setDate(nextAllowedChangeDate.getDate() + DAYS_LIMIT)
+
+    if (currentDate >= nextAllowedChangeDate) {
+      allowedChangedUsername = true
+      changedUsernameDaysLeft = 0
+    } else {
+      const timeDiff = nextAllowedChangeDate.getTime() - currentDate.getTime()
+      changedUsernameDaysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24))
+      allowedChangedUsername = false
+    }
     const result: GetUserResponseDto = {
       id: userResult.user.id,
       email: userResult.user.email,
       phone: userResult.user.phone,
       username: userResult.user.name,
+      changedUsernameDaysLeft,
+      allowedChangedUsername,
       displayName: userResult.user.displayName,
       bio: userResult.user.bio,
       thumbnail: userResult.user.thumbnail,
@@ -282,12 +304,34 @@ export class UserController {
     if (!userResult) {
       return null
     }
+    const DAYS_LIMIT = 60
+    const currentDate = new Date()
+    let allowedChangedUsername: boolean
+    let changedUsernameDaysLeft: number
+    if (!userResult.user.lastUsernameChangeAt) {
+      allowedChangedUsername = true
+      changedUsernameDaysLeft = 0
+      return
+    }
 
+    const nextAllowedChangeDate = new Date(userResult.user.lastUsernameChangeAt)
+    nextAllowedChangeDate.setDate(nextAllowedChangeDate.getDate() + DAYS_LIMIT)
+
+    if (currentDate >= nextAllowedChangeDate) {
+      allowedChangedUsername = true
+      changedUsernameDaysLeft = 0
+    } else {
+      const timeDiff = nextAllowedChangeDate.getTime() - currentDate.getTime()
+      changedUsernameDaysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24))
+      allowedChangedUsername = false
+    }
     const result: GetUserResponseDto = {
       id: userResult.user.id,
       email: userResult.user.email,
       phone: userResult.user.phone,
       username: userResult.user.username,
+      changedUsernameDaysLeft,
+      allowedChangedUsername,
       displayName: userResult.user.displayName,
       bio: userResult.user.bio,
       thumbnail: userResult.user.thumbnail,
