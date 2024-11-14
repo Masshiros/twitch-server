@@ -77,6 +77,17 @@ export class UpdateUsernameCommandHandler {
       })
     }
 
+    // validate user name exist
+    if (await this.userRepository.findByUsername(username)) {
+      throw new CommandError({
+        code: CommandErrorCode.BAD_REQUEST,
+        message: "Username already exist",
+        info: {
+          errorCode: CommandErrorDetailCode.USERNAME_EXIST,
+        },
+      })
+    }
+
     const nextAllowedChangeDate = new Date(
       targetUserAggregate.lastUsernameChangeAt,
     )

@@ -99,6 +99,7 @@ export const SwaggerErrorMessages = {
         "Cannot update user without data",
         "Unauthorized to update user",
         "You can only change your username every 60 days. Try again in X days",
+        "Username already exist",
       ],
       notFound: ["User not found"],
     },
