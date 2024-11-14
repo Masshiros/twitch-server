@@ -19,6 +19,7 @@ import { GroupsService } from "./groups.service"
 import { GetGroupHandler } from "./query/get-group/get-group.handler"
 import { GetJoinedGroupHandler } from "./query/get-joined-groups/get-joined-groups.handler"
 import { GetManageGroupHandler } from "./query/get-manage-groups/get-manage-groups.handler"
+import { GetPendingRequestsHandler } from "./query/get-pending-requests/get-pending-requests.handler"
 
 const commandHandlers = [
   CreateGroupHandler,
@@ -35,6 +36,7 @@ const queryHandlers = [
   GetGroupHandler,
   GetJoinedGroupHandler,
   GetManageGroupHandler,
+  GetPendingRequestsHandler,
 ]
 @Module({
   controllers: [GroupsController],

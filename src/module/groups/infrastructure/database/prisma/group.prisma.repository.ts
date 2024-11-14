@@ -197,6 +197,37 @@ export class GroupPrismaRepository implements IGroupRepository {
       })
     }
   }
+  async getCommonGroupBetweenUsers(
+    userId1: string,
+    userId2: string,
+  ): Promise<Group[]> {
+    try {
+      const commonGroupIds = await this.prismaService.$queryRaw<
+        Array<{ groupId: string }>
+      >`SELECT gm1."groupId" as groupId
+      FROM twitch."groupMembers" gm1
+      JOIN twitch."groupMembers" gm2 ON gm1."groupId" = gm2."groupId"
+      WHERE gm1."memberId" = '${userId1}'
+        AND gm2."memberId" = '${userId2}'
+        AND gm1."deletedAt" IS NULL 
+        AND gm2."deletedAt" IS NULL
+      `
+
+      if (!commonGroupIds || commonGroupIds.length === 0) {
+        return []
+      }
+      const groupIds = commonGroupIds.map((i) => i.groupId)
+      const groups = await this.prismaService.group.findMany({
+        where: { id: { in: groupIds } },
+      })
+      if (!groups || groups.length === 0) {
+        return []
+      }
+      return groups.map((g) => GroupMapper.toDomain(g)) ?? []
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
   async addPost(
     post: GroupPost,
     taggedUserIds?: string[] | null,
@@ -520,7 +551,7 @@ export class GroupPrismaRepository implements IGroupRepository {
       const ids = requests.map((e) => e.id)
       const queryRequests = await this.prismaService.memberRequest.findMany({
         where: { id: { in: ids } },
-        orderBy: { [orderBy]: order },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!queryRequests) {
         return []

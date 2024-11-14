@@ -26,7 +26,10 @@ export abstract class IGroupRepository {
       order?: "asc" | "desc"
     },
   ) => Promise<Group[]>
-
+  getCommonGroupBetweenUsers: (
+    userId1: string,
+    userId2: string,
+  ) => Promise<Group[]>
   // group -posts
   addPost: (
     post: GroupPost,
@@ -54,6 +57,7 @@ export abstract class IGroupRepository {
       order?: "asc" | "desc"
     },
   ) => Promise<GroupPost[]>
+
   // group request member
   addRequest: (request: MemberRequest) => Promise<void>
   findRequestById: (requestId: string) => Promise<MemberRequest | null>

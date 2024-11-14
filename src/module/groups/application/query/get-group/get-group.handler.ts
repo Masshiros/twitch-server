@@ -6,11 +6,13 @@ import {
 } from "libs/exception/application/query"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { EGroupPostStatus } from "src/module/groups/domain/enum/group-post-status.enum"
 import { EGroupPrivacy } from "src/module/groups/domain/enum/group-privacy.enum"
 import { EGroupRole } from "src/module/groups/domain/enum/group-role.enum"
 import { EGroupVisibility } from "src/module/groups/domain/enum/group-visibility.enum"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetGroupQuery } from "./get-group.query"
 import { GetGroupResult } from "./get-group.result"
@@ -89,25 +91,30 @@ export class GetGroupHandler {
             content: r.content
           }
         })
-        posts = groupPosts.map(async (p) => {
-          const [images, owner] = await Promise.all([
-            this.imageService.getImageByApplicableId(p.id),
-            this.userRepository.findById(p.userId),
-          ])
-          const ownerAvatar = await this.imageService.getImageByApplicableId(
-            owner.id,
-          )
-          return {
-            user: {
-              id: owner.id,
-              username: owner?.name ?? "",
-              avatar: ownerAvatar[0]?.url ?? "",
-            },
-            createdAt: p.createdAt.toISOString().split("T")[0],
-            content: p.content,
-            images: images?.map((i) => ({ url: i.url })) ?? [],
-          }
-        })
+        posts = groupPosts
+          .filter((e) => e.status === EGroupPostStatus.APPROVED)
+          .map(async (p) => {
+            const [images, owner] = await Promise.all([
+              this.imageService.getImageByApplicableId(p.id),
+              this.userRepository.findById(p.userId),
+            ])
+            const ownerImages = await this.imageService.getImageByApplicableId(
+              owner.id,
+            )
+            const ownerAvatar = ownerImages.find(
+              (e) => e.imageType === EImageType.AVATAR,
+            )
+            return {
+              user: {
+                id: owner.id,
+                username: owner?.name ?? "",
+                avatar: ownerAvatar[0]?.url ?? "",
+              },
+              createdAt: p.createdAt.toISOString().split("T")[0],
+              content: p.content,
+              images: images?.map((i) => ({ url: i.url })) ?? [],
+            }
+          })
       } else if (
         !member &&
         group.visibility === EGroupVisibility.PRIVATE &&
@@ -128,7 +135,7 @@ export class GetGroupHandler {
         privacy: group.privacy,
         visibility: group.visibility,
         coverImage: coverImage[0]?.url ?? "",
-        description: group.description,
+        description,
         rules,
         posts,
         isAdmin,

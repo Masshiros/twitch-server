@@ -32,12 +32,14 @@ import { GroupsService } from "../application/groups.service"
 import { GetGroupQuery } from "../application/query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "../application/query/get-joined-groups/get-joined-groups.query"
 import { GetManageGroupQuery } from "../application/query/get-manage-groups/get-manage-groups.query"
+import { GetPendingRequestsQuery } from "../application/query/get-pending-requests/get-pending-requests.query"
 import { AcceptRequestRequestDto } from "./http/dto/request/accept-request.request.dto"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
 import { AddDescriptionRequestDto } from "./http/dto/request/add-description.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
 import { GetManageGroupRequestDto } from "./http/dto/request/get-manage-group.request.dto"
+import { GetPendingRequestsRequestDto } from "./http/dto/request/get-pending-requests.request.dto"
 import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
 import { RejectRequestRequestDto } from "./http/dto/request/reject-request.request.dto"
 import { GetGroupResponseDto } from "./http/dto/response/get-group.response.dto"
@@ -98,6 +100,7 @@ export class GroupsController {
       image: image,
       groupId: param,
     })
+    console.log(command)
     await this.service.addCoverImage(command)
   }
   // post: add description
@@ -123,6 +126,7 @@ export class GroupsController {
       description: data.description,
       userId: user.id,
     })
+    console.log(command)
     await this.service.addDescription(command)
   }
   // Post: Invite members
@@ -148,6 +152,7 @@ export class GroupsController {
       friendIds: data.friendIds,
       groupId: param,
     })
+    console.log(command)
     await this.service.inviteMembers(command)
   }
   // POST: Accept invitation
@@ -172,6 +177,7 @@ export class GroupsController {
       groupId: param,
       userId: user.id,
     })
+    console.log(command)
     await this.service.acceptInvitation(command)
   }
   // POST: Reject invitation
@@ -196,6 +202,7 @@ export class GroupsController {
       groupId: param,
       userId: user.id,
     })
+    console.log(command)
     await this.service.rejectInvitation(command)
   }
   // Post: Request to join group
@@ -220,6 +227,7 @@ export class GroupsController {
       groupId: param,
       userId: user.id,
     })
+    console.log(command)
     await this.service.requestToJoinGroup(command)
   }
   // Post: Accept request
@@ -249,6 +257,7 @@ export class GroupsController {
       groupId: param,
       requestUserId: data.requestUserId,
     })
+    console.log(command)
     await this.service.acceptRequest(command)
   }
   // Post: Reject request
@@ -278,6 +287,7 @@ export class GroupsController {
       userId: user.id,
       requestUserId: data.requestUserId,
     })
+    console.log(command)
     await this.service.rejectRequest(command)
   }
   // GET: get group
@@ -300,6 +310,7 @@ export class GroupsController {
       groupId: param,
       userId: user.id,
     })
+    console.log(query)
     return await this.service.getGroup(query)
   }
   // GET: Get joined group
@@ -337,7 +348,11 @@ export class GroupsController {
       SwaggerErrorMessages.groups.getManageGroups.notFound,
     auth: true,
   })
-  @Permission([Permissions.Groups.Read])
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
   @ResponseMessage(SuccessMessages.groups.GET_MANAGE_GROUP)
   @Get("/me/manage-group")
   async getManageGroup(
@@ -351,5 +366,35 @@ export class GroupsController {
     query.limit = data.limit ?? 5
     query.offset = data.page ? (data.page - 1) * data.limit : null
     return await this.service.getManageGroup(query)
+  }
+  // GET: Get pending requests
+  @ApiOperationDecorator({
+    summary: "Get pending requests",
+    description: "Get pending requests by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.getPendingRequests.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.getPendingRequests.notFound,
+    auth: true,
+  })
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
+  @ResponseMessage(SuccessMessages.groups.GET_PENDING_REQUESTS)
+  @Get("/:groupId/pending-requests")
+  async getPendingRequests(
+    @Param("groupId") param: string,
+    @Query() data: GetPendingRequestsRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetManageGroupResponseDto> {
+    const query = new GetPendingRequestsQuery({
+      groupId: param,
+      userId: user.id,
+    })
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return await this.service.getPendingRequests(query)
   }
 }
