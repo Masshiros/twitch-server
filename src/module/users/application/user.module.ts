@@ -29,6 +29,7 @@ import { AddThumbnailHandler } from "./command/user/add-thumbnail/add-thumbnail.
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
+import { UpdateDisplayNameHandler } from "./command/user/update-display-name/update-display-name.handler"
 import { UpdateProfilePictureHandler } from "./command/user/update-profile-picture/update-profile-picture.handler"
 import { UpdateUsernameCommandHandler } from "./command/user/update-username/update-username.handler"
 import { GetListDeviceQueryHandler } from "./query/device/get-list-device/get-list-device.handler"
@@ -47,6 +48,7 @@ const commandHandlers = [
   DeleteUserCommandHandler,
   UpdateBioCommandHandler,
   UpdateUsernameCommandHandler,
+  UpdateDisplayNameHandler,
   AddProfilePictureHandler,
   AddThumbnailHandler,
   UpdateProfilePictureHandler,

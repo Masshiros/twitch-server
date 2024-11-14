@@ -14,6 +14,7 @@ export type CreateUserAggregateParams = {
 
   email?: string
   name?: string
+  displayName?: string
   slug?: string
   password?: string
   phoneNumber?: string
@@ -46,7 +47,7 @@ export class UserFactory {
     return new UserAggregate(
       {
         name,
-        displayName: params.name ?? "",
+        displayName: params.displayName ?? "",
         slug,
         email: params.email ?? "",
         password: (await hashPassword(params.password)) ?? "",

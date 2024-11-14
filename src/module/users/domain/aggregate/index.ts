@@ -21,7 +21,7 @@ import { EUserStatus } from "../enum/user-status.enum"
 
 interface UserAggregateProps {
   name: string
-  displayName: string
+  displayName?: string
   slug: string
   email: string
   password: string

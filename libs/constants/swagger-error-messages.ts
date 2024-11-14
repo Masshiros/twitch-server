@@ -102,6 +102,14 @@ export const SwaggerErrorMessages = {
       ],
       notFound: ["User not found"],
     },
+    updateDisplayname: {
+      badRequest: [
+        "Update user id can not be empty",
+        "Cannot update user without data",
+        "Unauthorized to update user",
+      ],
+      notFound: ["User not found"],
+    },
     updateProfilePicture: {
       badRequest: ["Data from client can not be empty", "Unauthorized"],
       notFound: ["User not found"],
@@ -465,6 +473,10 @@ export const SwaggerErrorMessages = {
     getManageGroups: {
       badRequest: ["User id can not be empty"],
       notFound: ["User not found"],
+    },
+    getPendingRequests: {
+      badRequest: ["User id can not be empty", "Group id can not be empty"],
+      notFound: ["User not found", "Group not found"],
     },
   },
 }

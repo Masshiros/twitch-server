@@ -34,6 +34,7 @@ import { AddThumbnailCommand } from "../application/command/user/add-thumbnail/a
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
+import { UpdateDisplayNameCommand } from "../application/command/user/update-display-name/update-display-name.command"
 import { UpdateProfilePictureCommand } from "../application/command/user/update-profile-picture/update-profile-picture.command"
 import { UpdateUsernameCommand } from "../application/command/user/update-username/update-username.command"
 import { GetListDeviceQuery } from "../application/query/device/get-list-device/get-list-device.query"
@@ -59,6 +60,7 @@ import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.requ
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
 import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activate.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
+import { UpdateDisplaynameRequestDto } from "./http/dto/request/user/update-display-name.request.dto"
 import { UpdateProfilePictureRequestDto } from "./http/dto/request/user/update-profile-picture.request.dto"
 import { UpdateUsernameRequestDto } from "./http/dto/request/user/update-username.request.dto"
 import { PermissionResponseDto } from "./http/dto/response/role/permission.response.dto"
@@ -168,7 +170,27 @@ export class UserController {
     command.id = user.id
     await this.userService.updateUsername(command)
   }
-
+  // PATCH: Update Displayname
+  @ApiOperationDecorator({
+    summary: "Update displayname",
+    description: "Updates the displayname of the user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.updateDisplayname.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.updateDisplayname.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Users.Update])
+  @ResponseMessage(SuccessMessages.user.UPDATE_USERNAME)
+  @Patch("/update-display-name")
+  async updateDisplayname(
+    @CurrentUser() user: UserAggregate,
+    @Body() body: UpdateDisplaynameRequestDto,
+  ) {
+    const command = new UpdateDisplayNameCommand(body)
+    command.id = user.id
+    await this.userService.updateDisplayname(command)
+  }
   // POST: Add profile picture
   @ApiOperationDecorator({
     summary: "Add profile picture",

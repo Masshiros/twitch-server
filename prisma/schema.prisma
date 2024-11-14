@@ -15,7 +15,7 @@ enum EUserStatus{
 model User {
   id                    String                   @id @default(uuid())
   name                  String                   @unique
-  displayName           String
+  displayName           String?
   slug                  String
   email                 String                   @unique
   password              String
