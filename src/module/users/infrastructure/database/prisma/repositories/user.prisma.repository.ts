@@ -268,6 +268,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async update(user: UserAggregate): Promise<void> {
     try {
+      // console.log(user)
       const { id } = user
       let foundUser = await this.prismaService.user.findUnique({
         where: { id },

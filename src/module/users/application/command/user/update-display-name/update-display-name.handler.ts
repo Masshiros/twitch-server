@@ -17,7 +17,7 @@ export class UpdateDisplayNameHandler {
   ) {}
   async execute(
     command: UpdateDisplayNameCommand,
-    currentUser: { id: string; username: string },
+    // currentUser: { id: string; username: string },
   ) {
     const { id: targetUserId, displayName } = command
     // validate user id
@@ -41,15 +41,15 @@ export class UpdateDisplayNameHandler {
       })
     }
     // validate current user's id equal target user's id
-    if (targetUserId !== currentUser.id) {
-      throw new CommandError({
-        code: CommandErrorCode.BAD_REQUEST,
-        message: "Unauthorized to update user",
-        info: {
-          errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-        },
-      })
-    }
+    // if (targetUserId !== currentUser.id) {
+    //   throw new CommandError({
+    //     code: CommandErrorCode.BAD_REQUEST,
+    //     message: "Unauthorized to update user",
+    //     info: {
+    //       errorCode: CommandErrorDetailCode.UNAUTHORIZED,
+    //     },
+    //   })
+    // }
     // validate target user exist
     const targetUserAggregate: UserAggregate | null =
       await this.userRepository.findById(targetUserId)
@@ -64,20 +64,20 @@ export class UpdateDisplayNameHandler {
       })
     }
     // validate current user exist
-    const currentUserAggregate: UserAggregate | null =
-      await this.userRepository.findById(currentUser.id)
+    // const currentUserAggregate: UserAggregate | null =
+    //   await this.userRepository.findById(currentUser.id)
 
-    if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
-      throw new CommandError({
-        code: CommandErrorCode.BAD_REQUEST,
-        message: "Unauthorized",
-        info: {
-          errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-        },
-      })
-    }
+    // if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
+    //   throw new CommandError({
+    //     code: CommandErrorCode.BAD_REQUEST,
+    //     message: "Unauthorized",
+    //     info: {
+    //       errorCode: CommandErrorDetailCode.UNAUTHORIZED,
+    //     },
+    //   })
+    // }
 
-    if (!displayName) {
+    if (displayName) {
       targetUserAggregate.displayName = displayName
     }
     await this.userRepository.update(targetUserAggregate)
