@@ -127,6 +127,11 @@ export const SwaggerErrorMessages = {
       badRequest: ["User id can not be empty"],
       notFound: ["User not found"],
     },
+    isValidUsername: {
+      badRequest: ["Username can not be empty"],
+      notFound: ["Username already exists"],
+    },
+
     assignRoleToUser: {
       badRequest: ["User Id can not be empty"],
       notFound: ["User not found", "Role not found"],

@@ -18,6 +18,7 @@ import { GetUserPermissionsQuery } from "./query/role/get-user-permissions/get-u
 import { GetUserRoleQuery } from "./query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "./query/user/get-user/get-user.query"
+import { IsValidUserNameQuery } from "./query/user/is-valid-username/is-valid-username.query"
 
 @Injectable()
 export class UserService {
@@ -77,6 +78,9 @@ export class UserService {
     return this.queryBus.execute(query)
   }
   getUserPermissions(query: GetUserPermissionsQuery) {
+    return this.queryBus.execute(query)
+  }
+  isValidUserName(query: IsValidUserNameQuery) {
     return this.queryBus.execute(query)
   }
 }

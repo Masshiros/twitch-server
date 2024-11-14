@@ -40,6 +40,7 @@ import { GetUserPermissionsHandler } from "./query/role/get-user-permissions/get
 import { GetUserRoleHandler } from "./query/role/get-user-role/get-user-role.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
+import { IsValidUserNameHandler } from "./query/user/is-valid-username/is-valid-username.handler"
 import { UserService } from "./user.service"
 
 const commandHandlers = [
@@ -75,6 +76,7 @@ const queryHandlers = [
   GetUserRoleHandler,
   GetAllPermissionsHandler,
   GetUserPermissionsHandler,
+  IsValidUserNameHandler,
 ]
 @Module({
   controllers: [AuthController, UserController],

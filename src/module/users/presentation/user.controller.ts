@@ -45,6 +45,7 @@ import { GetUserPermissionsQuery } from "../application/query/role/get-user-perm
 import { GetUserRoleQuery } from "../application/query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
+import { IsValidUserNameQuery } from "../application/query/user/is-valid-username/is-valid-username.query"
 import { UserService } from "../application/user.service"
 import { UserAggregate } from "../domain/aggregate"
 import { AssignPermissionsToRoleRequestDto } from "./http/dto/request/role/assign-permission-to-role.request.dto"
@@ -58,6 +59,7 @@ import { AddThumbnailRequestDto } from "./http/dto/request/user/add-thumbnail.re
 import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.request.dto"
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
+import { IsValidUserNameRequestDto } from "./http/dto/request/user/is-valid-username.request.dto"
 import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activate.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateDisplaynameRequestDto } from "./http/dto/request/user/update-display-name.request.dto"
@@ -397,13 +399,31 @@ export class UserController {
     listNotFoundErrorMessages:
       SwaggerErrorMessages.user.toggleActivate.notFound,
     type: ToggleActivateRequestDto,
+    auth: true,
   })
-  @Permission([Permissions.Users.Create])
   @ResponseMessage(SuccessMessages.user.TOGGLE_ACTIVATE)
   @Post("/toggle-activate")
   async toggleActivate(@Body() body: ToggleActivateRequestDto) {
     const command = new ToggleActivateCommand(body)
     await this.userService.toggleActivate(command)
+  }
+  // get: is valid user name(boolean)
+  @ApiOperationDecorator({
+    summary: "Is valid user name",
+    description: "Check username is valid",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.isValidUsername.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.user.isValidUsername.notFound,
+  })
+  @ResponseMessage(SuccessMessages.user.IS_VALID_USERNAME)
+  @Public()
+  @Get("/is-valid-username")
+  async isValidUsername(
+    @Query() data: IsValidUserNameRequestDto,
+  ): Promise<boolean> {
+    const query = new IsValidUserNameQuery(data)
+    return await this.userService.isValidUserName(query)
   }
 
   @ApiOperationDecorator({

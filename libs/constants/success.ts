@@ -26,6 +26,7 @@ export const SuccessMessages = {
     ADD_PROFILE_PICTURE: "Add profile picture successfully",
     ADD_THUMBNAIL: "Add thumbnail successfully",
     UPDATE_PROFILE_PICTURE: "Update profile picture successfully",
+    IS_VALID_USERNAME: "Get validity of username successfully",
   },
   friend: {
     SEND_FRIEND_REQUEST: "Send friend request successfully",
