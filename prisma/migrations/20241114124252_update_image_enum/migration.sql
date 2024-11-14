@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "EImage" ADD VALUE 'GROUP_POST';

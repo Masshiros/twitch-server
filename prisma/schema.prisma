@@ -65,7 +65,7 @@ model User {
   membershipRequests    MemberRequest[]
   sentInvitations       GroupInvitation[]    @relation("InviterUser")
   receivedInvitations   GroupInvitation[]    @relation("InvitedUser")
-
+  postTags    GroupPostTaggedUser[]
 
   @@index([isLive])
   @@index([isActive])
@@ -191,6 +191,7 @@ enum EImage{
   POST
   CATEGORY
   GROUP
+  GROUP_POST
 }
 enum EImageType{
   THUMBNAIL
@@ -449,8 +450,19 @@ model Group {
   posts       GroupPost[]
   inviteLinks GroupInviteLink[]
   invitations GroupInvitation[]
+  postTags    GroupPostTaggedUser[]
 
   @@map("groups")
+}
+model GroupPostTaggedUser {
+  postId       String
+  taggedUserId String
+  groupId      String
+  post         GroupPost   @relation(fields: [postId], references: [id],onDelete: Cascade)
+  taggedUser   User   @relation(fields: [taggedUserId], references: [id],onDelete: Cascade)
+  group        Group  @relation(fields: [groupId],references: [id])
+  @@id([postId, taggedUserId])
+  @@map("groupPostTaggedUsers")
 }
 model GroupInviteLink {
   id            String    @id @default(uuid())
@@ -523,7 +535,7 @@ model GroupPost {
   group       Group          @relation(fields: [groupId], references: [id])
   user        User           @relation(fields: [userId], references: [id])
   reactions   PostReaction[] @relation()
-  
+  postTags    GroupPostTaggedUser[]
 
   @@map("groupPosts")
 }

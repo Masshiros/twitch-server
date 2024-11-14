@@ -124,7 +124,16 @@ async function main() {
         where: { name: permissionName },
       })
 
-      if (permission) {
+      const existingRolePermission = await prisma.rolePermission.findUnique({
+        where: {
+          roleId_permissionId: {
+            roleId: role.id,
+            permissionId: permission.id,
+          },
+        },
+      })
+
+      if (!existingRolePermission) {
         await prisma.rolePermission.create({
           data: {
             roleId: role.id,
