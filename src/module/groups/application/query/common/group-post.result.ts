@@ -6,6 +6,7 @@ export interface GroupPostResult {
   createdAt: string
   content: string
   images: ImageResult[]
+  id: string
   isShared?: boolean
   isTagged?: boolean
 }

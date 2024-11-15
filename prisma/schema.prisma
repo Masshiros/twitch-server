@@ -525,6 +525,7 @@ model GroupPost {
   id          String         @id @default(uuid())
   groupId     String
   userId      String
+  tagByGroupPostId String?
   content     String
   totalViewCount  Int        @default(0)
   status      EGroupPostStatus    @default(PENDING)

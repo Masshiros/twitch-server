@@ -15,6 +15,7 @@ import { EGroupVisibility } from "../enum/group-visibility.enum"
 interface GroupPostCreationsProps {
   groupId: string
   userId: string
+  tagByGroupPostId?: string
   content: string
   totalViewCount?: number
   status?: EGroupPostStatus
@@ -63,6 +64,7 @@ export class GroupFactory {
     return new GroupPost({
       groupId: props.groupId,
       userId: props.userId,
+      tagByGroupPostId: props.tagByGroupPostId,
       content: props.content,
       totalViewCount: props.totalViewCount ?? 0,
       status: props.status ?? EGroupPostStatus.PENDING,

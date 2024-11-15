@@ -256,10 +256,6 @@ export class GroupPrismaRepository implements IGroupRepository {
           await prisma.postTaggedUser.createMany({ data: taggedUsersData })
         }
         if (taggedGroup && taggedGroup.length > 0) {
-          const images = await prisma.image.findMany({
-            where: { applicableId: post.id },
-          })
-          console.log(images)
           await Promise.all(
             taggedGroup.map(async (e) => {
               await prisma.groupPost.createMany({
@@ -267,20 +263,9 @@ export class GroupPrismaRepository implements IGroupRepository {
                   ...data,
                   id: uuidv4(),
                   groupId: e.id,
+                  tagByGroupPostId: post.id,
                 },
               })
-              await Promise.all(
-                images.map((i) => {
-                  prisma.image.create({
-                    data: {
-                      url: i.url,
-                      publicId: i.publicId,
-                      applicableType: i.applicableType,
-                      applicableId: e.id,
-                    },
-                  })
-                }),
-              )
             }),
           )
         }

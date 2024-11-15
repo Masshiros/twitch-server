@@ -91,10 +91,19 @@ export class GetPendingPostsHandler {
         groupPosts
           .filter((e) => e.status === EGroupPostStatus.PENDING)
           .map(async (p) => {
-            const [images, owner] = await Promise.all([
-              this.imageService.getImageByApplicableId(p.id),
-              this.userRepository.findById(p.userId),
-            ])
+            let images = []
+            let owner = null
+            if (p.tagByGroupPostId) {
+              ;[images, owner] = await Promise.all([
+                this.imageService.getImageByApplicableId(p.tagByGroupPostId),
+                this.userRepository.findById(p.userId),
+              ])
+            } else {
+              ;[images, owner] = await Promise.all([
+                this.imageService.getImageByApplicableId(p.id),
+                this.userRepository.findById(p.userId),
+              ])
+            }
             const ownerImages = await this.imageService.getImageByApplicableId(
               owner.id,
             )
@@ -107,6 +116,7 @@ export class GetPendingPostsHandler {
                 username: owner?.name ?? "",
                 avatar: ownerAvatar?.url ?? "",
               },
+              id: p.id,
               createdAt: p.createdAt.toISOString().split("T")[0],
               content: p.content,
               images: images?.map((i) => ({ url: i.url })) ?? [],

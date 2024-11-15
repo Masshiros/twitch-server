@@ -6,6 +6,7 @@ interface GroupPostsProps {
   id?: string
   groupId: string
   userId: string
+  tagByGroupPostId?: string
   content: string
   totalViewCount?: number
   status: EGroupPostStatus
@@ -16,14 +17,17 @@ interface GroupPostsProps {
 export class GroupPost extends BaseEntity {
   private _groupId: string
   private _userId: string
+  private _tagByGroupPostId?: string
   private _content: string
   private _status: EGroupPostStatus
   private _totalViewCount?: number
+
   constructor(props: GroupPostsProps) {
     super()
     this._id = props.id ?? randomUUID()
     this._userId = props.userId
     this._groupId = props.groupId
+    this._tagByGroupPostId = props.tagByGroupPostId
     this._content = props.content
     this._status = props.status ?? EGroupPostStatus.PENDING
     this._totalViewCount = props.totalViewCount ?? 0
@@ -35,7 +39,9 @@ export class GroupPost extends BaseEntity {
   public get groupId(): string {
     return this._groupId
   }
-
+  public get tagByGroupPostId(): string {
+    return this._tagByGroupPostId
+  }
   public get userId(): string {
     return this._userId
   }
@@ -58,6 +64,9 @@ export class GroupPost extends BaseEntity {
 
   public set userId(value: string) {
     this._userId = value
+  }
+  public set tagByGroupPostId(value: string) {
+    this._tagByGroupPostId = value
   }
 
   public set content(value: string) {

@@ -423,7 +423,7 @@ export class GroupsController {
     Permissions.Groups.Update,
     Permissions.Groups.Delete,
   ])
-  @ResponseMessage(SuccessMessages.groups.GET_PENDING_REQUESTS)
+  @ResponseMessage(SuccessMessages.groups.GET_PENDING_POSTS)
   @Get("/:groupId/pending-posts")
   async getPendingPosts(
     @Param("groupId") param: string,
