@@ -19,9 +19,9 @@ export class UpdateBioCommandHandler {
   ) {}
   async execute(
     command: UpdateBioCommand,
-    currentUser: { id: string; username: string },
+    // currentUser: { id: string; username: string },
   ): Promise<void> {
-    const { id: targetUserId, displayName, bio } = command
+    const { id: targetUserId, bio } = command
     // validate user id
     if (targetUserId.length === 0) {
       throw new CommandError({
@@ -33,22 +33,12 @@ export class UpdateBioCommandHandler {
       })
     }
     // validate data's update
-    if (!displayName && !bio) {
+    if (!bio) {
       throw new CommandError({
         code: CommandErrorCode.BAD_REQUEST,
         message: "Can not update user without data",
         info: {
           errorCode: CommandErrorDetailCode.CAN_NOT_UPDATE_USER_WITHOUT_DATA,
-        },
-      })
-    }
-    // validate current user's id equal target user's id
-    if (targetUserId !== currentUser.id) {
-      throw new CommandError({
-        code: CommandErrorCode.BAD_REQUEST,
-        message: "Unauthorized to update user",
-        info: {
-          errorCode: CommandErrorDetailCode.UNAUTHORIZED,
         },
       })
     }
@@ -66,22 +56,20 @@ export class UpdateBioCommandHandler {
       })
     }
     // validate current user exist
-    const currentUserAggregate: UserAggregate | null =
-      await this.userRepository.findByUsername(currentUser.username)
+    // const currentUserAggregate: UserAggregate | null =
+    //   await this.userRepository.findByUsername(currentUser.username)
 
-    if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
-      throw new CommandError({
-        code: CommandErrorCode.BAD_REQUEST,
-        message: "Unauthorized",
-        info: {
-          errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-        },
-      })
-    }
-    if (!displayName || displayName === "") {
-      targetUserAggregate.displayName = displayName
-    }
-    if (!bio || bio === "") {
+    // if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
+    //   throw new CommandError({
+    //     code: CommandErrorCode.BAD_REQUEST,
+    //     message: "Unauthorized",
+    //     info: {
+    //       errorCode: CommandErrorDetailCode.UNAUTHORIZED,
+    //     },
+    //   })
+    // }
+
+    if (bio) {
       targetUserAggregate.bio = bio
     }
     await this.userRepository.update(targetUserAggregate)

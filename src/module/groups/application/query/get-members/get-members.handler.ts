@@ -102,11 +102,11 @@ export class GetMembersHandler {
           }
         }),
       )
-    //   console.log(groupMembers)
+
       const adminInGroups = groupMembers.filter(
         (e) => e.role === EGroupRole.ADMIN,
       )
-    //   console.log(adminInGroups)
+
       const admins = await Promise.all(
         adminInGroups.map(async (e) => {
           const admin = await this.userRepository.findById(e.memberId)
