@@ -49,6 +49,15 @@ export class UnfollowCommandHandler {
           },
         })
       }
+      if (sourceUserId === destinationUserId) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "You can not unfollow your self",
+          info: {
+            errorCode: CommandErrorDetailCode.SOMETHING_WRONG_HAPPEN,
+          },
+        })
+      }
       const destinationUser =
         await this.userRepository.findById(destinationUserId)
       if (!destinationUser) {

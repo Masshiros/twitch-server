@@ -153,7 +153,7 @@ export class UserAggregate extends BaseAggregate {
     this._isActive = props.isActive ?? true
     this._is2FA = props.is2FA ?? false
     this._view = props.view ?? 0
-    this._bio = props.bio
+    this._bio = props.bio ?? ""
     this._lastUsernameChangeAt = props.lastUsernameChangeAt
     this._thumbnail = props.thumbnail
 

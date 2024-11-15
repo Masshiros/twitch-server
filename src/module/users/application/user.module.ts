@@ -4,6 +4,7 @@ import { DatabaseModule } from "prisma/database.module"
 import { NodeMailerModule } from "src/integration/email/nodemailer/nodemailer.module"
 import { TwilioModule } from "src/integration/twilio/twilio.module"
 import { CategoriesDatabaseModule } from "src/module/categories/infrastructure/database/categories.database.module"
+import { FollowersDatabaseModule } from "src/module/followers/infrastructure/database/followers.database.module"
 import { ImageModule } from "src/module/image/application/image.module"
 import { UserFactory } from "../domain/factory/user/index"
 import { UserDatabaseModule } from "../infrastructure/database/user.database.module"
@@ -90,6 +91,7 @@ const queryHandlers = [
   imports: [
     CqrsModule,
     UserDatabaseModule,
+    FollowersDatabaseModule,
     CategoriesDatabaseModule,
     NodeMailerModule,
     TwilioModule,

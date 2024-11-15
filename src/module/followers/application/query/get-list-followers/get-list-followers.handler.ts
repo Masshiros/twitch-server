@@ -52,15 +52,15 @@ export class GetListFollowersQueryHandler {
             user.id,
           )
           if (user) {
-            if (userImage) {
+            if (userImage && userImage.length > 0) {
               return {
                 id: user.id,
                 name: user.name,
                 displayName: user.displayName,
                 slug: user.slug,
                 avatar: {
-                  url: userImage[0].url,
-                  publicId: userImage[0].publicId,
+                  url: userImage[0]?.url ?? "",
+                  publicId: userImage[0]?.publicId ?? "",
                 },
                 isLive: user.isLive,
                 followDate: follower.followDate,

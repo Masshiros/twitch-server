@@ -49,6 +49,15 @@ export class FollowCommandHandler {
           },
         })
       }
+      if (sourceUserId === destinationUserId) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "You can not follow your self",
+          info: {
+            errorCode: CommandErrorDetailCode.SOMETHING_WRONG_HAPPEN,
+          },
+        })
+      }
       const destinationUser =
         await this.userRepository.findById(destinationUserId)
       if (!destinationUser) {

@@ -27,7 +27,10 @@ export class GetUserResponseDto {
   allowedChangedUsername?: boolean
   @Expose()
   changedUsernameDaysLeft?: number
-
+  @Expose()
+  numberOfFollowers?: number
+  @Expose()
+  numberOfFollowings?: number
   @Expose()
   bio?: string
 

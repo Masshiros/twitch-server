@@ -196,6 +196,7 @@ export const SwaggerErrorMessages = {
       badRequest: [
         "User id can not be empty",
         "User to follow's id can not be empty",
+        "You can not follow your self",
       ],
       notFound: ["Follower not found", "User to follow not found"],
     },
@@ -203,6 +204,7 @@ export const SwaggerErrorMessages = {
       badRequest: [
         "User id can not be empty",
         "User to follow's id can not be empty",
+        "You can not unfollow your self",
       ],
       notFound: ["Follower not found", "User to follow not found"],
     },

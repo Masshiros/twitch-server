@@ -33,7 +33,7 @@ export class UpdateBioCommandHandler {
       })
     }
     // validate data's update
-    if (!bio) {
+    if (bio === null) {
       throw new CommandError({
         code: CommandErrorCode.BAD_REQUEST,
         message: "Can not update user without data",

@@ -30,7 +30,7 @@ model User {
   isActive              Boolean                  @default(true)
   is2FA                 Boolean                  @default(false)
   view                  Int                      @default(0)
-  bio                   String?
+  bio                   String?                  @default("")
   thumbnail             String?
   lastUsernameChangeAt  DateTime?
   createdAt             DateTime                 @default(now())

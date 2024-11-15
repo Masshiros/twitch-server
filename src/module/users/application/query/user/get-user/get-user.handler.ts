@@ -6,6 +6,7 @@ import {
 } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
+import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
@@ -20,6 +21,7 @@ export class GetUserQueryHandler {
     private readonly userFactory: UserFactory,
     private readonly imageService: ImageService,
     private readonly categoryRepository: ICategoriesRepository,
+    private readonly followersRepository: IFollowersRepository,
   ) {}
   async execute(
     query: GetUserQuery,
@@ -69,12 +71,20 @@ export class GetUserQueryHandler {
       const userCategories = await this.categoryRepository.getUserCategories(
         targetUserAggregate.id,
       )
+      // get number of followers and followings
+      const [followers, followings] = await Promise.all([
+        this.followersRepository.findFollowersByUser(targetUserAggregate.id),
+        this.followersRepository.findFollowingByUser(targetUserAggregate.id),
+      ])
+
       console.log(targetUserAggregate)
       const categoryNames = userCategories.map((e) => e.name)
       if (images.length > 0) {
         return {
           user: targetUserAggregate,
           categoryNames,
+          numberOfFollowers: followers.length,
+          numberOfFollowings: followings.length,
           image: {
             url: images[0].url || "",
             publicId: images[0].publicId || "",
@@ -85,6 +95,8 @@ export class GetUserQueryHandler {
       return {
         user: targetUserAggregate,
         categoryNames,
+        numberOfFollowers: followers.length,
+        numberOfFollowings: followings.length,
         image: { url: "", publicId: "" },
       }
     } catch (err) {
