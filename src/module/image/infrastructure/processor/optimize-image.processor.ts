@@ -42,6 +42,7 @@ export class ImageOptimizationProcessor extends WorkerHost {
     try {
       const optimizedBuffer = await sharp(Buffer.from(file.buffer))
         .resize({ width: 1024, height: 1024 })
+        .webp({ quality: 80 })
         .toBuffer()
 
       return { optimizedBuffer }

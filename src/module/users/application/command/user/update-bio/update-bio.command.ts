@@ -7,6 +7,6 @@ export class UpdateBioCommand {
   readonly bio: string
   constructor(params: UpdateBioCommandParams) {
     this.id = params.id
-    this.bio = params.bio = ""
+    this.bio = params.bio ?? ""
   }
 }
