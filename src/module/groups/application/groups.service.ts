@@ -16,6 +16,7 @@ import { GetGroupQuery } from "./query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "./query/get-joined-groups/get-joined-groups.query"
 import { GetManageGroupQuery } from "./query/get-manage-groups/get-manage-groups.query"
 import { GetMembersQuery } from "./query/get-members/get-members.query"
+import { GetPendingPostsQuery } from "./query/get-pending-posts/get-pending-posts.query"
 import { GetPendingRequestsQuery } from "./query/get-pending-requests/get-pending-requests.query"
 
 @Injectable()
@@ -55,6 +56,9 @@ export class GroupsService {
     return this.queryBus.execute(query)
   }
   async getMembers(query: GetMembersQuery) {
+    return this.queryBus.execute(query)
+  }
+  async getPendingPosts(query: GetPendingPostsQuery) {
     return this.queryBus.execute(query)
   }
   async requestToJoinGroup(command: RequestToJoinGroupCommand) {

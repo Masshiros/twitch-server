@@ -23,6 +23,7 @@ import { GetGroupHandler } from "./query/get-group/get-group.handler"
 import { GetJoinedGroupHandler } from "./query/get-joined-groups/get-joined-groups.handler"
 import { GetManageGroupHandler } from "./query/get-manage-groups/get-manage-groups.handler"
 import { GetMembersHandler } from "./query/get-members/get-members.handler"
+import { GetPendingPostsHandler } from "./query/get-pending-posts/get-pending-posts.handler"
 import { GetPendingRequestsHandler } from "./query/get-pending-requests/get-pending-requests.handler"
 
 const commandHandlers = [
@@ -45,6 +46,7 @@ const queryHandlers = [
   GetManageGroupHandler,
   GetPendingRequestsHandler,
   GetMembersHandler,
+  GetPendingPostsHandler,
 ]
 @Module({
   controllers: [GroupsController],

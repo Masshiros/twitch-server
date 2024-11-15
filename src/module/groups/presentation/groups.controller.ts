@@ -37,6 +37,7 @@ import { GetGroupQuery } from "../application/query/get-group/get-group.query"
 import { GetJoinedGroupQuery } from "../application/query/get-joined-groups/get-joined-groups.query"
 import { GetManageGroupQuery } from "../application/query/get-manage-groups/get-manage-groups.query"
 import { GetMembersQuery } from "../application/query/get-members/get-members.query"
+import { GetPendingPostsQuery } from "../application/query/get-pending-posts/get-pending-posts.query"
 import { GetPendingRequestsQuery } from "../application/query/get-pending-requests/get-pending-requests.query"
 import { AcceptRequestRequestDto } from "./http/dto/request/accept-request.request.dto"
 import { AddCoverImageRequestDto } from "./http/dto/request/add-cover-image.request.dto"
@@ -46,6 +47,7 @@ import { CreateGroupPostRequestDto } from "./http/dto/request/create-group-post.
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
 import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
 import { GetManageGroupRequestDto } from "./http/dto/request/get-manage-group.request.dto"
+import { GetPendingPostsRequestDto } from "./http/dto/request/get-pending-posts.request.dto"
 import { GetPendingRequestsRequestDto } from "./http/dto/request/get-pending-requests.request.dto"
 import { InviteMembersRequestDto } from "./http/dto/request/invite-members.request.dto"
 import { RejectGroupPostRequestDto } from "./http/dto/request/reject-group-post.request.dto"
@@ -53,6 +55,7 @@ import { RejectRequestRequestDto } from "./http/dto/request/reject-request.reque
 import { GetGroupResponseDto } from "./http/dto/response/get-group.response.dto"
 import { GetJoinedGroupResponseDto } from "./http/dto/response/get-joined-group.response.dto"
 import { GetManageGroupResponseDto } from "./http/dto/response/get-manage-group.response.dto"
+import { GetPendingPostsResponseDto } from "./http/dto/response/get-pending-posts.response.dto"
 
 @ApiTags("groups")
 @Controller("groups")
@@ -396,7 +399,7 @@ export class GroupsController {
     @Param("groupId") param: string,
     @Query() data: GetPendingRequestsRequestDto,
     @CurrentUser() user: UserAggregate,
-  ): Promise<GetManageGroupResponseDto> {
+  ): Promise<GetPendingRequestsRequestDto> {
     const query = new GetPendingRequestsQuery({
       groupId: param,
       userId: user.id,
@@ -404,6 +407,36 @@ export class GroupsController {
     query.limit = data.limit ?? 5
     query.offset = data.page ? (data.page - 1) * data.limit : null
     return await this.service.getPendingRequests(query)
+  }
+  // GET: Get pending posts
+  @ApiOperationDecorator({
+    summary: "Get pending posts",
+    description: "Get pending posts by admin",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.getPendingPosts.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.getPendingPosts.notFound,
+    auth: true,
+  })
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
+  @ResponseMessage(SuccessMessages.groups.GET_PENDING_REQUESTS)
+  @Get("/:groupId/pending-posts")
+  async getPendingPosts(
+    @Param("groupId") param: string,
+    @Query() data: GetPendingPostsRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetPendingPostsResponseDto> {
+    const query = new GetPendingPostsQuery({
+      groupId: param,
+      userId: user.id,
+    })
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
+    return await this.service.getPendingPosts(query)
   }
   // post: create group post
   @ApiOperationDecorator({

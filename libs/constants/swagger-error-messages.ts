@@ -533,5 +533,14 @@ export const SwaggerErrorMessages = {
       badRequest: ["User id can not be empty", "Group id can not be empty"],
       notFound: ["User not found", "Group not found"],
     },
+    getPendingPosts: {
+      badRequest: [
+        "User id can not be empty",
+        "Group id can not be empty",
+        "You are not a member of this group",
+        "You do not have permission to do this action",
+      ],
+      notFound: ["Group not found", "User not found"],
+    },
   },
 }

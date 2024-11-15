@@ -157,6 +157,7 @@ export class CreateGroupPostHandler {
                 },
               })
             }
+            
             return taggedGroup
           }),
         )

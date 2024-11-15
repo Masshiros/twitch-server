@@ -71,6 +71,16 @@ export class GetMembersHandler {
           },
         })
       }
+      const member = await this.groupRepository.findMemberById(
+        group.id,
+        user.id,
+      )
+      if (!member) {
+        throw new QueryError({
+          code: QueryErrorCode.BAD_REQUEST,
+          message: "You are not member of this group",
+        })
+      }
       // get friends
       const friendOfUsers = await this.friendRepository.getFriends(user)
       const friendIds = friendOfUsers.map((e) => e.friendId)

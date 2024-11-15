@@ -14,6 +14,7 @@ import { Group } from "src/module/groups/domain/entity/groups.entity"
 import { MemberRequest } from "src/module/groups/domain/entity/member-requests.entity"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { handlePrismaError } from "utils/prisma-error"
+import { v4 as uuidv4 } from "uuid"
 import { GroupInvitationMapper } from "../mapper/group-invitation.prisma.mapper"
 import { GroupInviteLinkMapper } from "../mapper/group-invite-link.prisma.mapper"
 import { MemberRequestMapper } from "../mapper/group-member-request.mapper"
@@ -255,14 +256,33 @@ export class GroupPrismaRepository implements IGroupRepository {
           await prisma.postTaggedUser.createMany({ data: taggedUsersData })
         }
         if (taggedGroup && taggedGroup.length > 0) {
-          taggedGroup.map(async (e) => {
-            await prisma.groupPost.createMany({
-              data: {
-                ...data,
-                groupId: e.id,
-              },
-            })
+          const images = await prisma.image.findMany({
+            where: { applicableId: post.id },
           })
+          console.log(images)
+          await Promise.all(
+            taggedGroup.map(async (e) => {
+              await prisma.groupPost.createMany({
+                data: {
+                  ...data,
+                  id: uuidv4(),
+                  groupId: e.id,
+                },
+              })
+              await Promise.all(
+                images.map((i) => {
+                  prisma.image.create({
+                    data: {
+                      url: i.url,
+                      publicId: i.publicId,
+                      applicableType: i.applicableType,
+                      applicableId: e.id,
+                    },
+                  })
+                }),
+              )
+            }),
+          )
         }
       })
     } catch (error) {
