@@ -32,6 +32,7 @@ import { AssignRoleToUserCommand } from "../application/command/role/assign-role
 import { AddProfilePictureCommand } from "../application/command/user/add-profile-picture/add-profile-picture.command"
 import { AddThumbnailCommand } from "../application/command/user/add-thumbnail/add-thumbnail.command"
 import { DeleteUserCommand } from "../application/command/user/delete-user/delete-user.command"
+import { SetStreamKeyCommand } from "../application/command/user/set-stream-key/set-stream-key.command"
 import { ToggleActivateCommand } from "../application/command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "../application/command/user/update-bio/update-bio.command"
 import { UpdateDisplayNameCommand } from "../application/command/user/update-display-name/update-display-name.command"
@@ -60,6 +61,7 @@ import { DeleteUserRequestDto } from "./http/dto/request/user/delete-user.reques
 import { GetAllUsersRequestDto } from "./http/dto/request/user/get-all-user.request.dto"
 import { GetUserRequestDto } from "./http/dto/request/user/get-user.request.dto"
 import { IsValidUserNameRequestDto } from "./http/dto/request/user/is-valid-username.request.dto"
+import { SetStreamKeyRequestDto } from "./http/dto/request/user/set-stream-key.request.dto"
 import { ToggleActivateRequestDto } from "./http/dto/request/user/toggle-activate.request.dto"
 import { UpdateBioRequestDto } from "./http/dto/request/user/update-bio.request.dto"
 import { UpdateDisplaynameRequestDto } from "./http/dto/request/user/update-display-name.request.dto"
@@ -93,6 +95,26 @@ export class UserController {
     await this.userService.delete(command)
   }
 
+  @ApiOperationDecorator({
+    summary: "Set stream key",
+    description: "Set stream key of the user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.setStreamKey.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.setStreamKey.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Users.Update])
+  @ResponseMessage(SuccessMessages.user.SET_STREAM_KEY)
+  @Patch("/update-bio")
+  async setStreamkey(
+    @CurrentUser() user: UserAggregate,
+    @Body() body: SetStreamKeyRequestDto,
+  ) {
+    const command = new SetStreamKeyCommand({ ...body, userId: user.id })
+
+    await this.userService.setStreamKey(command)
+  }
+  // set stream key
   @ApiOperationDecorator({
     summary: "Update user bio",
     description: "Updates the bio and display name of the user",

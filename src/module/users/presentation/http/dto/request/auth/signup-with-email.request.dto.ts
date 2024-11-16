@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { Transform } from "class-transformer"
-import { IsISO8601, IsNotEmpty, IsString } from "class-validator"
+import { IsISO8601, IsNotEmpty, IsOptional, IsString } from "class-validator"
 
 export class SignupWithEmailRequestDto {
   @ApiProperty({
@@ -34,4 +34,20 @@ export class SignupWithEmailRequestDto {
   @IsString()
   @IsNotEmpty()
   readonly name: string
+
+  @ApiProperty({
+    description: "The stream key for the user",
+    example: "abc123xyz",
+  })
+  @IsOptional()
+  @IsString({ message: "Stream key must be a string" })
+  streamKey?: string
+
+  @ApiProperty({
+    description: "The server URL for the stream",
+    example: "rtmp://live.example.com/stream",
+  })
+  @IsOptional()
+  @IsString({ message: "Server URL must be a string" })
+  serverUrl?: string
 }

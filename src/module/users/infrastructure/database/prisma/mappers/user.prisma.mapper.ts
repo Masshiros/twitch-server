@@ -68,6 +68,8 @@ export class UserMapper {
       view: domainUser.view,
       bio: domainUser.bio,
       lastUsernameChangeAt: domainUser.lastUsernameChangeAt,
+      serverUrl: domainUser.serverUrl,
+      streamKey: domainUser.streamKey,
       thumbnail: domainUser.thumbnail,
       createdAt: domainUser.createdAt,
       updatedAt: domainUser.updatedAt,

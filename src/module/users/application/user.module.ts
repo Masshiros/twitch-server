@@ -28,6 +28,7 @@ import { AssignRoleToUserHandler } from "./command/role/assign-role-to-user/assi
 import { AddProfilePictureHandler } from "./command/user/add-profile-picture/add-profile-picture.handler"
 import { AddThumbnailHandler } from "./command/user/add-thumbnail/add-thumbnail.handler"
 import { DeleteUserCommandHandler } from "./command/user/delete-user/delete-user.handler"
+import { SetStreamKeyHandler } from "./command/user/set-stream-key/set-stream-key.handler"
 import { ToggleActivateCommandHandler } from "./command/user/toggle-activate/toggle-activate.handler"
 import { UpdateBioCommandHandler } from "./command/user/update-bio/update-bio.handler"
 import { UpdateDisplayNameHandler } from "./command/user/update-display-name/update-display-name.handler"
@@ -67,6 +68,7 @@ const commandHandlers = [
   AssignRoleToUserHandler,
   AssignPermissionToRoleHandler,
   ForgetUsernameHandler,
+  SetStreamKeyHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,

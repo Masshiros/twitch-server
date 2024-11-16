@@ -39,6 +39,8 @@ interface UserAggregateProps {
   status?: EUserStatus
   lastUsernameChangeAt?: Date
   thumbnail?: string
+  streamKey?: string
+  serverUrl?: string
   devices?: Device[]
   tokens?: Token[]
   loginHistories?: LoginHistory[]
@@ -122,6 +124,8 @@ export class UserAggregate extends BaseAggregate {
   @IsOptional()
   @Expose()
   private _thumbnail?: string
+  private _streamKey?: string
+  private _serverUrl?: string
   @Expose()
   private _tokens: Token[]
   @Expose()
@@ -156,7 +160,8 @@ export class UserAggregate extends BaseAggregate {
     this._bio = props.bio ?? ""
     this._lastUsernameChangeAt = props.lastUsernameChangeAt
     this._thumbnail = props.thumbnail
-
+    this._serverUrl = props.serverUrl
+    this._streamKey = props.streamKey
     this._devices = props.devices || []
     this._tokens = props.tokens || []
     this._loginHistories = props.loginHistories || []
@@ -366,6 +371,18 @@ export class UserAggregate extends BaseAggregate {
 
   set permissions(value: Permission[] | undefined) {
     this._permissions = value
+  }
+  get serverUrl(): string {
+    return this._serverUrl
+  }
+  set serverUrl(value: string) {
+    this._serverUrl = value
+  }
+  get streamKey(): string {
+    return this._streamKey
+  }
+  set streamKey(value: string) {
+    this._streamKey = value
   }
 
   // TODO: Update later

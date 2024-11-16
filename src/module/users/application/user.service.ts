@@ -5,6 +5,7 @@ import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assi
 import { AddProfilePictureCommand } from "./command/user/add-profile-picture/add-profile-picture.command"
 import { AddThumbnailCommand } from "./command/user/add-thumbnail/add-thumbnail.command"
 import { DeleteUserCommand } from "./command/user/delete-user/delete-user.command"
+import { SetStreamKeyCommand } from "./command/user/set-stream-key/set-stream-key.command"
 import { ToggleActivateCommand } from "./command/user/toggle-activate/toggle-activate.command"
 import { UpdateBioCommand } from "./command/user/update-bio/update-bio.command"
 import { UpdateDisplayNameCommand } from "./command/user/update-display-name/update-display-name.command"
@@ -82,5 +83,8 @@ export class UserService {
   }
   isValidUserName(query: IsValidUserNameQuery) {
     return this.queryBus.execute(query)
+  }
+  setStreamKey(command: SetStreamKeyCommand) {
+    return this.commandBus.execute(command)
   }
 }

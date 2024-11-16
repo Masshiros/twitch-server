@@ -33,7 +33,7 @@ export class SignupWithEmailCommandHandler
     private readonly emailService: NodemailerService,
   ) {}
   async execute(command: SignupWithEmailCommand) {
-    const { email, password, name, dob } = command
+    const { email, password, name, dob, streamKey, serverUrl } = command
     try {
       // validate user name length
       if (!name || name.length === 0) {
@@ -129,6 +129,12 @@ export class SignupWithEmailCommandHandler
         emailVerifyToken: otp,
         roles: [userRole],
       })
+      if (streamKey) {
+        user.streamKey = streamKey
+      }
+      if (serverUrl) {
+        user.serverUrl = serverUrl
+      }
       user.status = EUserStatus.UNVERIFIED
       // send email
       const template = new EmailTemplate(

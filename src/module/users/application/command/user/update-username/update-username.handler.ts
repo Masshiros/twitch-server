@@ -116,12 +116,12 @@ export class UpdateUsernameCommandHandler {
 
       await this.userRepository.update(targetUserAggregate)
     } catch (err) {
-      if (err instanceof QueryError || err instanceof InfrastructureError) {
+      if (err instanceof CommandError || err instanceof InfrastructureError) {
         throw err
       }
 
-      throw new QueryError({
-        code: QueryErrorCode.INTERNAL_SERVER_ERROR,
+      throw new CommandError({
+        code: CommandErrorCode.INTERNAL_SERVER_ERROR,
         message: err.message,
       })
     }

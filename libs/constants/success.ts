@@ -15,6 +15,7 @@ export const SuccessMessages = {
     LOGOUT_FROM_ALL_DEVICE: "Logout from all device successfully",
   },
   user: {
+    SET_STREAM_KEY: "Set stream key successfully",
     UPDATE_BIO: "User bio updated successfully",
     UPDATE_USERNAME: "Username updated successfully",
     DELETE_USER: "User deleted successfully",

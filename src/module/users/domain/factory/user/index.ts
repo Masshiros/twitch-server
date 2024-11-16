@@ -31,6 +31,8 @@ export type CreateUserAggregateParams = {
   bio?: string
   lastUsernameChangeAt?: Date
   thumbnail?: string
+  serverUrl?: string
+  streamKey?: string
   devices?: Device[]
   tokens?: Token[]
   loginHistories?: LoginHistory[]
@@ -65,6 +67,8 @@ export class UserFactory {
         bio: params.bio ?? "",
         lastUsernameChangeAt: params.lastUsernameChangeAt ?? new Date(),
         thumbnail: params.thumbnail ?? "",
+        serverUrl: params.serverUrl,
+        streamKey: params.streamKey,
         devices: params.devices ?? [],
         tokens: params.tokens ?? [],
         loginHistories: params.loginHistories ?? [],
