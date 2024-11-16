@@ -89,6 +89,10 @@ export const SwaggerErrorMessages = {
       ],
       notFound: ["User not found"],
     },
+    getStreamKey: {
+      badRequest: ["User id can not be empty"],
+      notFound: ["User not found"],
+    },
     deleteUser: {
       badRequest: ["Unauthorized to delete user", "Unauthorized action"],
       notFound: ["User not found"],

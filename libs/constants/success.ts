@@ -16,6 +16,7 @@ export const SuccessMessages = {
   },
   user: {
     SET_STREAM_KEY: "Set stream key successfully",
+    GET_STREAM_KEY: "Get stream key successfully",
     UPDATE_BIO: "User bio updated successfully",
     UPDATE_USERNAME: "Username updated successfully",
     DELETE_USER: "User deleted successfully",

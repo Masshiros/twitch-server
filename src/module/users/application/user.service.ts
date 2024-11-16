@@ -18,6 +18,7 @@ import { GetAllRolesQuery } from "./query/role/get-all-role/get-all-role.query"
 import { GetUserPermissionsQuery } from "./query/role/get-user-permissions/get-user-permissions.query"
 import { GetUserRoleQuery } from "./query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
+import { GetStreamKeyQuery } from "./query/user/get-stream-key/get-stream-key.query"
 import { GetUserQuery } from "./query/user/get-user/get-user.query"
 import { IsValidUserNameQuery } from "./query/user/is-valid-username/is-valid-username.query"
 
@@ -86,5 +87,8 @@ export class UserService {
   }
   setStreamKey(command: SetStreamKeyCommand) {
     return this.commandBus.execute(command)
+  }
+  getStreamKey(query: GetStreamKeyQuery) {
+    return this.queryBus.execute(query)
   }
 }

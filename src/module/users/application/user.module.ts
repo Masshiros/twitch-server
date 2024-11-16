@@ -41,6 +41,7 @@ import { GetAllRolesHandler } from "./query/role/get-all-role/get-all-role.handl
 import { GetUserPermissionsHandler } from "./query/role/get-user-permissions/get-user-permissions.handler"
 import { GetUserRoleHandler } from "./query/role/get-user-role/get-user-role.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
+import { GetStreamKeyHandler } from "./query/user/get-stream-key/get-stream-key.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { IsValidUserNameHandler } from "./query/user/is-valid-username/is-valid-username.handler"
 import { UserService } from "./user.service"
@@ -80,6 +81,7 @@ const queryHandlers = [
   GetAllPermissionsHandler,
   GetUserPermissionsHandler,
   IsValidUserNameHandler,
+  GetStreamKeyHandler,
 ]
 @Module({
   controllers: [AuthController, UserController],

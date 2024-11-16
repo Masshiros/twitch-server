@@ -45,6 +45,7 @@ import { GetAllRolesQuery } from "../application/query/role/get-all-role/get-all
 import { GetUserPermissionsQuery } from "../application/query/role/get-user-permissions/get-user-permissions.query"
 import { GetUserRoleQuery } from "../application/query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
+import { GetStreamKeyQuery } from "../application/query/user/get-stream-key/get-stream-key.query"
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { IsValidUserNameQuery } from "../application/query/user/is-valid-username/is-valid-username.query"
 import { UserService } from "../application/user.service"
@@ -72,6 +73,7 @@ import { RoleResponseDto } from "./http/dto/response/role/role.response.dto"
 import { GetAllUsersResponseDto } from "./http/dto/response/user/get-all-user.response.dto"
 import { GetDeviceResponseDto } from "./http/dto/response/user/get-device.response.dto"
 import { GetLoginHistoryResponseDto } from "./http/dto/response/user/get-login-history.response.dto"
+import { GetStreamKeyResponseDto } from "./http/dto/response/user/get-stream-key.response.dto"
 import { GetUserResponseDto } from "./http/dto/response/user/get-user.response.dto"
 
 @ApiTags("User")
@@ -94,7 +96,7 @@ export class UserController {
     const command = new DeleteUserCommand(param)
     await this.userService.delete(command)
   }
-
+  // set stream key
   @ApiOperationDecorator({
     summary: "Set stream key",
     description: "Set stream key of the user",
@@ -105,7 +107,7 @@ export class UserController {
   })
   @Permission([Permissions.Users.Update])
   @ResponseMessage(SuccessMessages.user.SET_STREAM_KEY)
-  @Patch("/update-bio")
+  @Patch("/set-stream-key")
   async setStreamkey(
     @CurrentUser() user: UserAggregate,
     @Body() body: SetStreamKeyRequestDto,
@@ -114,7 +116,25 @@ export class UserController {
 
     await this.userService.setStreamKey(command)
   }
-  // set stream key
+  // get stream key
+  @ApiOperationDecorator({
+    summary: "get stream key",
+    description: "get stream key of the user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.user.getStreamKey.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.getStreamKey.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Users.Update])
+  @ResponseMessage(SuccessMessages.user.SET_STREAM_KEY)
+  @Get("/get-stream-key")
+  async getStreamkey(
+    @CurrentUser() user: UserAggregate,
+  ): Promise<GetStreamKeyResponseDto> {
+    const query = new GetStreamKeyQuery({ userId: user.id })
+    return await this.userService.getStreamKey(query)
+  }
+  // update bio
   @ApiOperationDecorator({
     summary: "Update user bio",
     description: "Updates the bio and display name of the user",
