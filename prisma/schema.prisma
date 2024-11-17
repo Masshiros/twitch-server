@@ -69,6 +69,7 @@ model User {
   receivedInvitations   GroupInvitation[]    @relation("InvitedUser")
   postTags    GroupPostTaggedUser[]
   Livestream Livestream[]
+  scheduledPost ScheduledPost[]
   @@index([isLive])
   @@index([isActive])
   @@map("users")
@@ -488,8 +489,22 @@ model Group {
   inviteLinks GroupInviteLink[]
   invitations GroupInvitation[]
   postTags    GroupPostTaggedUser[]
+  scheduledPost ScheduledPost[]
 
   @@map("groups")
+}
+model ScheduledPost {
+  id          String   @id @default(uuid())
+  groupId     String   
+  userId      String  
+  postId      String   
+  scheduledAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post        GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 model GroupPostTaggedUser {
   postId       String
@@ -574,6 +589,7 @@ model GroupPost {
   user        User           @relation(fields: [userId], references: [id])
   reactions   PostReaction[] @relation()
   postTags    GroupPostTaggedUser[]
+  scheduledPost ScheduledPost[]
 
   @@map("groupPosts")
 }
