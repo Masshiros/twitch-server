@@ -10,7 +10,9 @@ import { GroupCronjobService } from "./group.cronjob.service"
   imports: [
     ScheduleModule.forRoot(),
     GroupDatabaseModule,
-    BullModule.registerQueue({ name: Bull.queue.post.schedule }),
+    BullModule.registerQueue({
+      name: Bull.queue.post.schedule,
+    }),
     GroupProcessorModule,
   ],
   providers: [GroupCronjobService],

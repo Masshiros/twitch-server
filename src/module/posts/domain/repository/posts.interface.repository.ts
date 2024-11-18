@@ -1,5 +1,6 @@
 import { EReactionType } from "libs/constants/enum"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { Comment } from "../entity/comments.entity"
 import { PostReactions } from "../entity/post-reactions.entity"
 import { Post } from "../entity/posts.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
@@ -84,4 +85,9 @@ export abstract class IPostsRepository {
     shareToType: ESharedType,
     customContent: string,
   ) => Promise<void>
+  // comment
+  createComment: (comment: Comment) => Promise<void>
+  getCommentByPost: (post: Post) => Promise<Comment[]>
+  updateComment: (comment: Comment) => Promise<void>
+  deleteComment: (comment: Comment) => Promise<void>
 }

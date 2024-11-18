@@ -5,6 +5,7 @@ import {
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
 import { PrismaService } from "prisma/prisma.service"
+import { Comment } from "src/module/posts/domain/entity/comments.entity"
 import { PostReactions } from "src/module/posts/domain/entity/post-reactions.entity"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
@@ -12,6 +13,7 @@ import { ESharedType } from "src/module/posts/domain/enum/shared-type.enum"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { handlePrismaError } from "utils/prisma-error"
+import { CommentMapper } from "../mapper/comments.prisma.mapper"
 import { PostReactionMapper } from "../mapper/post-reactions.prisma.mapper"
 import { PostMapper } from "../mapper/posts.prisma.mapper"
 
@@ -1065,6 +1067,102 @@ export class PostsRepository implements IPostsRepository {
         throw error
       }
 
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async createComment(comment: Comment): Promise<void> {
+    try {
+      const data = CommentMapper.toPersistence(comment)
+      await this.prismaService.postComment.create({ data })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async updateComment(comment: Comment): Promise<void> {
+    try {
+      let foundComment = await this.prismaService.postComment.findUnique({
+        where: { id: comment.id },
+      })
+      if (!foundComment) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.NOT_FOUND,
+          message: "Comment not found",
+        })
+      }
+      foundComment = CommentMapper.toPersistence(comment)
+      const updatedComment = await this.prismaService.postComment.update({
+        where: { id: comment.id },
+        data: foundComment,
+      })
+      if (!updatedComment) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.BAD_REQUEST,
+          message: "Update operation not work",
+        })
+      }
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async deleteComment(comment: Comment): Promise<void> {
+    try {
+      const id = comment.id
+      const foundComment = await this.prismaService.postComment.findUnique({
+        where: { id },
+      })
+      if (!foundComment) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.NOT_FOUND,
+          message: "Comment not found",
+        })
+      }
+      await this.prismaService.postComment.delete({
+        where: { id: foundComment.id },
+      })
+    } catch (error) {
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getCommentByPost(post: Post): Promise<Comment[]> {
+    try {
+      const comments = await this.prismaService.postComment.findMany({
+        where: { postId: post.id },
+      })
+      if (!comments) {
+        return []
+      }
+      const result = comments.map((e) => CommentMapper.toDomain(e))
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
         message: error.message,

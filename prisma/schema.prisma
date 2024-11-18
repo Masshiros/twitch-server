@@ -70,6 +70,8 @@ model User {
   postTags    GroupPostTaggedUser[]
   Livestream Livestream[]
   scheduledPost ScheduledPost[]
+  postComments  PostComment[]
+  groupPostComments GroupPostComment[]
   @@index([isLive])
   @@index([isActive])
   @@map("users")
@@ -94,6 +96,7 @@ model Livestream {
   isChatFollowersOnly  Boolean?
   thumbnailPreviewImage String?
   themeColor           String?
+  ingressId            String?
   
 
   createdAt             DateTime                 @default(now())
@@ -402,8 +405,51 @@ model Post {
   taggedUsers     PostTaggedUser[]
   sharedPost      SharedPost[]
   viewPermissions UserPostViewPermission[]
+  comments        PostComment[]
 
   @@map("posts")
+}
+model PostComment {
+  id          String   @id @default(uuid())
+  postId      String
+  userId      String
+  parentId    String? 
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent      PostComment? @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     PostComment[] @relation("ParentChild")
+
+  @@index([postId])
+  @@index([userId])
+  @@map("postComments")
+}
+model GroupPostComment {
+  id          String   @id @default(uuid())
+  groupPostId      String
+  userId      String
+  groupId     String
+  parentId    String? 
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  post        GroupPost      @relation(fields: [groupPostId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group       Group     @relation(fields:[groupId],references: [id],onDelete: Cascade)
+  parent      GroupPostComment? @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     GroupPostComment[] @relation("ParentChild")
+
+  @@index([groupPostId])
+  @@index([userId])
+  @@map("groupPostComments")
 }
 model SharedPost{
    id            String    @id @default(uuid())
@@ -490,6 +536,7 @@ model Group {
   invitations GroupInvitation[]
   postTags    GroupPostTaggedUser[]
   scheduledPost ScheduledPost[]
+  groupPostComment GroupPostComment[]
 
   @@map("groups")
 }
@@ -591,6 +638,7 @@ model GroupPost {
   reactions   PostReaction[] @relation()
   postTags    GroupPostTaggedUser[]
   scheduledPost ScheduledPost[]
+  groupPostComment GroupPostComment[]
 
   @@map("groupPosts")
 }
