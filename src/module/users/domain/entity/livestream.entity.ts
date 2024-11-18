@@ -21,6 +21,7 @@ export class Livestream extends BaseEntity {
     isChatFollowersOnly?: boolean
     thumbnailPreviewImage?: string
     themeColor?: string
+    ingressId?: string
     createdAt?: Date
     updatedAt?: Date
     deletedAt?: Date
@@ -46,6 +47,7 @@ export class Livestream extends BaseEntity {
       isChatFollowersOnly: boolean
       thumbnailPreviewImage: string
       themeColor: string
+      ingressId?: string
       createdAt?: Date
       updatedAt?: Date
       deletedAt?: Date
@@ -155,5 +157,11 @@ export class Livestream extends BaseEntity {
 
   set deletedAt(value: Date | undefined) {
     this.props.deletedAt = value
+  }
+  get ingressId(): string {
+    return this.props.ingressId
+  }
+  set ingressId(value: string) {
+    this.props.ingressId = value
   }
 }

@@ -36,6 +36,8 @@ export class UserMapper {
         isLive: prismaUser.isLive,
         isActive: prismaUser.isActive,
         is2FA: prismaUser.is2FA,
+        streamKey: prismaUser.streamKey,
+        serverUrl: prismaUser.serverUrl,
         view: prismaUser.view,
         bio: prismaUser.bio,
         lastUsernameChangeAt: prismaUser.lastUsernameChangeAt,

@@ -26,6 +26,7 @@ export class LivestreamMapper {
         isChatFollowersOnly: prismaLivestream.isChatFollowersOnly,
         thumbnailPreviewImage:
           prismaLivestream.thumbnailPreviewImage || undefined,
+        ingressId: prismaLivestream.ingressId,
         themeColor: prismaLivestream.themeColor || undefined,
         createdAt: prismaLivestream.createdAt,
         updatedAt: prismaLivestream.updatedAt,
@@ -59,6 +60,7 @@ export class LivestreamMapper {
       isChatFollowersOnly: domainLivestream.isChatFollowersOnly || false,
       thumbnailPreviewImage: domainLivestream.thumbnailPreviewImage || null,
       themeColor: domainLivestream.themeColor || null,
+      ingressId: domainLivestream.ingressId,
       createdAt: domainLivestream.createdAt || new Date(),
       updatedAt: domainLivestream.updatedAt || new Date(),
       deletedAt: domainLivestream.deletedAt || null,

@@ -33,6 +33,7 @@ export class GetStreamKeyHandler {
           },
         })
       }
+      console.log(user)
       return {
         streamKey: user.streamKey ?? "",
         serverUrl: user.serverUrl ?? "",
