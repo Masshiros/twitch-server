@@ -7,6 +7,7 @@ import { AddDescriptionCommand } from "./command/add-description/add-description
 import { ApproveGroupPostCommand } from "./command/approve-group-post/approve-group-post.command"
 import { CreateGroupPostCommand } from "./command/create-group-post/create-group-post.command"
 import { CreateGroupCommand } from "./command/create-group/create-group.command"
+import { CreateScheduleGroupPostCommand } from "./command/create-schedule-group-post/create-schedule-group-post.command"
 import { InviteMembersCommand } from "./command/invite-members/invite-members.command"
 import { RejectGroupPostCommand } from "./command/reject-group-post/reject-group-post.command"
 import { RejectInvitationCommand } from "./command/reject-invitation/reject-invitation.command"
@@ -26,6 +27,9 @@ export class GroupsService {
     private readonly queryBus: QueryBus,
   ) {}
   async createGroup(command: CreateGroupCommand) {
+    return this.commandBus.execute(command)
+  }
+  async createScheduleGroupPost(command: CreateScheduleGroupPostCommand) {
     return this.commandBus.execute(command)
   }
   async addCoverImage(command: AddCoverImageCommand) {

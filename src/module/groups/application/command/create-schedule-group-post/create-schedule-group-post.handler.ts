@@ -16,16 +16,16 @@ import { IGroupRepository } from "src/module/groups/domain/repository/group.inte
 import { ImageService } from "src/module/image/application/image.service"
 import { EImage } from "src/module/image/domain/enum/image.enum"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { CreateGroupPostCommand } from "./create-group-post.command"
+import { CreateScheduleGroupPostCommand } from "./create-schedule-group-post.command"
 
-@CommandHandler(CreateGroupPostCommand)
-export class CreateGroupPostHandler {
+@CommandHandler(CreateScheduleGroupPostCommand)
+export class CreateScheduleGroupPostHandler {
   constructor(
     private readonly groupRepository: IGroupRepository,
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
   ) {}
-  async execute(command: CreateGroupPostCommand): Promise<void> {
+  async execute(command: CreateScheduleGroupPostCommand): Promise<void> {
     const {
       userId,
       content,
@@ -34,6 +34,7 @@ export class CreateGroupPostHandler {
       taggedGroupIds,
       taggedUserIds,
       isPublic,
+      scheduledAt,
     } = command
     let savedImages
     let groupPost: GroupPost
@@ -66,6 +67,12 @@ export class CreateGroupPostHandler {
             errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
             field: "groupId",
           },
+        })
+      }
+      if (!scheduledAt) {
+        throw new CommandError({
+          code: CommandErrorCode.BAD_REQUEST,
+          message: "Please provide day when the post should be created",
         })
       }
       const user = await this.userRepository.findById(userId)
@@ -118,7 +125,6 @@ export class CreateGroupPostHandler {
           status: EGroupPostStatus.APPROVED,
         })
       }
-
       if (!groupPost) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
@@ -172,6 +178,13 @@ export class CreateGroupPostHandler {
         )
       }
       await this.groupRepository.addPost(groupPost, taggedUserIds, taggedGroups)
+      const schedulePost = GroupFactory.createScheduledPost({
+        groupId: group.id,
+        postId: groupPost.id,
+        userId: user.id,
+        scheduledAt,
+      })
+      await this.groupRepository.createScheduledPost(schedulePost)
     } catch (err) {
       savedImages = await this.imageService.getImageByApplicableId(groupPost.id)
       if (savedImages) {

@@ -2,11 +2,9 @@ import { BullModule } from "@nestjs/bullmq"
 import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
 import { APP_GUARD } from "@nestjs/core"
-import { ScheduleModule } from "@nestjs/schedule"
 import config, { validate } from "libs/config"
 import { AuthGuard } from "./guard/auth.guard"
 import { PermissionGuard } from "./guard/permission.guard"
-import { CronModule } from "./integration/cronjob/cron.module"
 import { CategoriesModule } from "./module/categories/application/categories.module"
 import { FollowerModule } from "./module/followers/application/follower.module"
 import { FriendsModule } from "./module/friends/application/friend.module"
@@ -28,7 +26,7 @@ import { UserDatabaseModule } from "./module/users/infrastructure/database/user.
         },
       }),
     }),
-    CronModule,
+
     ImageModule,
     UserModule,
     UserDatabaseModule,

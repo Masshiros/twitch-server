@@ -5,6 +5,7 @@ import { GroupPost } from "../entity/group-posts.entity"
 import { GroupRule } from "../entity/group-rule.entity"
 import { Group } from "../entity/groups.entity"
 import { MemberRequest } from "../entity/member-requests.entity"
+import { ScheduledPost } from "../entity/scheduled-posts.entity"
 
 export abstract class IGroupRepository {
   // groups
@@ -148,4 +149,8 @@ export abstract class IGroupRepository {
     groupId: string,
   ) => Promise<GroupInvitation | null>
   updateInvitation: (invitation: GroupInvitation) => Promise<void>
+  // scheduled post
+  findDuePosts: (currentTime: Date) => Promise<ScheduledPost[]>
+  deleteScheduledPost: (data: ScheduledPost) => Promise<void>
+  createScheduledPost: (schedulePost: ScheduledPost) => Promise<void>
 }

@@ -89,6 +89,7 @@ export const SuccessMessages = {
   groups: {
     CREATE_GROUP: "Create new group successfully",
     CREATE_GROUP_POST: "Create new group post successfully",
+    CREATE_SCHEDULE_GROUP_POST: "Create new schedule group post successfully",
     GET_MEMBERS: "Get members of group successfully",
     APPROVE_GROUP_POST: "Approve group post successfully",
     REJECT_GROUP_POST: "Reject group post successfully",

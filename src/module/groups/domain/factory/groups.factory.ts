@@ -5,6 +5,7 @@ import { GroupPost } from "../entity/group-posts.entity"
 import { GroupRule } from "../entity/group-rule.entity"
 import { Group } from "../entity/groups.entity"
 import { MemberRequest } from "../entity/member-requests.entity"
+import { ScheduledPost } from "../entity/scheduled-posts.entity"
 import { EInvitationStatus } from "../enum/group-invitation-status.enum"
 import { EGroupPostStatus } from "../enum/group-post-status.enum"
 import { EGroupPrivacy } from "../enum/group-privacy.enum"
@@ -19,6 +20,7 @@ interface GroupPostCreationsProps {
   content: string
   totalViewCount?: number
   status?: EGroupPostStatus
+  isPublic: boolean
 }
 interface GroupCreationsProps {
   ownerId: string
@@ -59,6 +61,13 @@ interface GroupInvitationCreationsProps {
   status?: EInvitationStatus
   expiredAt?: Date
 }
+interface ScheduledPostCreationsProps {
+  groupId: string
+  userId: string
+  postId: string
+  scheduledAt: Date
+  createdAt?: Date
+}
 export class GroupFactory {
   static createGroupPost(props: GroupPostCreationsProps): GroupPost {
     return new GroupPost({
@@ -68,6 +77,7 @@ export class GroupFactory {
       content: props.content,
       totalViewCount: props.totalViewCount ?? 0,
       status: props.status ?? EGroupPostStatus.PENDING,
+      isPublic: props.isPublic,
       createdAt: new Date(),
     })
   }
@@ -132,6 +142,17 @@ export class GroupFactory {
       status: props.status ?? EInvitationStatus.PENDING,
       createdAt: createdAt,
       expiredAt: expiredAt,
+    })
+  }
+  static createScheduledPost(
+    props: ScheduledPostCreationsProps,
+  ): ScheduledPost {
+    return new ScheduledPost({
+      groupId: props.groupId,
+      postId: props.postId,
+      userId: props.userId,
+      scheduledAt: props.scheduledAt,
+      createdAt: props.createdAt ?? new Date(),
     })
   }
 }

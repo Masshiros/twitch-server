@@ -12,6 +12,7 @@ import { GroupPost } from "src/module/groups/domain/entity/group-posts.entity"
 import { GroupRule } from "src/module/groups/domain/entity/group-rule.entity"
 import { Group } from "src/module/groups/domain/entity/groups.entity"
 import { MemberRequest } from "src/module/groups/domain/entity/member-requests.entity"
+import { ScheduledPost } from "src/module/groups/domain/entity/scheduled-posts.entity"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { handlePrismaError } from "utils/prisma-error"
 import { v4 as uuidv4 } from "uuid"
@@ -22,6 +23,7 @@ import { GroupMemberMapper } from "../mapper/group-member.prisma.mapper"
 import { GroupPostMapper } from "../mapper/group-post.prisma.mapper"
 import { GroupRuleMapper } from "../mapper/group-rule.mapper"
 import { GroupMapper } from "../mapper/group.prisma.mapper"
+import { ScheduledPostMapper } from "../mapper/scheduled-post.prisma.mapper"
 
 @Injectable()
 export class GroupPrismaRepository implements IGroupRepository {
@@ -1010,6 +1012,45 @@ export class GroupPrismaRepository implements IGroupRepository {
           message: "Update operation not work",
         })
       }
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async findDuePosts(currentTime: Date): Promise<ScheduledPost[]> {
+    try {
+      const scheduledPost = await this.prismaService.scheduledPost.findMany({
+        where: {
+          scheduledAt: {
+            lte: currentTime,
+          },
+        },
+      })
+      if (!scheduledPost) {
+        return []
+      }
+      return scheduledPost.map((e) => ScheduledPostMapper.toDomain(e))
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async createScheduledPost(schedulePost: ScheduledPost): Promise<void> {
+    try {
+      const data = ScheduledPostMapper.toPersistence(schedulePost)
+      await this.prismaService.scheduledPost.create({
+        data,
+      })
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async deleteScheduledPost(data: ScheduledPost): Promise<void> {
+    try {
+      console.log(data.id)
+      await this.prismaService.scheduledPost.delete({
+        where: {
+          id: data.id,
+        },
+      })
     } catch (error) {
       this.handleDatabaseError(error)
     }

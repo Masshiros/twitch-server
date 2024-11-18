@@ -581,6 +581,7 @@ model GroupPost {
   content     String
   totalViewCount  Int        @default(0)
   status      EGroupPostStatus    @default(PENDING)
+  isPublic    Boolean        @default(false)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @default(now()) @updatedAt
   deletedAt   DateTime?

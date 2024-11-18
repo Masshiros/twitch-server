@@ -27,6 +27,7 @@ import { AddDescriptionCommand } from "../application/command/add-description/ad
 import { ApproveGroupPostCommand } from "../application/command/approve-group-post/approve-group-post.command"
 import { CreateGroupPostCommand } from "../application/command/create-group-post/create-group-post.command"
 import { CreateGroupCommand } from "../application/command/create-group/create-group.command"
+import { CreateScheduleGroupPostCommand } from "../application/command/create-schedule-group-post/create-schedule-group-post.command"
 import { InviteMembersCommand } from "../application/command/invite-members/invite-members.command"
 import { RejectGroupPostCommand } from "../application/command/reject-group-post/reject-group-post.command"
 import { RejectInvitationCommand } from "../application/command/reject-invitation/reject-invitation.command"
@@ -45,6 +46,7 @@ import { AddDescriptionRequestDto } from "./http/dto/request/add-description.req
 import { ApproveGroupPostRequestDto } from "./http/dto/request/approve-group-post.request.dto"
 import { CreateGroupPostRequestDto } from "./http/dto/request/create-group-post.request.dto"
 import { CreateGroupRequestDto } from "./http/dto/request/create-group.request.dto"
+import { CreateScheduledGroupPostRequestDto } from "./http/dto/request/create-schedule-group-post.request.dto"
 import { GetJoinedGroupsRequestDto } from "./http/dto/request/get-joined-groups.request.dto"
 import { GetManageGroupRequestDto } from "./http/dto/request/get-manage-group.request.dto"
 import { GetPendingPostsRequestDto } from "./http/dto/request/get-pending-posts.request.dto"
@@ -471,6 +473,40 @@ export class GroupsController {
       userId: user.id,
     })
     await this.service.createGroupPost(command)
+  }
+  // post: create schedule group post
+  @ApiOperationDecorator({
+    summary: "Create schedule group post",
+    description: "Create schedule group post by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.groups.createGroupPost.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.groups.createGroupPost.notFound,
+    auth: true,
+    fileFieldName: "images",
+  })
+  @Permission([
+    Permissions.Groups.Read,
+    Permissions.Groups.Update,
+    Permissions.Groups.Delete,
+  ])
+  @ResponseMessage(SuccessMessages.groups.CREATE_SCHEDULE_GROUP_POST)
+  @UseInterceptors(FilesInterceptor("images"))
+  @Post("/schedule-post")
+  async createScheduledGroupPost(
+    @Body() data: CreateScheduledGroupPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+    @Query("groupId") groupId: string,
+    @UploadedFiles() images: Express.Multer.File[],
+  ): Promise<void> {
+    // console.log(data)
+    const command = new CreateScheduleGroupPostCommand({
+      ...data,
+      images,
+      groupId,
+      userId: user.id,
+    })
+    await this.service.createScheduleGroupPost(command)
   }
   // post: approve group post
   @ApiOperationDecorator({

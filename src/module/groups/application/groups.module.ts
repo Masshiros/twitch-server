@@ -4,6 +4,7 @@ import { FriendsDatabaseModule } from "src/module/friends/infrastructure/databas
 import { ImageModule } from "src/module/image/application/image.module"
 import { PostsDatabaseModule } from "src/module/posts/infrastructure/database/posts.database.module"
 import { UserDatabaseModule } from "src/module/users/infrastructure/database/user.database.module"
+import { GroupCronModule } from "../infrastructure/cronjob/group.cronjob.module"
 import { GroupDatabaseModule } from "../infrastructure/database/group.database.module"
 import { GroupsController } from "../presentation/groups.controller"
 import { AcceptInvitationHandler } from "./command/accept-invitation/accept-invitation.handler"
@@ -13,6 +14,7 @@ import { AddDescriptionHandler } from "./command/add-description/add-description
 import { ApproveGroupPostHandler } from "./command/approve-group-post/approve-group-post.handler"
 import { CreateGroupPostHandler } from "./command/create-group-post/create-group-post.handler"
 import { CreateGroupHandler } from "./command/create-group/create-group.handler"
+import { CreateScheduleGroupPostHandler } from "./command/create-schedule-group-post/create-schedule-group-post.handler"
 import { InviteMembersHandler } from "./command/invite-members/invite-members.handler"
 import { RejectGroupPostHandler } from "./command/reject-group-post/reject-group-post.handler"
 import { RejectInvitationHandler } from "./command/reject-invitation/reject-imvitation.handler"
@@ -39,6 +41,7 @@ const commandHandlers = [
   RejectRequestHandler,
   RejectGroupPostHandler,
   ApproveGroupPostHandler,
+  CreateScheduleGroupPostHandler,
 ]
 const queryHandlers = [
   GetGroupHandler,
@@ -57,6 +60,7 @@ const queryHandlers = [
     UserDatabaseModule,
     ImageModule,
     FriendsDatabaseModule,
+    GroupCronModule,
   ],
 })
 export class GroupsModule {}

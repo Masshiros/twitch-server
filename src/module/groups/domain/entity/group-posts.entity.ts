@@ -10,6 +10,7 @@ interface GroupPostsProps {
   content: string
   totalViewCount?: number
   status: EGroupPostStatus
+  isPublic: boolean
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -21,6 +22,7 @@ export class GroupPost extends BaseEntity {
   private _content: string
   private _status: EGroupPostStatus
   private _totalViewCount?: number
+  private _isPublic: boolean
 
   constructor(props: GroupPostsProps) {
     super()
@@ -31,6 +33,7 @@ export class GroupPost extends BaseEntity {
     this._content = props.content
     this._status = props.status ?? EGroupPostStatus.PENDING
     this._totalViewCount = props.totalViewCount ?? 0
+    this._isPublic = props.isPublic
     this._createdAt = props.createdAt ?? new Date()
     this._updatedAt = props.updatedAt
     this._deletedAt = props.deletedAt
@@ -56,6 +59,9 @@ export class GroupPost extends BaseEntity {
   public get totalViewCount(): number {
     return this._totalViewCount
   }
+  public get isPublic(): boolean {
+    return this._isPublic
+  }
 
   // Setters
   public set groupId(value: string) {
@@ -78,5 +84,8 @@ export class GroupPost extends BaseEntity {
   }
   public set totalViewCount(value: number) {
     this._totalViewCount = value
+  }
+  public set isPublic(value: boolean) {
+    this._isPublic = value
   }
 }
