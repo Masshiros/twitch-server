@@ -80,6 +80,17 @@ export const SwaggerErrorMessages = {
       notFound: ["User not found"],
     },
   },
+  stream: {
+    setStreamTitle: {
+      badRequest: [
+        "User ID cannot be empty.",
+        "Stream ID cannot be empty.",
+        "Stream title cannot be empty.",
+        "This livestream is not belong to you",
+      ],
+      notFound: ["User not found", "Livestream not found"],
+    },
+  },
   user: {
     setStreamKey: {
       badRequest: [

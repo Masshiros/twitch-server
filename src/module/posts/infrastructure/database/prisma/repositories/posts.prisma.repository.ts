@@ -1087,6 +1087,27 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
+  async findCommentById(commentId: string): Promise<Comment> {
+    try {
+      const comment = await this.prismaService.postComment.findUnique({
+        where: {
+          id: commentId,
+        },
+      })
+      if (!comment) {
+        return null
+      }
+      return CommentMapper.toDomain(comment) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async updateComment(comment: Comment): Promise<void> {
     try {
       let foundComment = await this.prismaService.postComment.findUnique({

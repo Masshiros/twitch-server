@@ -39,7 +39,7 @@ model User {
   updatedAt             DateTime                 @default(now()) @updatedAt
   deletedAt             DateTime?
   
-  
+  livestreamInfo        LiveStreamInfo?
   CategoryFollowers     CategoryFollowers[]      @relation("Users")
   devices               Device[]
   externalLinks         ExternalLink[]
@@ -57,7 +57,6 @@ model User {
   posts       GroupPost[]
   taggedUsers           PostTaggedUser[]
   tokens                Token[]
-  userCategories        UsersCategories[]        @relation("Users")
   viewPermissions       UserPostViewPermission[]
   userRoles             UserRole[]
   friends               Friend[]                 @relation("UserFriends")
@@ -76,26 +75,43 @@ model User {
   @@index([isActive])
   @@map("users")
 }
-model Livestream {
-  id                   String   @id @default(uuid()) // Primary Key
-  userId               String   
-  categoryId           String?   
-  tagId                String?  
-  tagName              String?
-  tagSlug              String?
+model LiveStreamInfo{
+  id                  String  @id @default(uuid())
+  userId               String   @unique()
   userName             String?
   userImage            String?
   userSlug             String?
   title                String?
+  isLive               Boolean?
+  thumbnailPreviewImage String?
+  themeColor           String?
+  user                 User @relation(fields:[userId],references: [id])
+  livestreamCateInfo   LiveStreamCategoriesInfo[]
+  livestreamTagInfo    LiveStreamTagsInfo[]
+}
+model LiveStreamTagsInfo{
+  liveStreamInfoId    String
+  tagId               String
+  liveStreamInfo      LiveStreamInfo @relation(fields: [liveStreamInfoId], references: [id])
+  tag                 Tag        @relation(fields: [tagId],references: [id])
+  @@id([liveStreamInfoId,tagId])
+}
+model LiveStreamCategoriesInfo{
+  liveStreamInfoId    String
+  categoryId          String
+  liveStreamInfo      LiveStreamInfo @relation(fields: [liveStreamInfoId], references: [id]) 
+  category            Category       @relation(fields: [categoryId],references: [id])
+  @@id([liveStreamInfoId,categoryId])
+}
+model Livestream {
+  id                   String   @id @default(uuid())
+  userId               String   
   slug                 String?
   totalView            Int?
-  isLive               Boolean?
   isChatEnabled        Boolean?
   isChatDelayed        Boolean?
   delayedSeconds       String?
   isChatFollowersOnly  Boolean?
-  thumbnailPreviewImage String?
-  themeColor           String?
   ingressId            String?
   
 
@@ -105,12 +121,10 @@ model Livestream {
 
   // Relations
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category             Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  tag                  Tag?      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
 
   @@index([userId])
-  @@index([categoryId])
-  @@index([tagId])
+  
 }
 
 model ExternalLink {
@@ -330,15 +344,13 @@ model Category {
   name              String
   slug              String              @unique
   image             String?
-  applicableTo      ECategory
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now()) @updatedAt
   deletedAt         DateTime?
   numberOfFollowers Int                 @default(0)
   categoryFollowers CategoryFollowers[] @relation("Categories")
   tagsCategories    TagsCategories[]    @relation("Categories")
-  userCategories    UsersCategories[]   @relation("Categories")
-  Livestream Livestream[]
+  livestreamCateInfo   LiveStreamCategoriesInfo[]
   @@map("categories")
 }
 
@@ -351,7 +363,7 @@ model Tag {
   updatedAt      DateTime         @default(now()) @updatedAt
   deletedAt      DateTime?
   tagsCategories TagsCategories[] @relation("Tags")
-  Livestream Livestream[]
+  livestreamCateInfo   LiveStreamTagsInfo[]
   @@map("tags")
 }
 
@@ -363,18 +375,6 @@ model TagsCategories {
 
   @@id([tagId, categoryId])
   @@map("tagCategories")
-}
-
-model UsersCategories {
-  userId     String
-  categoryId String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-  category   Category @relation("Categories", fields: [categoryId], references: [id])
-  user       User     @relation("Users", fields: [userId], references: [id])
-
-  @@id([userId, categoryId])
-  @@map("userCategories")
 }
 
 model CategoryFollowers {

@@ -9,6 +9,7 @@ import { ImageModule } from "src/module/image/application/image.module"
 import { UserFactory } from "../domain/factory/user/index"
 import { UserDatabaseModule } from "../infrastructure/database/user.database.module"
 import { AuthController } from "../presentation/auth.controller"
+import { LiveStreamController } from "../presentation/livestream.controller"
 import { UserController } from "../presentation/user.controller"
 import { AuthService } from "./auth.service"
 import { ConfirmEmailCommandHandler } from "./command/auth/confirm-email/confirm-email.handler"
@@ -23,6 +24,7 @@ import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
 import { ToggleTwoFaCommandHandler } from "./command/auth/toggle-two-fa/toggle-two-fa.handler"
+import { SetStreamInfoHandler } from "./command/livestream/set-stream-info/set-stream-info.handler"
 import { AssignPermissionToRoleHandler } from "./command/role/assign-permission-to-role/assign-permission-to-role.handler"
 import { AssignRoleToUserHandler } from "./command/role/assign-role-to-user/assign-role-to-user.handler"
 import { AddProfilePictureHandler } from "./command/user/add-profile-picture/add-profile-picture.handler"
@@ -70,6 +72,7 @@ const commandHandlers = [
   AssignPermissionToRoleHandler,
   ForgetUsernameHandler,
   SetStreamKeyHandler,
+  SetStreamInfoHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,
@@ -84,7 +87,7 @@ const queryHandlers = [
   GetStreamKeyHandler,
 ]
 @Module({
-  controllers: [AuthController, UserController],
+  controllers: [AuthController, UserController, LiveStreamController],
   providers: [
     UserFactory,
     AuthService,

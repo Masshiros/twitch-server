@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto"
 import { BaseEntity } from "src/common/entity"
-import { ECategory } from "../enum/categories.enum"
 import { Tag } from "./tags.entity"
 
 interface CategoryProps {
@@ -9,7 +8,6 @@ interface CategoryProps {
   name?: string
   slug?: string
   image?: string
-  applicableTo?: ECategory
   tags?: Tag[]
   createdAt?: Date
   updatedAt?: Date
@@ -22,7 +20,6 @@ export class Category extends BaseEntity {
   private _slug: string
   private _image: string
   private _tagId: string
-  private _applicableTo: ECategory
   private _tags: Tag[]
 
   constructor(props: CategoryProps, id?: string) {
@@ -32,9 +29,7 @@ export class Category extends BaseEntity {
     this._numberOfFollowers = props.numberOfFollowers ?? 0
     this._name = props.name ?? ""
     this._slug = props.slug ?? ""
-    ;(this._image = props.image ?? ""),
-      (this._applicableTo = props.applicableTo ?? ECategory.USER)
-    this._tags = props.tags
+    ;(this._image = props.image ?? ""), (this._tags = props.tags)
     this._createdAt = props.createdAt || new Date()
     this._updatedAt = props.updatedAt || new Date()
     this._deletedAt = props.deletedAt
@@ -74,12 +69,6 @@ export class Category extends BaseEntity {
   }
   set image(value: string) {
     this._image = value
-  }
-  get applicableTo(): ECategory {
-    return this._applicableTo
-  }
-  set applicableTo(value: ECategory) {
-    this._applicableTo = value
   }
   get tags(): Tag[] {
     return this._tags

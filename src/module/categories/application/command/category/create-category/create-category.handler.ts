@@ -22,7 +22,7 @@ export class CreateCategoryHandler {
     private readonly imageService: ImageService,
   ) {}
   async execute(command: CreateCategoryCommand): Promise<void> {
-    const { name, image, applicableTo } = command
+    const { name, image } = command
     try {
       if (!name || name.length === 0) {
         throw new CommandError({
@@ -44,8 +44,6 @@ export class CreateCategoryHandler {
       }
       const category = CategoriesFactory.createCategory({
         name,
-
-        applicableTo,
       })
       // handle image
       await this.imageService.uploadImage(

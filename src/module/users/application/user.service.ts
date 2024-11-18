@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
+import { SetStreamInfoCommand } from "./command/livestream/set-stream-info/set-stream-info.command"
 import { AssignPermissionToRoleCommand } from "./command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "./command/user/add-profile-picture/add-profile-picture.command"
@@ -86,6 +87,9 @@ export class UserService {
     return this.queryBus.execute(query)
   }
   setStreamKey(command: SetStreamKeyCommand) {
+    return this.commandBus.execute(command)
+  }
+  setStreamInfo(command: SetStreamInfoCommand) {
     return this.commandBus.execute(command)
   }
   getStreamKey(query: GetStreamKeyQuery) {

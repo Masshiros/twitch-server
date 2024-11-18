@@ -3,7 +3,6 @@ import { DomainError, DomainErrorCode } from "libs/exception/domain"
 import { generateSlug } from "utils/string-format"
 import { Category } from "../entity/categories.entity"
 import { Tag } from "../entity/tags.entity"
-import { ECategory } from "../enum/categories.enum"
 import { ETag } from "../enum/tags.enum"
 
 interface CreateCategoryProps {
@@ -13,7 +12,6 @@ interface CreateCategoryProps {
   image?: string
   currentTotalView?: number
   numberOfFollowers?: number
-  applicableTo?: ECategory
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -37,7 +35,6 @@ export class CategoriesFactory {
         name: params.name,
         slug: generateSlug(params.name),
         image: params.image,
-        applicableTo: params.applicableTo,
         currentTotalView: params.currentTotalView ?? 0,
         numberOfFollowers: params.numberOfFollowers ?? 0,
         tags: params.tags ?? [],

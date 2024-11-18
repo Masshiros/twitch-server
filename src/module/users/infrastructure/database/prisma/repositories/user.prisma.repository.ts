@@ -1166,4 +1166,242 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async updateLivestream(livestream: Livestream): Promise<void> {
+    try {
+      const data = LivestreamMapper.toPersistence(livestream)
+      await this.prismaService.livestream.update({
+        where: { id: data.id },
+        data: data,
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async findLivestreamById(id: string): Promise<Livestream> {
+    try {
+      const livestream = await this.prismaService.livestream.findUnique({
+        where: { id },
+      })
+      if (!livestream) {
+        return null
+      }
+      return LivestreamMapper.toDomain(livestream) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async setLiveStreamInfoCategories(
+    userId: string,
+    categoriesId: string[],
+  ): Promise<void> {
+    try {
+      const livestreamInfo = await this.prismaService.liveStreamInfo.findUnique(
+        {
+          where: {
+            userId: userId,
+          },
+        },
+      )
+      if (!livestreamInfo) {
+        return
+      }
+      await Promise.all(
+        categoriesId.map(async (e) => {
+          const category = await this.prismaService.category.findUnique({
+            where: { id: e },
+          })
+          if (!category) {
+            throw new InfrastructureError({
+              code: InfrastructureErrorCode.BAD_REQUEST,
+              message: "Category does not exist",
+            })
+          }
+          await this.prismaService.liveStreamCategoriesInfo.createMany({
+            data: {
+              categoryId: category.id,
+              liveStreamInfoId: livestreamInfo.id,
+            },
+          })
+        }),
+      )
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async setLiveStreamInfoTags(userId: string, tagsIds: string[]) {
+    try {
+      const livestreamInfo = await this.prismaService.liveStreamInfo.findUnique(
+        {
+          where: {
+            userId: userId,
+          },
+        },
+      )
+      if (!livestreamInfo) {
+        return
+      }
+      await Promise.all(
+        tagsIds.map(async (e) => {
+          const tag = await this.prismaService.tag.findUnique({
+            where: { id: e },
+          })
+          if (!tag) {
+            throw new InfrastructureError({
+              code: InfrastructureErrorCode.BAD_REQUEST,
+              message: "Tag does not exist",
+            })
+          }
+          await this.prismaService.liveStreamTagsInfo.createMany({
+            data: {
+              tagId: tag.id,
+              liveStreamInfoId: livestreamInfo.id,
+            },
+          })
+        }),
+      )
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getStreamInfoByUser(user: UserAggregate) {
+    try {
+      const streamInfo = await this.prismaService.liveStreamInfo.findUnique({
+        where: {
+          userId: user.id,
+        },
+      })
+      if (!streamInfo) {
+        return null
+      }
+      return streamInfo
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async updateStreamInfoOfUser(streamInfo: any) {
+    try {
+      await this.prismaService.liveStreamInfo.update({
+        where: { id: streamInfo.id },
+        data: streamInfo,
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async createStreamInfo(streamInfo: any) {
+    try {
+      await this.prismaService.liveStreamInfo.create({
+        data: streamInfo,
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getLiveStreamInfoCategories(liveStreamInfoId: string) {
+    try {
+      const result = await this.prismaService.liveStreamCategoriesInfo.findMany(
+        {
+          where: {
+            liveStreamInfoId,
+          },
+        },
+      )
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getLiveStreamInfoTags(liveStreamInfoId: string) {
+    try {
+      const result = await this.prismaService.liveStreamTagsInfo.findMany({
+        where: {
+          liveStreamInfoId,
+        },
+      })
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
 }

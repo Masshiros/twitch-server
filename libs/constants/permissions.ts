@@ -14,6 +14,7 @@ export class Permissions {
   public static Friends = createPermissions("Friends")
   public static FriendRequests = createPermissions("FriendRequests")
   public static Groups = createPermissions("Groups")
+  public static LiveStreams = createPermissions("LiveStreams")
 }
 
 function createPermissions(resource: string) {

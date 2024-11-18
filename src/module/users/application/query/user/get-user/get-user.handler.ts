@@ -68,21 +68,38 @@ export class GetUserQueryHandler {
       const images: any[] | null =
         await this.imageService.getImageByApplicableId(targetUserAggregate.id)
       // get user categories
-      const userCategories = await this.categoryRepository.getUserCategories(
-        targetUserAggregate.id,
-      )
+      let categoryNames = []
+
+      const liveStreamInfo =
+        await this.userRepository.getStreamInfoByUser(targetUserAggregate)
+      if (liveStreamInfo) {
+        const liveStreamInfoCategories =
+          await this.userRepository.getLiveStreamInfoCategories(
+            liveStreamInfo.id,
+          )
+
+        const categories = await Promise.all(
+          liveStreamInfoCategories.map(async (e) => {
+            return await this.categoryRepository.getCategoryById(e.categoryId)
+          }),
+        )
+
+        categoryNames = categories.map((e) => {
+          return e.name
+        })
+      }
+
       // get number of followers and followings
       const [followers, followings] = await Promise.all([
         this.followersRepository.findFollowersByUser(targetUserAggregate.id),
         this.followersRepository.findFollowingByUser(targetUserAggregate.id),
       ])
 
-      console.log(targetUserAggregate)
-      const categoryNames = userCategories.map((e) => e.name)
+      // const categoryNames = userCategories.map((e) => e.name)
       if (images.length > 0) {
         return {
           user: targetUserAggregate,
-          categoryNames,
+          categoryNames: categoryNames ?? [],
           numberOfFollowers: followers.length,
           numberOfFollowings: followings.length,
           image: {
@@ -94,7 +111,7 @@ export class GetUserQueryHandler {
 
       return {
         user: targetUserAggregate,
-        categoryNames,
+        categoryNames: categoryNames ?? [],
         numberOfFollowers: followers.length,
         numberOfFollowings: followings.length,
         image: { url: "", publicId: "" },

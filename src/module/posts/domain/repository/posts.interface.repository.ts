@@ -87,6 +87,7 @@ export abstract class IPostsRepository {
   ) => Promise<void>
   // comment
   createComment: (comment: Comment) => Promise<void>
+  findCommentById: (commentId: string) => Promise<Comment>
   getCommentByPost: (post: Post) => Promise<Comment[]>
   updateComment: (comment: Comment) => Promise<void>
   deleteComment: (comment: Comment) => Promise<void>

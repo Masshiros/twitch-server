@@ -1,5 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { ECategory } from "src/module/categories/domain/enum/categories.enum"
 
 export class CreateCategoryRequestDto {
   @ApiProperty({
@@ -14,11 +13,4 @@ export class CreateCategoryRequestDto {
     format: "binary",
   })
   image: Express.Multer.File
-
-  @ApiProperty({
-    description: "The applicable category type",
-    enum: ECategory,
-    example: ECategory.USER,
-  })
-  applicableTo: ECategory
 }

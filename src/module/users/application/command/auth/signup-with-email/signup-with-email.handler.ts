@@ -157,6 +157,12 @@ export class SignupWithEmailCommandHandler
           this.userRepository.assignRoleToUser(role, user)
         }),
       )
+      // livestream info
+      await this.userRepository.createStreamInfo({
+        userId: user.id,
+        userName: user.name,
+        userSlug: user.slug,
+      })
     } catch (err) {
       console.error(err.stack)
       if (

@@ -40,5 +40,5 @@ export abstract class ICategoriesRepository {
   getCategoryById: (id: string) => Promise<Category | null>
   getCategoriesByTag: (tag: Tag) => Promise<Category[] | null>
   // categories
-  getUserCategories: (userId: string) => Promise<Category[]>
+  // getUserCategories: (userId: string) => Promise<Category[]>
 }

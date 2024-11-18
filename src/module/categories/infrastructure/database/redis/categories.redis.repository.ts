@@ -53,7 +53,6 @@ export class CategoriesRedisRepository {
       slug: data._slug,
       currentTotalView: data._currentTotalView,
       image: data._image,
-      applicableTo: data._applicableTo,
       createdAt: new Date(data._createdAt),
       updatedAt: new Date(data._updatedAt),
       deletedAt: data._deletedAt ? new Date(data._deletedAt) : null,

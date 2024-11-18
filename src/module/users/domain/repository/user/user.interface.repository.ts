@@ -1,5 +1,6 @@
 import { JwtSignOptions, JwtVerifyOptions } from "@nestjs/jwt"
 import { TokenPayload, UserFilters } from "src/common/interface"
+import { LivestreamMapper } from "src/module/users/infrastructure/database/prisma/mappers/livestream.mapper"
 import { type UserAggregate } from "../../aggregate"
 import { Device } from "../../entity/devices.entity"
 import { Livestream } from "../../entity/livestream.entity"
@@ -93,4 +94,20 @@ export abstract class IUserRepository {
   getPermissionById: (id: string) => Promise<Permission | null>
   getRolePermissions: (role: Role) => Promise<Permission[] | null>
   getUserPermissions: (user: UserAggregate) => Promise<Permission[] | null>
+  // livestream
+  updateLivestream: (livestream: Livestream) => Promise<void>
+  findLivestreamById: (id: string) => Promise<Livestream>
+  setLiveStreamInfoCategories: (
+    userId: string,
+    categoriesId: string[],
+  ) => Promise<void>
+  setLiveStreamInfoTags: (
+    userId: string,
+    categoriesId: string[],
+  ) => Promise<void>
+  getLiveStreamInfoCategories: (livestreamInfoId: string) => Promise<any[]>
+  getLiveStreamInfoTags: (livestreamInfoId: string) => Promise<any[]>
+  getStreamInfoByUser: (user: UserAggregate) => Promise<any>
+  updateStreamInfoOfUser: (streamInfo: any) => Promise<void>
+  createStreamInfo: (streamInfo: any) => Promise<void>
 }

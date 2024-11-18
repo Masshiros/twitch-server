@@ -146,68 +146,28 @@ async function main() {
   }
 
   // 4. Create the default admin user
-  const defaultAdmin = await prisma.user.create({
-    data: {
+  const usersData = [
+    {
       name: "admin1",
       displayName: "Admin",
       slug: "admin",
       email: "nguahoang2003@gmail.com",
-      password: await hashPassword("strongPassword123@@AA"), // Replace with hashed password
+      password: await hashPassword("strongPassword123@@AA"),
       phoneNumber: "0123456789",
-      dob: new Date("1980-01-01T00:00:00.000Z"), // ISO8601 format
-      status: EUserStatus.VERIFIED,
+      dob: new Date("1980-01-01T00:00:00.000Z"),
+      role: Roles.Admin,
     },
-  })
-  console.log(`Admin user created: ${defaultAdmin.email}`)
-
-  // 5. Assign 'Admin' role to the default user
-  const adminRole = await prisma.role.findUnique({
-    where: { name: Roles.Admin },
-  })
-
-  if (adminRole) {
-    await prisma.userRole.create({
-      data: {
-        userId: defaultAdmin.id,
-        roleId: adminRole.id,
-      },
-    })
-    console.log(`Role '${Roles.Admin}' assigned to user: ${defaultAdmin.email}`)
-  }
-  // 6. Create the default admin user
-  const defaultAdmin2 = await prisma.user.create({
-    data: {
+    {
       name: "admin2",
       displayName: "Admin 2",
       slug: "admin-2",
       email: "phatvu080903@gmail.com",
-      password: await hashPassword("strongPassword123@@AA"), // Replace with hashed password
+      password: await hashPassword("strongPassword123@@AA"),
       phoneNumber: "0123456789",
-      dob: new Date("1980-01-01T00:00:00.000Z"), // ISO8601 format
-      status: EUserStatus.VERIFIED,
+      dob: new Date("1980-01-01T00:00:00.000Z"),
+      role: Roles.Admin,
     },
-  })
-  console.log(`Admin user created: ${defaultAdmin2.email}`)
-
-  // 7. Assign 'Admin' role to the default user
-  const adminRole2 = await prisma.role.findUnique({
-    where: { name: Roles.Admin },
-  })
-
-  if (adminRole2) {
-    await prisma.userRole.create({
-      data: {
-        userId: defaultAdmin2.id,
-        roleId: adminRole2.id,
-      },
-    })
-    console.log(
-      `Role '${Roles.Admin}' assigned to user: ${defaultAdmin2.email}`,
-    )
-  }
-  // 8. Create a default user with 'User' role
-  const defaultUser = await prisma.user.create({
-    data: {
+    {
       name: "user1",
       displayName: "User",
       slug: "user",
@@ -215,24 +175,89 @@ async function main() {
       password: await hashPassword("regularUserPass123!"),
       phoneNumber: "0987654321",
       dob: new Date("1990-01-01T00:00:00.000Z"),
-      status: EUserStatus.VERIFIED,
+      role: Roles.User,
     },
-  })
-  console.log(`User created: ${defaultUser.email}`)
+  ]
 
-  // Assign 'User' role to the default user
-  const userRole = await prisma.role.findUnique({
-    where: { name: Roles.User },
-  })
-
-  if (userRole) {
-    await prisma.userRole.create({
+  for (const userData of usersData) {
+    const user = await prisma.user.create({
       data: {
-        userId: defaultUser.id,
-        roleId: userRole.id,
+        name: userData.name,
+        displayName: userData.displayName,
+        slug: userData.slug,
+        email: userData.email,
+        password: userData.password,
+        phoneNumber: userData.phoneNumber,
+        dob: userData.dob,
+        status: EUserStatus.VERIFIED,
       },
     })
-    console.log(`Role '${Roles.User}' assigned to user: ${defaultUser.email}`)
+    console.log(`User created: ${user.email}`)
+
+    const role = await prisma.role.findUnique({
+      where: { name: userData.role },
+    })
+    if (role) {
+      await prisma.userRole.create({
+        data: {
+          userId: user.id,
+          roleId: role.id,
+        },
+      })
+      console.log(`Role '${userData.role}' assigned to user: ${user.email}`)
+    }
+
+    // Create LivestreamInfo for the user
+    await prisma.liveStreamInfo.create({
+      data: {
+        userId: user.id,
+      },
+    })
+    console.log(`LivestreamInfo created for user: ${user.email}`)
+  }
+  const categories = [
+    {
+      name: "Technology",
+      slug: "technology",
+      image: "https://example.com/images/technology.jpg",
+    },
+    {
+      name: "Gaming",
+      slug: "gaming",
+      image: "https://example.com/images/gaming.jpg",
+    },
+    {
+      name: "Education",
+      slug: "education",
+      image: "https://example.com/images/education.jpg",
+    },
+    {
+      name: "Fitness",
+      slug: "fitness",
+      image: "https://example.com/images/fitness.jpg",
+    },
+  ]
+  for (const category of categories) {
+    try {
+      const existingCategory = await prisma.category.findUnique({
+        where: { slug: category.slug },
+      })
+
+      if (!existingCategory) {
+        await prisma.category.create({
+          data: {
+            name: category.name,
+            slug: category.slug,
+            image: category.image,
+          },
+        })
+        console.log(`Seeded category: ${category.name}`)
+      } else {
+        console.log(`Category already exists: ${category.name}`)
+      }
+    } catch (error) {
+      console.error(`Failed to seed category: ${category.name}`, error)
+    }
   }
 
   console.log("Seeding completed.")

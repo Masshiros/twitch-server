@@ -30,6 +30,9 @@ export const SuccessMessages = {
     UPDATE_PROFILE_PICTURE: "Update profile picture successfully",
     IS_VALID_USERNAME: "Get validity of username successfully",
   },
+  livestream: {
+    SET_STREAM_TITLE: "Set stream title successfully",
+  },
   friend: {
     SEND_FRIEND_REQUEST: "Send friend request successfully",
     ACCEPT_FRIEND_REQUEST: "Accept friend request successfully",
