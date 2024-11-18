@@ -1,12 +1,18 @@
+import { InjectQueue } from "@nestjs/bullmq"
 import { Injectable, Logger } from "@nestjs/common"
 import { Cron, CronExpression } from "@nestjs/schedule"
+import { Queue } from "bullmq"
+import { Bull } from "libs/constants/bull"
 import { IGroupRepository } from "../../domain/repository/group.interface.repository"
 
 @Injectable()
 export class GroupCronjobService {
   private readonly logger = new Logger(GroupCronjobService.name)
 
-  constructor(private readonly groupRepository: IGroupRepository) {}
+  constructor(
+    @InjectQueue(Bull.queue.post.schedule) private queue: Queue,
+    private readonly groupRepository: IGroupRepository,
+  ) {}
   @Cron(CronExpression.EVERY_10_SECONDS)
   async test() {
     this.logger.log("Group cron run")
@@ -22,21 +28,19 @@ export class GroupCronjobService {
       }
       for (const scheduledPost of scheduledPosts) {
         try {
-          const groupPost = await this.groupRepository.findPostById(
-            scheduledPost.postId,
-          )
-          if (!groupPost) {
-            this.logger.warn(
-              `GroupPost not found for scheduledPostId: ${scheduledPost.id}`,
-            )
-            continue
+          const plainData = {
+            id: scheduledPost.id,
+            postId: scheduledPost.postId,
+            groupId: scheduledPost.groupId,
+            userId: scheduledPost.userId,
+            createdAt: scheduledPost.createdAt,
+            updatedAt: scheduledPost.updatedAt,
+            scheduledAt: scheduledPost.scheduledAt,
           }
-          groupPost.isPublic = true
-          await Promise.all([
-            this.groupRepository.updatePost(groupPost),
-            this.groupRepository.deleteScheduledPost(scheduledPost),
-          ])
-          this.logger.log(`Processed scheduled post: ${scheduledPost.id}`)
+          await this.queue.add(Bull.job.post.schedule, {
+            plainData,
+          })
+          this.logger.log(`Scheduled post added to queue: ${scheduledPost.id}`)
         } catch (error) {
           this.logger.error(
             `Error processing scheduled post: ${scheduledPost.id}`,

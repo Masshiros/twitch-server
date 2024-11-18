@@ -445,9 +445,9 @@ export class GroupsController {
     summary: "Create group post",
     description: "Create group post by user",
     listBadRequestErrorMessages:
-      SwaggerErrorMessages.groups.createGroupPost.badRequest,
+      SwaggerErrorMessages.groups.createScheduledGroupPost.badRequest,
     listNotFoundErrorMessages:
-      SwaggerErrorMessages.groups.createGroupPost.notFound,
+      SwaggerErrorMessages.groups.createScheduledGroupPost.notFound,
     auth: true,
     fileFieldName: "images",
   })

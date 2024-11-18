@@ -8,12 +8,18 @@ export const Bull = {
       upload: "image-upload",
       remove: "image-remove",
     },
+    post: {
+      schedule: "schedule-post",
+    },
   },
   job: {
     image: {
       optimize: "image-job-optimize",
       upload: "image-job-upload",
       remove: "image-job-remove",
+    },
+    post: {
+      schedule: "schedule-job-post",
     },
   },
 }
