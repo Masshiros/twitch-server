@@ -24,6 +24,7 @@ import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
 import { ToggleTwoFaCommandHandler } from "./command/auth/toggle-two-fa/toggle-two-fa.handler"
+import { SetIsLiveHandler } from "./command/livestream/set-is-live/set-is-live.handler"
 import { SetStreamInfoHandler } from "./command/livestream/set-stream-info/set-stream-info.handler"
 import { AssignPermissionToRoleHandler } from "./command/role/assign-permission-to-role/assign-permission-to-role.handler"
 import { AssignRoleToUserHandler } from "./command/role/assign-role-to-user/assign-role-to-user.handler"
@@ -42,8 +43,10 @@ import { GetAllPermissionsHandler } from "./query/role/get-all-permissions/get-a
 import { GetAllRolesHandler } from "./query/role/get-all-role/get-all-role.handler"
 import { GetUserPermissionsHandler } from "./query/role/get-user-permissions/get-user-permissions.handler"
 import { GetUserRoleHandler } from "./query/role/get-user-role/get-user-role.handler"
+import { GetAllStreamHandler } from "./query/user/get-all-stream/get-all-stream.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
 import { GetStreamKeyHandler } from "./query/user/get-stream-key/get-stream-key.handler"
+import { GetTop5StreamHandler } from "./query/user/get-top-5-stream/get-top-5-stream.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { IsValidUserNameHandler } from "./query/user/is-valid-username/is-valid-username.handler"
 import { UserService } from "./user.service"
@@ -73,6 +76,7 @@ const commandHandlers = [
   ForgetUsernameHandler,
   SetStreamKeyHandler,
   SetStreamInfoHandler,
+  SetIsLiveHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,
@@ -85,6 +89,8 @@ const queryHandlers = [
   GetUserPermissionsHandler,
   IsValidUserNameHandler,
   GetStreamKeyHandler,
+  GetTop5StreamHandler,
+  GetAllStreamHandler,
 ]
 @Module({
   controllers: [AuthController, UserController, LiveStreamController],

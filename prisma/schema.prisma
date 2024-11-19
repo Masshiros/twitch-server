@@ -112,9 +112,9 @@ model Livestream {
   isChatDelayed        Boolean?
   delayedSeconds       String?
   isChatFollowersOnly  Boolean?
-  ingressId            String?
-  
-
+  ingressId            String?  @unique()
+  startStreamAt          DateTime?
+  endStreamAt            DateTime?
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @default(now()) @updatedAt
   deletedAt             DateTime?

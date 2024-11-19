@@ -11,6 +11,8 @@ export class Livestream extends BaseEntity {
     delayedSeconds?: string
     isChatFollowersOnly?: boolean
     ingressId?: string
+    startStreamAt?: Date
+    endStreamAt?: Date
     createdAt?: Date
     updatedAt?: Date
     deletedAt?: Date
@@ -26,6 +28,8 @@ export class Livestream extends BaseEntity {
       delayedSeconds: string
       isChatFollowersOnly: boolean
       ingressId?: string
+      startStreamAt?: Date
+      endStreamAt?: Date
       createdAt?: Date
       updatedAt?: Date
       deletedAt?: Date
@@ -36,7 +40,18 @@ export class Livestream extends BaseEntity {
     this._id = id ?? randomUUID()
     this.props = props
   }
-
+  get startStreamAt(): Date {
+    return this.props.startStreamAt
+  }
+  get endStreamAt(): Date {
+    return this.props.endStreamAt
+  }
+  set startStreamAt(value: Date) {
+    this.props.startStreamAt = value
+  }
+  set endStreamAt(value: Date) {
+    this.props.endStreamAt
+  }
   get userId(): string {
     return this.props.userId
   }

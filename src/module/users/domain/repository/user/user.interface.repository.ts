@@ -3,6 +3,7 @@ import { TokenPayload, UserFilters } from "src/common/interface"
 import { LivestreamMapper } from "src/module/users/infrastructure/database/prisma/mappers/livestream.mapper"
 import { type UserAggregate } from "../../aggregate"
 import { Device } from "../../entity/devices.entity"
+import { LiveStreamInfo } from "../../entity/live-stream-info.entity"
 import { Livestream } from "../../entity/livestream.entity"
 import { LoginHistory } from "../../entity/login-histories.entity"
 import { Permission } from "../../entity/permissions.entity"
@@ -109,5 +110,19 @@ export abstract class IUserRepository {
   getLiveStreamInfoTags: (livestreamInfoId: string) => Promise<any[]>
   getStreamInfoByUser: (user: UserAggregate) => Promise<any>
   updateStreamInfoOfUser: (streamInfo: any) => Promise<void>
+  updateLivestreamInfo: (livestreamInfo: LiveStreamInfo) => Promise<void>
   createStreamInfo: (streamInfo: any) => Promise<void>
+  findLivestreamByIngressId: (ingressId: string) => Promise<Livestream>
+  getAllLivingLiveStreamInfo: ({
+    limit,
+    offset,
+    orderBy,
+    order,
+  }: {
+    limit?: number
+    offset?: number
+    orderBy?: string
+    order?: "asc" | "desc"
+  }) => Promise<LiveStreamInfo[] | []>
+  getAllStreamSessions: (user: UserAggregate) => Promise<Livestream[]>
 }

@@ -176,7 +176,7 @@ export class GroupPrismaRepository implements IGroupRepository {
       const ids = groups.map((group) => group.groupId)
       const queryGroup = await this.prismaService.group.findMany({
         where: { id: { in: ids } },
-        orderBy: { [orderBy]: order },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!queryGroup) {
         return []

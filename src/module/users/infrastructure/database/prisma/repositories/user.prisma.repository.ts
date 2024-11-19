@@ -11,6 +11,7 @@ import { PrismaService } from "prisma/prisma.service"
 import { TokenPayload, UserFilters } from "src/common/interface"
 import { type UserAggregate } from "src/module/users/domain/aggregate"
 import { Device } from "src/module/users/domain/entity/devices.entity"
+import { LiveStreamInfo } from "src/module/users/domain/entity/live-stream-info.entity"
 import { Livestream } from "src/module/users/domain/entity/livestream.entity"
 import { LoginHistory } from "src/module/users/domain/entity/login-histories.entity"
 import { Permission } from "src/module/users/domain/entity/permissions.entity"
@@ -21,6 +22,7 @@ import { addTimeToNow } from "utils/date"
 import { hashToken } from "utils/encrypt"
 import { handlePrismaError } from "utils/prisma-error"
 import { DeviceMapper } from "../mappers/device.mapper"
+import { LiveStreamInfoMapper } from "../mappers/live-stream-info.mapper"
 import { LivestreamMapper } from "../mappers/livestream.mapper"
 import { LoginHistoryMapper } from "../mappers/login-history.mapper"
 import { PermissionMapper } from "../mappers/permission.mapper"
@@ -1035,8 +1037,6 @@ export class PrismaUserRepository implements IUserRepository {
     order: "asc" | "desc"
   }): Promise<Permission[] | null> {
     try {
-      const finalOrderBy = orderBy ?? "createdAt"
-      const finalOrder = order ?? "desc"
       const permissions = await this.prismaService.permission.findMany({
         where: { deletedAt: null },
         ...(offset !== null ? { skip: offset } : {}),
@@ -1051,7 +1051,7 @@ export class PrismaUserRepository implements IUserRepository {
       const ids = permissions.map((permission) => permission.id)
       const queryPermission = await this.prismaService.permission.findMany({
         where: { id: { in: ids } },
-        orderBy: { [finalOrderBy]: finalOrder },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!queryPermission) {
         return null
@@ -1186,10 +1186,52 @@ export class PrismaUserRepository implements IUserRepository {
       })
     }
   }
+  async updateLivestreamInfo(livestreamInfo: LiveStreamInfo): Promise<void> {
+    try {
+      const data = LiveStreamInfoMapper.toPersistence(livestreamInfo)
+      await this.prismaService.liveStreamInfo.update({
+        where: { id: data.id },
+        data: data,
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async findLivestreamById(id: string): Promise<Livestream> {
     try {
       const livestream = await this.prismaService.livestream.findUnique({
         where: { id },
+      })
+      if (!livestream) {
+        return null
+      }
+      return LivestreamMapper.toDomain(livestream) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async findLivestreamByIngressId(ingressId: string): Promise<Livestream> {
+    try {
+      const livestream = await this.prismaService.livestream.findUnique({
+        where: { ingressId },
       })
       if (!livestream) {
         return null
@@ -1390,6 +1432,80 @@ export class PrismaUserRepository implements IUserRepository {
           liveStreamInfoId,
         },
       })
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getAllLivingLiveStreamInfo({
+    limit,
+    offset = 0,
+    orderBy = "createdAt",
+    order = "desc",
+  }: {
+    limit: number
+    offset: number
+    orderBy: string
+    order: "asc" | "desc"
+  }): Promise<LiveStreamInfo[] | null> {
+    try {
+      const livestreamInfos = await this.prismaService.liveStreamInfo.findMany({
+        where: { isLive: true },
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
+        select: {
+          id: true,
+        },
+      })
+      if (!livestreamInfos) {
+        return []
+      }
+      const ids = livestreamInfos.map((e) => e.id)
+      const queryInfos = await this.prismaService.liveStreamInfo.findMany({
+        where: { id: { in: ids } },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
+      })
+      if (!queryInfos) {
+        return []
+      }
+      const result = queryInfos.map((e) => {
+        const liveStreamInfo = LiveStreamInfoMapper.toDomain(e)
+        return liveStreamInfo
+      })
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getAllStreamSessions(user: UserAggregate): Promise<Livestream[]> {
+    try {
+      const livestreams = await this.prismaService.livestream.findMany({
+        where: {
+          userId: user.id,
+        },
+      })
+      if (!livestreams) {
+        return []
+      }
+      const result = livestreams.map((e) => LivestreamMapper.toDomain(e))
       return result ?? []
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

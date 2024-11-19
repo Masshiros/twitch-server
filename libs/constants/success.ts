@@ -32,6 +32,9 @@ export const SuccessMessages = {
   },
   livestream: {
     SET_STREAM_TITLE: "Set stream title successfully",
+    GET_ALL_LIVING_STREAM: "Get all living stream successfully",
+    GET_TOP_5_STREAM: "Get top 5 living stream successfully",
+    SET_IS_LIVE: "Set stream is live successfully",
   },
   friend: {
     SEND_FRIEND_REQUEST: "Send friend request successfully",

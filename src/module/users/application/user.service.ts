@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
+import { SetIsLiveCommand } from "./command/livestream/set-is-live/set-is-live.command"
 import { SetStreamInfoCommand } from "./command/livestream/set-stream-info/set-stream-info.command"
+import { UpdateLivestreamSessionCommand } from "./command/livestream/update-livestream-session/update-livestream-session.command"
 import { AssignPermissionToRoleCommand } from "./command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "./command/user/add-profile-picture/add-profile-picture.command"
@@ -18,8 +20,10 @@ import { GetAllPermissionsQuery } from "./query/role/get-all-permissions/get-all
 import { GetAllRolesQuery } from "./query/role/get-all-role/get-all-role.query"
 import { GetUserPermissionsQuery } from "./query/role/get-user-permissions/get-user-permissions.query"
 import { GetUserRoleQuery } from "./query/role/get-user-role/get-user-role.query"
+import { GetAllStreamQuery } from "./query/user/get-all-stream/get-all-stream.query"
 import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
 import { GetStreamKeyQuery } from "./query/user/get-stream-key/get-stream-key.query"
+import { GetTop5StreamQuery } from "./query/user/get-top-5-stream/get-top-5-stream.query"
 import { GetUserQuery } from "./query/user/get-user/get-user.query"
 import { IsValidUserNameQuery } from "./query/user/is-valid-username/is-valid-username.query"
 
@@ -92,7 +96,19 @@ export class UserService {
   setStreamInfo(command: SetStreamInfoCommand) {
     return this.commandBus.execute(command)
   }
+  setIsLive(command: SetIsLiveCommand) {
+    return this.commandBus.execute(command)
+  }
   getStreamKey(query: GetStreamKeyQuery) {
     return this.queryBus.execute(query)
+  }
+  getAllLivingStreamInfo(query: GetAllStreamQuery) {
+    return this.queryBus.execute(query)
+  }
+  getTop5Stream(query: GetTop5StreamQuery) {
+    return this.queryBus.execute(query)
+  }
+  updateLivestreamSession(command: UpdateLivestreamSessionCommand) {
+    return this.commandBus.execute(command)
   }
 }
