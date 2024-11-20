@@ -1,9 +1,9 @@
 type GetLivestreamInfoQueryParams = {
-  userId: string
+  username: string
 }
 export class GetLivestreamInfoQuery {
-  userId: string
+  username: string
   constructor(params: GetLivestreamInfoQueryParams) {
-    this.userId = params.userId
+    this.username = params.username
   }
 }

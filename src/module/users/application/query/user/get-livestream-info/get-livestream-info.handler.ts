@@ -13,15 +13,15 @@ import { GetLivestreamInfoQuery } from "./get-livestream-info.query"
 export class GetLivestreamInfoHandler {
   constructor(private readonly userRepository: IUserRepository) {}
   async execute(query: GetLivestreamInfoQuery): Promise<LiveStreamInfoResult> {
-    const { userId } = query
+    const { username } = query
     try {
-      if (!userId || userId.length === 0) {
+      if (!username || username.length === 0) {
         throw new QueryError({
           code: QueryErrorCode.BAD_REQUEST,
-          message: "userId can not be empty",
+          message: "username can not be empty",
         })
       }
-      const user = await this.userRepository.findById(userId)
+      const user = await this.userRepository.findByUsername(username)
       if (!user) {
         throw new QueryError({
           code: QueryErrorCode.NOT_FOUND,
