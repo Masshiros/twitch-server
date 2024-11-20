@@ -196,6 +196,9 @@ export const SwaggerErrorMessages = {
       badRequest: ["Id can not be empty"],
       notFound: ["Category not found"],
     },
+    searchCategoriesByName: {
+      badRequest: ["Keyword can not be empty"],
+    },
   },
   tag: {
     createTag: {

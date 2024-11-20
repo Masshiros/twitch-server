@@ -32,6 +32,7 @@ import { GetAllCategoriesQuery } from "../application/query/category/get-all-cat
 import { GetCategoriesByTagQuery } from "../application/query/category/get-categories-by-tag/get-categories-by-tag.query"
 import { GetCategoryByIdQuery } from "../application/query/category/get-category-by-id/get-category-by-id.query"
 import { GetCategoryBySlugQuery } from "../application/query/category/get-category-by-slug/get-category-by-slug.query"
+import { SearchCategoryByNameQuery } from "../application/query/category/search-category-by-name/search-category-by-name.query"
 import { GetAllTagsQuery } from "../application/query/tag/get-all-tags/get-all-tags.query"
 import { AssignTagsToCategoryRequestDto } from "./http/dto/request/assign-tags-to-category.request.dto"
 import { CreateCategoryRequestDto } from "./http/dto/request/create-category.request.dto"
@@ -43,6 +44,7 @@ import { GetAllTagsRequestDto } from "./http/dto/request/get-all-tags.request.dt
 import { GetCategoriesByTagRequestDto } from "./http/dto/request/get-categories-by-tag.request.dto"
 import { GetCategoryByIdRequestDto } from "./http/dto/request/get-category-by-id.request.dto"
 import { GetCategoryBySlugRequestDto } from "./http/dto/request/get-category-by-slug.request.dto"
+import { SearchCategoryByNameRequestDto } from "./http/dto/request/search-category-by-name.request.dto"
 import { UpdateCategoryRequestDto } from "./http/dto/request/update-category.request.dto"
 import { UpdateTagRequestDto } from "./http/dto/request/update-tag.request.dto"
 import { CategoryResponseDto } from "./http/dto/response/category.response.dto"
@@ -254,5 +256,23 @@ export class CategoriesController {
       tagsId: body.tagIds,
     })
     await this.service.assignTagsToCategory(command)
+  }
+
+  @ApiOperationDecorator({
+    summary: "Search categories by name",
+    description: "Search categories by name",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.category.searchCategoriesByName.badRequest,
+
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.categories.SEARCH_CATEGORIES_BY_NAME)
+  @Permission([Permissions.Categories.Read])
+  @Get("/search/by-name")
+  async searchCategoriesByName(
+    @Query() body: SearchCategoryByNameRequestDto,
+  ): Promise<CategoryResponseDto[]> {
+    const command = new SearchCategoryByNameQuery({ keyword: body.keyword })
+    return await this.service.searchCategoryByName(command)
   }
 }

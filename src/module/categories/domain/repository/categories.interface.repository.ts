@@ -39,6 +39,7 @@ export abstract class ICategoriesRepository {
   getCategoryBySlug: (slug: string) => Promise<Category | null>
   getCategoryById: (id: string) => Promise<Category | null>
   getCategoriesByTag: (tag: Tag) => Promise<Category[] | null>
+  searchCategoriesByKeyword: (keyword: string) => Promise<Category[]>
   // categories
   // getUserCategories: (userId: string) => Promise<Category[]>
 }

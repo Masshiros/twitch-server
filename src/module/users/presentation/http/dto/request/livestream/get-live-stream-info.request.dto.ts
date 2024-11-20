@@ -8,5 +8,5 @@ export class GetLiveStreamInfoRequestDto {
   })
   @IsOptional()
   @IsString({ message: "User ID must be a string" })
-  userId?: string
+  username?: string
 }

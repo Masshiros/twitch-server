@@ -512,6 +512,36 @@ export class CategoriesRepository implements ICategoriesRepository {
       })
     }
   }
+  async searchCategoriesByKeyword(keyword: string): Promise<Category[]> {
+    try {
+      const categories = await this.prismaService.category.findMany({
+        where: {
+          name: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+          deletedAt: null,
+        },
+      })
+      if (!categories) {
+        return []
+      }
+      const result = categories.map((c) => CategoryMapper.toDomain(c))
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   // async getUserCategories(userId: string): Promise<Category[]> {
   //   try {
   //     const userCategories = await this.prismaService.usersCategories.findMany({

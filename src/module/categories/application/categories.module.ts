@@ -16,6 +16,7 @@ import { GetAllCategoriesHandler } from "./query/category/get-all-categories/get
 import { GetCategoriesByTagHandler } from "./query/category/get-categories-by-tag/get-categories-by-tag.handler"
 import { GetCategoryByIdHandler } from "./query/category/get-category-by-id/get-category-by-id.handler"
 import { GetCategoryBySlugHandler } from "./query/category/get-category-by-slug/get-category-by-slug.handler"
+import { SearchCategoryByNameHandler } from "./query/category/search-category-by-name/search-category-by-name.handler"
 import { GetAllTagsHandler } from "./query/tag/get-all-tags/get-all-tags.handler"
 
 const commandHandlers = [
@@ -33,6 +34,7 @@ const queryHandlers = [
   GetCategoryBySlugHandler,
   GetCategoriesByTagHandler,
   GetAllTagsHandler,
+  SearchCategoryByNameHandler,
 ]
 @Module({
   controllers: [CategoriesController],

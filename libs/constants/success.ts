@@ -59,6 +59,7 @@ export const SuccessMessages = {
     GET_CATEGORY_BY_ID: "Get category by id successfully",
     GET_CATEGORY_BY_SLUG: "Get category by slug successfully",
     GET_CATEGORIES_BY_TAG: "Get categories by tag successfully",
+    SEARCH_CATEGORIES_BY_NAME: "Search categories by name successfully",
   },
   tags: {
     GET_ALL_TAGS: "Get all tags successfully",

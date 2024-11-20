@@ -136,7 +136,7 @@ export class LiveStreamController {
   async getLiveStreamInfo(
     @Body() body: GetLiveStreamInfoRequestDto,
   ): Promise<LiveStreamInfoResponseDto> {
-    const query = new GetLivestreamInfoQuery({ userId: body.userId })
+    const query = new GetLivestreamInfoQuery({ username: body.username })
     return await this.userService.getLiveStreamInfo(query)
   }
 }
