@@ -45,6 +45,7 @@ import { GetUserPermissionsHandler } from "./query/role/get-user-permissions/get
 import { GetUserRoleHandler } from "./query/role/get-user-role/get-user-role.handler"
 import { GetAllStreamHandler } from "./query/user/get-all-stream/get-all-stream.handler"
 import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.handler"
+import { GetLivestreamInfoHandler } from "./query/user/get-livestream-info/get-livestream-info.handler"
 import { GetStreamKeyHandler } from "./query/user/get-stream-key/get-stream-key.handler"
 import { GetTop5StreamHandler } from "./query/user/get-top-5-stream/get-top-5-stream.handler"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
@@ -91,6 +92,7 @@ const queryHandlers = [
   GetStreamKeyHandler,
   GetTop5StreamHandler,
   GetAllStreamHandler,
+  GetLivestreamInfoHandler,
 ]
 @Module({
   controllers: [AuthController, UserController, LiveStreamController],

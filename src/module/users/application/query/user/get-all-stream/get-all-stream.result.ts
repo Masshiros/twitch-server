@@ -1,4 +1,4 @@
-export interface LiveStreamInfoResult {
+export class LiveStreamInfoResult {
   id: string
   userId: string
   userName: string

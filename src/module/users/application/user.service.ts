@@ -22,6 +22,7 @@ import { GetUserPermissionsQuery } from "./query/role/get-user-permissions/get-u
 import { GetUserRoleQuery } from "./query/role/get-user-role/get-user-role.query"
 import { GetAllStreamQuery } from "./query/user/get-all-stream/get-all-stream.query"
 import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
+import { GetLivestreamInfoQuery } from "./query/user/get-livestream-info/get-livestream-info.query"
 import { GetStreamKeyQuery } from "./query/user/get-stream-key/get-stream-key.query"
 import { GetTop5StreamQuery } from "./query/user/get-top-5-stream/get-top-5-stream.query"
 import { GetUserQuery } from "./query/user/get-user/get-user.query"
@@ -110,5 +111,8 @@ export class UserService {
   }
   updateLivestreamSession(command: UpdateLivestreamSessionCommand) {
     return this.commandBus.execute(command)
+  }
+  getLiveStreamInfo(query: GetLivestreamInfoQuery) {
+    return this.queryBus.execute(query)
   }
 }

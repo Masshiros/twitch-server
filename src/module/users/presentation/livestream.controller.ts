@@ -20,14 +20,17 @@ import { SetIsLiveCommand } from "../application/command/livestream/set-is-live/
 import { SetStreamInfoCommand } from "../application/command/livestream/set-stream-info/set-stream-info.command"
 import { UpdateLivestreamSessionCommand } from "../application/command/livestream/update-livestream-session/update-livestream-session.command"
 import { GetAllStreamQuery } from "../application/query/user/get-all-stream/get-all-stream.query"
+import { GetLivestreamInfoQuery } from "../application/query/user/get-livestream-info/get-livestream-info.query"
 import { GetTop5StreamQuery } from "../application/query/user/get-top-5-stream/get-top-5-stream.query"
 import { UserService } from "../application/user.service"
 import { UserAggregate } from "../domain/aggregate"
 import { GetAllLivingStreamInfosRequestDto } from "./http/dto/request/livestream/get-all-living-stream-infos.request.dto"
+import { GetLiveStreamInfoRequestDto } from "./http/dto/request/livestream/get-live-stream-info.request.dto"
 import { SetIsLiveRequestDTO } from "./http/dto/request/livestream/set-is-live.request.dto"
 import { SetStreamInfoRequestDto } from "./http/dto/request/livestream/set-stream-info.request.dto"
 import { GetAllLivingStreamInfosResponseDto } from "./http/dto/response/livestream/get-all-living-stream-infos.response.dto"
 import { GetTop5StreamResponseDto } from "./http/dto/response/livestream/get-top-5-stream.response.dto"
+import { LiveStreamInfoResponseDto } from "./http/dto/response/livestream/live-stream-info.response.dto"
 import { UpdateLivestreamSessionRequestDTO } from "./http/dto/response/livestream/update-livestream-session.request.dto"
 
 @ApiTags("Livestreams")
@@ -121,5 +124,19 @@ export class LiveStreamController {
       userId: user.id,
     })
     await this.userService.updateLivestreamSession(command)
+  }
+  // get: get livestream info of user
+  @ApiOperationDecorator({
+    summary: "Get livestream info of user",
+    description: "Get livestream info of user",
+  })
+  @Public()
+  @ResponseMessage(SuccessMessages.livestream.GET_TOP_5_STREAM)
+  @Get("top-5-stream")
+  async getLiveStreamInfo(
+    @Body() body: GetLiveStreamInfoRequestDto,
+  ): Promise<LiveStreamInfoResponseDto> {
+    const query = new GetLivestreamInfoQuery({ userId: body.userId })
+    return await this.userService.getLiveStreamInfo(query)
   }
 }
