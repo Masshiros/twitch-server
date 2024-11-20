@@ -13,7 +13,7 @@ import { SetStreamInfoCommand } from "./set-stream-info.command"
 export class SetStreamInfoHandler {
   constructor(private readonly userRepository: IUserRepository) {}
   async execute(command: SetStreamInfoCommand) {
-    const { userId, title, categoryIds, tagsIds } = command
+    const { userId, title, categoryId } = command
     try {
       if (!userId && userId.length === 0) {
         throw new CommandError({
@@ -61,15 +61,12 @@ export class SetStreamInfoHandler {
       if (title) {
         livestreamInfo.title = title
       }
-      if (categoryIds && categoryIds.length > 0) {
-        await this.userRepository.setLiveStreamInfoCategories(
-          user.id,
-          categoryIds,
-        )
+      if (categoryId && categoryId.length > 0) {
+        await this.userRepository.setLiveStreamInfoCategories(user.id, [
+          categoryId,
+        ])
       }
-      if (tagsIds && tagsIds.length > 0) {
-        await this.userRepository.setLiveStreamInfoTags(user.id, tagsIds)
-      }
+
       await this.userRepository.updateStreamInfoOfUser(livestreamInfo)
     } catch (err) {
       if (err instanceof CommandError || err instanceof InfrastructureError) {

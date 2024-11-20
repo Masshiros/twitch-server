@@ -1,20 +1,17 @@
 type SetStreamInfoCommandParams = {
   userId: string
-
   title: string
-  categoryIds?: string[]
-  tagsIds?: string[]
+  categoryId?: string
 }
 export class SetStreamInfoCommand {
   userId: string
   title: string
-  categoryIds?: string[]
-  tagsIds?: string[]
+  categoryId?: string
+
   constructor(params: SetStreamInfoCommandParams) {
     this.userId = params.userId
 
     this.title = params.title
-    this.categoryIds = params.categoryIds ?? []
-    this.tagsIds = params.tagsIds ?? []
+    this.categoryId = params.categoryId
   }
 }

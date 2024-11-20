@@ -132,7 +132,7 @@ export class LiveStreamController {
   })
   @Public()
   @ResponseMessage(SuccessMessages.livestream.GET_TOP_5_STREAM)
-  @Get("top-5-stream")
+  @Get("livestream-info")
   async getLiveStreamInfo(
     @Body() body: GetLiveStreamInfoRequestDto,
   ): Promise<LiveStreamInfoResponseDto> {
