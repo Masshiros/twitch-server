@@ -31,7 +31,8 @@ export const SuccessMessages = {
     IS_VALID_USERNAME: "Get validity of username successfully",
   },
   livestream: {
-    SET_STREAM_TITLE: "Set stream title successfully",
+    SET_STREAM_INFO: "Set stream info successfully",
+    GET_STREAM_INFO: "Get stream info successfully",
     GET_ALL_LIVING_STREAM: "Get all living stream successfully",
     GET_TOP_5_STREAM: "Get top 5 living stream successfully",
     SET_IS_LIVE: "Set stream is live successfully",

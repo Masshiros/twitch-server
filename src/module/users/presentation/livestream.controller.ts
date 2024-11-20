@@ -54,7 +54,7 @@ export class LiveStreamController {
     Permissions.LiveStreams.Read,
     Permissions.LiveStreams.Delete,
   ])
-  @ResponseMessage(SuccessMessages.livestream.SET_STREAM_TITLE)
+  @ResponseMessage(SuccessMessages.livestream.SET_STREAM_INFO)
   @Patch("/set-info")
   async setTitle(
     @Body() data: SetStreamInfoRequestDto,
@@ -131,10 +131,10 @@ export class LiveStreamController {
     description: "Get livestream info of user",
   })
   @Public()
-  @ResponseMessage(SuccessMessages.livestream.GET_TOP_5_STREAM)
+  @ResponseMessage(SuccessMessages.livestream.GET_STREAM_INFO)
   @Get("livestream-info")
   async getLiveStreamInfo(
-    @Body() body: GetLiveStreamInfoRequestDto,
+    @Query() body: GetLiveStreamInfoRequestDto,
   ): Promise<LiveStreamInfoResponseDto> {
     const query = new GetLivestreamInfoQuery({ username: body.username })
     return await this.userService.getLiveStreamInfo(query)
