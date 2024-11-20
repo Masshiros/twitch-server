@@ -386,6 +386,30 @@ export const SwaggerErrorMessages = {
     searchPost: {
       badRequest: ["Keyword can not be empty"],
     },
+    getPostComments: {
+      badRequest: ["Post ID cannot be empty"],
+      notFound: ["Post not found"],
+    },
+    createComment: {
+      badRequest: [
+        "User ID cannot be empty",
+        "Post ID cannot be empty",
+        "Content cannot be empty",
+
+        "Cannot create comment. Try again",
+      ],
+      notFound: ["User not found", "Post not found"],
+    },
+    updateComment: {
+      badRequest: [
+        "User ID cannot be empty",
+        "Post ID cannot be empty",
+        "Content cannot be empty",
+
+        "Comment not found",
+      ],
+      notFound: ["User not found", "Post not found", "Comment not found"],
+    },
   },
   groups: {
     createGroup: {

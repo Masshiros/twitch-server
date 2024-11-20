@@ -7,6 +7,7 @@ import {
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetUserPostsQuery } from "./get-user-posts.query"
@@ -83,8 +84,11 @@ export class GetUserPostsHandler {
             this.imageService.getImageByApplicableId(p.id),
             this.userRepository.findById(p.userId),
           ])
-          const ownerAvatar = await this.imageService.getImageByApplicableId(
+          const ownerImages = await this.imageService.getImageByApplicableId(
             owner.id,
+          )
+          const ownerAvatar = ownerImages.find(
+            (e) => e.imageType === EImageType.AVATAR,
           )
           if (currentUserId !== userId) {
             const hasPermission =

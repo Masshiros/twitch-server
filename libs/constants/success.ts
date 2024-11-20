@@ -91,6 +91,9 @@ export const SuccessMessages = {
     UPDATE_POST: "Update post successfully",
     SHARE_POST: "Share post successfully",
     SEARCH_POST: "Search post successfully",
+    GET_POST_COMMENTS: "Get post comments successfully",
+    CREATE_COMMENT: "Create comment successfully",
+    UPDATE_COMMENT: "Update comment successfully",
   },
   groups: {
     CREATE_GROUP: "Create new group successfully",

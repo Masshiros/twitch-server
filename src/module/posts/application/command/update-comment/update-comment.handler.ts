@@ -17,7 +17,7 @@ export class UpdateCommentHandler {
     private readonly userRepository: IUserRepository,
   ) {}
   async execute(command: UpdateCommentCommand): Promise<void> {
-    const { postId, userId, content, commentId } = command
+    const { userId, content, commentId } = command
     try {
       if (!userId || userId.length === 0) {
         throw new CommandError({
@@ -39,16 +39,7 @@ export class UpdateCommentHandler {
           },
         })
       }
-      if (!postId || postId.length === 0) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Post id can not be empty",
-          info: {
-            errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
-            field: "postId",
-          },
-        })
-      }
+
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new CommandError({
@@ -59,16 +50,7 @@ export class UpdateCommentHandler {
           },
         })
       }
-      const post = await this.postRepository.findPostById(postId)
-      if (!post) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Post not found",
-          info: {
-            errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
-          },
-        })
-      }
+
       const comment = await this.postRepository.findCommentById(commentId)
       if (!comment) {
         throw new CommandError({

@@ -91,4 +91,5 @@ export abstract class IPostsRepository {
   getCommentByPost: (post: Post) => Promise<Comment[]>
   updateComment: (comment: Comment) => Promise<void>
   deleteComment: (comment: Comment) => Promise<void>
+  getRepliesByCommentId: (parentId: string) => Promise<Comment[]>
 }

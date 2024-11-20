@@ -1190,4 +1190,25 @@ export class PostsRepository implements IPostsRepository {
       })
     }
   }
+  async getRepliesByCommentId(parentId: string): Promise<Comment[]> {
+    try {
+      const replies = await this.prismaService.postComment.findMany({
+        where: { parentId },
+        orderBy: { createdAt: "asc" },
+      })
+      if (!replies) {
+        return []
+      }
+      const result = replies.map((e) => CommentMapper.toDomain(e))
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
 }

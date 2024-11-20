@@ -21,22 +21,27 @@ import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { CreateCommentCommand } from "../application/command/create-comment/create-comment.command"
 import { CreateUserPostCommand } from "../application/command/create-user-post/create-user-post.command"
 import { DeleteUserPostCommand } from "../application/command/delete-user-post/delete-user-post.command"
 import { EditUserPostCommand } from "../application/command/edit-user-post/edit-user-post.command"
 import { ReactToPostCommand } from "../application/command/react-to-post/react-to-post.command"
 import { SharePostCommand } from "../application/command/share-post/share-post.command"
 import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
+import { UpdateCommentCommand } from "../application/command/update-comment/update-comment.command"
 import { PostsService } from "../application/posts.service"
 import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
+import { GetPostCommentQuery } from "../application/query/get-post-comment/get-post-comment.query"
 import { GetReactionsByTypeQuery } from "../application/query/get-reactions-by-type/get-reactions-by-type.query"
 import { GetUserFeedQuery } from "../application/query/get-user-feed/get-user-feed.query"
 import { GetUserPostsQuery } from "../application/query/get-user-posts/get-user-posts.query"
 import { SearchPostQuery } from "../application/query/search-post/search-post.query"
+import { CreateCommentRequestDTO } from "./dto/request/create-comment.request.dto"
 import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
 import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
 import { GetAllReactionsRequestDto } from "./dto/request/get-all-reactions.request.dto"
+import { GetPostCommentRequestDto } from "./dto/request/get-post-comment.request.dto"
 import { GetReactionsByTypeRequestDto } from "./dto/request/get-reactions-by-type.request.dto"
 import { GetUserFeedRequestDto } from "./dto/request/get-user-feed.request.dto"
 import { GetUserPostsRequestDto } from "./dto/request/get-user-posts.request.dto"
@@ -45,6 +50,7 @@ import { SearchPostRequestDto } from "./dto/request/search-post.request.dto"
 import { SharePostToMeRequestDto } from "./dto/request/share-post-to-me.request.dto"
 import { SharePostToOtherRequestDto } from "./dto/request/share-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
+import { UpdateCommentRequestDTO } from "./dto/request/update-comment.request.dto"
 import { GetAllReactionsResponseDto } from "./dto/response/get-all-reactions.response.dto"
 import { GetReactionsByTypeResponseDto } from "./dto/response/get-reactions-by-type.response.dto"
 import { GetUserPostsResponseDto } from "./dto/response/get-user-posts.response.dto"
@@ -354,5 +360,75 @@ export class PostsController {
       userId: user.id,
     })
     await this.service.toggleHidePostFromUser(command)
+  }
+  // get: post comments
+  @ApiOperationDecorator({
+    summary: "Get all post comments",
+    description: "Get all comments of a post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.getPostComments.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.getPostComments.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Comments.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_POST_COMMENTS)
+  @Get("comments")
+  async getPostComments(
+    @Param() param: GetPostCommentRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ) {
+    const query = new GetPostCommentQuery({ ...param })
+    return await this.service.getPostComments(query)
+  }
+  // post: create comment
+  @ApiOperationDecorator({
+    summary: "Create comment",
+    description: "Create comment",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.createComment.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.createComment.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Comments.Create, Permissions.Comments.Update])
+  @ResponseMessage(SuccessMessages.posts.CREATE_COMMENT)
+  @Post("comments/:postId")
+  async createComment(
+    @Param("postId") param: string,
+    @CurrentUser() user: UserAggregate,
+    @Body() data: CreateCommentRequestDTO,
+  ) {
+    const command = new CreateCommentCommand({
+      ...data,
+      userId: user.id,
+      postId: param,
+    })
+    await this.service.createComment(command)
+  }
+  // patch: create comment
+  @ApiOperationDecorator({
+    summary: "Update post comment",
+    description: "Update comment of a post",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.updateComment.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.updateComment.notFound,
+    auth: true,
+  })
+  @Permission([Permissions.Comments.Create, Permissions.Comments.Update])
+  @ResponseMessage(SuccessMessages.posts.UPDATE_COMMENT)
+  @Patch("comments/:commentId")
+  async updateComment(
+    @Param("commentId") param: string,
+    @CurrentUser() user: UserAggregate,
+    @Body() data: UpdateCommentRequestDTO,
+  ) {
+    const command = new UpdateCommentCommand({
+      ...data,
+      userId: user.id,
+      commentId: param,
+    })
+    await this.service.updateComment(command)
   }
 }

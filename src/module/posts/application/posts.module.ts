@@ -16,6 +16,7 @@ import { ToggleHidePostsFromUserHandler } from "./command/toggle-hide-posts-from
 import { UpdateCommentHandler } from "./command/update-comment/update-comment.handler"
 import { PostsService } from "./posts.service"
 import { GetAllReactionsHandler } from "./query/get-all-reactions/get-all-reactions.handler"
+import { GetPostCommentHandler } from "./query/get-post-comment/get-post-comment.handler"
 import { GetReactionsByTypeHandler } from "./query/get-reactions-by-type/get-reactions-by-type.handler"
 import { GetUserFeedHandler } from "./query/get-user-feed/get-user-feed.handler"
 import { GetUserPostsHandler } from "./query/get-user-posts/get-user-posts.handler"
@@ -36,6 +37,7 @@ const queryHandlers = [
   GetReactionsByTypeHandler,
   GetUserPostsHandler,
   GetUserFeedHandler,
+  GetPostCommentHandler,
   SearchPostHandler,
 ]
 @Module({
