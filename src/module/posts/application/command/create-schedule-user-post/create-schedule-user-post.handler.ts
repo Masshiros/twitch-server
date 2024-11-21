@@ -16,24 +16,25 @@ import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { CreateUserPostCommand } from "./create-user-post.command"
+import { CreateScheduleUserPostCommand } from "./create-schedule-user-post.command"
 
-@CommandHandler(CreateUserPostCommand)
-export class CreateUserPostHandler {
+@CommandHandler(CreateScheduleUserPostCommand)
+export class CreateScheduleUserPostHandler {
   constructor(
-    private readonly postRepository: IPostsRepository,
     private readonly userRepository: IUserRepository,
-    private readonly imageService: ImageService,
     private readonly friendRepository: IFriendRepository,
+    private readonly imageService: ImageService,
+    private readonly postRepository: IPostsRepository,
   ) {}
-  async execute(command: CreateUserPostCommand): Promise<void> {
+  async execute(command: CreateScheduleUserPostCommand): Promise<void> {
     const {
       userId,
       content,
-      visibility,
       images,
+      visibility,
       taggedUserIds,
       listUserViewIds,
+      scheduledAt,
     } = command
     let savedImages
     let post: Post
@@ -58,17 +59,12 @@ export class CreateUserPostHandler {
           },
         })
       }
-      if (!visibility) {
+      if (!scheduledAt) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Post visibility can not be empty",
-          info: {
-            errorCode: CommandErrorDetailCode.DATA_FROM_CLIENT_CAN_NOT_BE_EMPTY,
-            field: "visibility",
-          },
+          message: "Please provide day when the post should be created",
         })
       }
-
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new CommandError({
@@ -83,7 +79,7 @@ export class CreateUserPostHandler {
         userId,
         content,
         visibility,
-        isPublic: true,
+        isPublic: false,
       })
       if (!post) {
         throw new CommandError({
@@ -94,7 +90,6 @@ export class CreateUserPostHandler {
           },
         })
       }
-      console.log(taggedUserIds.length)
       if (taggedUserIds && taggedUserIds.length > 0) {
         await Promise.all(
           taggedUserIds.map(async (id) => {
@@ -114,7 +109,7 @@ export class CreateUserPostHandler {
       if (images && images.length > 0) {
         await this.imageService.uploadMultiImages(
           images,
-          Folder.image.user_post,
+          Folder.image.group_post,
           post.id,
           EImage.POST,
         )
@@ -126,13 +121,17 @@ export class CreateUserPostHandler {
         user,
         listUserViewIds,
       )
+      const schedulePost = PostFactory.createSchedulePost({
+        userId: user.id,
+        postId: post.id,
+        scheduledAt,
+      })
+      await this.postRepository.createScheduledPost(schedulePost)
     } catch (err) {
-      console.log(err)
       savedImages = await this.imageService.getImageByApplicableId(post.id)
       if (savedImages) {
-        await this.imageService.removeMultipleImages(savedImages!)
+        await this.imageService.removeMultipleImages(savedImages)
       }
-
       if (
         err instanceof DomainError ||
         err instanceof CommandError ||

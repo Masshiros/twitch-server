@@ -8,6 +8,7 @@ import { PrismaService } from "prisma/prisma.service"
 import { Comment } from "src/module/posts/domain/entity/comments.entity"
 import { PostReactions } from "src/module/posts/domain/entity/post-reactions.entity"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
+import { ScheduledPost } from "src/module/posts/domain/entity/scheduled-post.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
 import { ESharedType } from "src/module/posts/domain/enum/shared-type.enum"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
@@ -16,6 +17,7 @@ import { handlePrismaError } from "utils/prisma-error"
 import { CommentMapper } from "../mapper/comments.prisma.mapper"
 import { PostReactionMapper } from "../mapper/post-reactions.prisma.mapper"
 import { PostMapper } from "../mapper/posts.prisma.mapper"
+import { ScheduledPostMapper } from "../mapper/scheduled.post.prisma.mapper"
 
 @Injectable()
 export class PostsRepository implements IPostsRepository {
@@ -45,17 +47,7 @@ export class PostsRepository implements IPostsRepository {
         }
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async findPostById(postId: string): Promise<Post | null> {
@@ -69,17 +61,7 @@ export class PostsRepository implements IPostsRepository {
       const result = PostMapper.toDomain(post)
       return result ?? null
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async updatePost(data: Post, taggedUserIds?: string[] | null): Promise<void> {
@@ -119,17 +101,7 @@ export class PostsRepository implements IPostsRepository {
         }
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async deletePost(post: Post): Promise<void> {
@@ -149,17 +121,7 @@ export class PostsRepository implements IPostsRepository {
         data: { deletedAt: new Date() },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async searchPostsByKeyword(keyword: string): Promise<Post[]> {
@@ -179,17 +141,7 @@ export class PostsRepository implements IPostsRepository {
       const result = posts.map((p) => PostMapper.toDomain(p))
       return result ?? []
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getUserPost(
@@ -208,7 +160,7 @@ export class PostsRepository implements IPostsRepository {
   ): Promise<Post[]> {
     try {
       const posts = await this.prismaService.post.findMany({
-        where: { deletedAt: null, userId },
+        where: { deletedAt: null, userId, isPublic: true },
         ...(offset !== null ? { skip: offset } : {}),
         ...(limit !== null ? { take: limit } : {}),
         select: {
@@ -232,17 +184,7 @@ export class PostsRepository implements IPostsRepository {
       })
       return result ?? []
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getPostOfUsers(
@@ -289,17 +231,7 @@ export class PostsRepository implements IPostsRepository {
       const result = posts.map((p) => PostMapper.toDomain(p))
       return result ?? []
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getPostsByVisibility(
@@ -369,17 +301,7 @@ export class PostsRepository implements IPostsRepository {
           })
       }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async isUserHidden(
@@ -399,17 +321,7 @@ export class PostsRepository implements IPostsRepository {
       )
       return !!existingHiddenUser
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async hidePostsFromUser(userId: string, hiddenUserId: string): Promise<void> {
@@ -428,17 +340,7 @@ export class PostsRepository implements IPostsRepository {
         })
       }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async unhidePostsFromUser(
@@ -457,17 +359,7 @@ export class PostsRepository implements IPostsRepository {
         })
       }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async isPostHiddenFromUser(
@@ -485,17 +377,7 @@ export class PostsRepository implements IPostsRepository {
       })
       return !!hiddenUser
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getHiddenUserIds(user: UserAggregate): Promise<string[]> {
@@ -509,17 +391,7 @@ export class PostsRepository implements IPostsRepository {
       }
       return hiddenUsers.map((e) => e.hiddenUserId)
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async addOrUpdateReactionToPost(reaction: PostReactions): Promise<void> {
@@ -543,17 +415,7 @@ export class PostsRepository implements IPostsRepository {
         })
       }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async removeReactionFromPost(reaction: PostReactions): Promise<void> {
@@ -571,17 +433,7 @@ export class PostsRepository implements IPostsRepository {
         })
       }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getPostReactions(post: Post): Promise<PostReactions[]> {
@@ -597,17 +449,7 @@ export class PostsRepository implements IPostsRepository {
       const result = reactions.map((r) => PostReactionMapper.toDomain(r))
       return result ?? null
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async addTagUser(user: UserAggregate, post: Post): Promise<void> {
@@ -619,17 +461,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async addTagUsers(users: UserAggregate[], post: Post): Promise<void> {
@@ -644,17 +476,7 @@ export class PostsRepository implements IPostsRepository {
         skipDuplicates: true, // Ensures no duplicate entries are created if some users are already tagged
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
 
@@ -669,17 +491,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async removeAllTagUser(post: Post): Promise<void> {
@@ -690,17 +502,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getAllTagUserId(post: Post): Promise<string[] | null> {
@@ -714,17 +516,7 @@ export class PostsRepository implements IPostsRepository {
       const result = taggedUsers.map((e) => e.taggedUserId)
       return result ?? null
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getAllTagPost(user: UserAggregate): Promise<Post[] | null> {
@@ -746,17 +538,7 @@ export class PostsRepository implements IPostsRepository {
       const result = posts.map((p) => PostMapper.toDomain(p))
       return result ?? null
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async addUserView(user: UserAggregate, post: Post) {
@@ -780,17 +562,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async addUserViews(user: UserAggregate[], post: Post): Promise<void> {
@@ -818,17 +590,7 @@ export class PostsRepository implements IPostsRepository {
         }),
       )
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async removeUserView(user: UserAggregate, post: Post): Promise<void> {
@@ -854,17 +616,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async removeUserViews(user: UserAggregate[], post: Post): Promise<void> {
@@ -894,17 +646,7 @@ export class PostsRepository implements IPostsRepository {
         }),
       )
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async removePostUserViews(post: Post): Promise<void> {
@@ -924,17 +666,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async hasUserViewPermission(
@@ -975,17 +707,7 @@ export class PostsRepository implements IPostsRepository {
           return true
       }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async isSharedPost(post: Post, user: UserAggregate): Promise<boolean> {
@@ -995,17 +717,7 @@ export class PostsRepository implements IPostsRepository {
       })
       return !!sharedPost
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async getUserSharedPost(
@@ -1029,17 +741,7 @@ export class PostsRepository implements IPostsRepository {
       const result = posts.map((p) => PostMapper.toDomain(p))
       return result ?? null
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async sharePost(
@@ -1060,17 +762,7 @@ export class PostsRepository implements IPostsRepository {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async createComment(comment: Comment): Promise<void> {
@@ -1131,17 +823,7 @@ export class PostsRepository implements IPostsRepository {
         })
       }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        handlePrismaError(error)
-      }
-      if (error instanceof InfrastructureError) {
-        throw error
-      }
-
-      throw new InfrastructureError({
-        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      })
+      this.handleDatabaseError(error)
     }
   }
   async deleteComment(comment: Comment): Promise<void> {
@@ -1210,5 +892,56 @@ export class PostsRepository implements IPostsRepository {
         message: error.message,
       })
     }
+  }
+  async findDuePosts(currentTime: Date): Promise<ScheduledPost[]> {
+    try {
+      const scheduledPost = await this.prismaService.scheduledPost.findMany({
+        where: {
+          scheduledAt: {
+            lte: currentTime,
+          },
+        },
+      })
+      if (!scheduledPost) {
+        return []
+      }
+      return scheduledPost.map((e) => ScheduledPostMapper.toDomain(e))
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async createScheduledPost(schedulePost: ScheduledPost): Promise<void> {
+    try {
+      const data = ScheduledPostMapper.toPersistence(schedulePost)
+      await this.prismaService.scheduledPost.create({
+        data,
+      })
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  async deleteScheduledPost(data: ScheduledPost): Promise<void> {
+    try {
+      console.log(data.id)
+      await this.prismaService.scheduledPost.delete({
+        where: {
+          id: data.id,
+        },
+      })
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
+  private handleDatabaseError(error: any) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      handlePrismaError(error)
+    }
+    if (error instanceof InfrastructureError) {
+      throw error
+    }
+    throw new InfrastructureError({
+      code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+      message: error.message,
+    })
   }
 }

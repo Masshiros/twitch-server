@@ -68,9 +68,10 @@ model User {
   receivedInvitations   GroupInvitation[]    @relation("InvitedUser")
   postTags    GroupPostTaggedUser[]
   Livestream Livestream[]
-  scheduledPost ScheduledPost[]
+  scheduledGroupPost ScheduledGroupPost[]
   postComments  PostComment[]
   groupPostComments GroupPostComment[]
+  scheduledPost ScheduledPost[]
   @@index([isLive])
   @@index([isActive])
   @@map("users")
@@ -88,6 +89,7 @@ model LiveStreamInfo{
   user                 User @relation(fields:[userId],references: [id])
   livestreamCateInfo   LiveStreamCategoriesInfo[]
   livestreamTagInfo    LiveStreamTagsInfo[]
+  @@map("liveStreamInfos")
 }
 model LiveStreamTagsInfo{
   liveStreamInfoId    String
@@ -95,6 +97,7 @@ model LiveStreamTagsInfo{
   liveStreamInfo      LiveStreamInfo @relation(fields: [liveStreamInfoId], references: [id])
   tag                 Tag        @relation(fields: [tagId],references: [id])
   @@id([liveStreamInfoId,tagId])
+  @@map("liveStreamTagsInfos")
 }
 model LiveStreamCategoriesInfo{
   liveStreamInfoId    String
@@ -102,6 +105,7 @@ model LiveStreamCategoriesInfo{
   liveStreamInfo      LiveStreamInfo @relation(fields: [liveStreamInfoId], references: [id]) 
   category            Category       @relation(fields: [categoryId],references: [id])
   @@id([liveStreamInfoId,categoryId])
+  @@map("liveStreamCategoriesInfos")
 }
 model Livestream {
   id                   String   @id @default(uuid())
@@ -124,6 +128,7 @@ model Livestream {
 
 
   @@index([userId])
+  @@map("livestreams")
   
 }
 
@@ -396,6 +401,7 @@ model Post {
   content         String
   totalViewCount  Int                      @default(0)
   visibility      EUserPostVisibility
+  isPublic        Boolean                  @default(false)
   createdAt       DateTime                 @default(now())
   updatedAt       DateTime                 @default(now()) @updatedAt
   deletedAt       DateTime?
@@ -406,6 +412,7 @@ model Post {
   sharedPost      SharedPost[]
   viewPermissions UserPostViewPermission[]
   comments        PostComment[]
+  scheduledPost   ScheduledPost[]
 
   @@map("posts")
 }
@@ -462,6 +469,19 @@ model SharedPost{
 
   post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   @@map("sharedPosts")
+}
+model ScheduledPost {
+  id          String   @id @default(uuid()) 
+  userId      String  
+  postId      String   
+  scheduledAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post        Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@map("scheduledPosts")
 }
 
 model PostTaggedUser {
@@ -535,12 +555,12 @@ model Group {
   inviteLinks GroupInviteLink[]
   invitations GroupInvitation[]
   postTags    GroupPostTaggedUser[]
-  scheduledPost ScheduledPost[]
+  scheduledPost ScheduledGroupPost[]
   groupPostComment GroupPostComment[]
 
   @@map("groups")
 }
-model ScheduledPost {
+model ScheduledGroupPost {
   id          String   @id @default(uuid())
   groupId     String   
   userId      String  
@@ -552,6 +572,7 @@ model ScheduledPost {
   group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   post        GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@map("scheduledGroupPosts")
 }
 model GroupPostTaggedUser {
   postId       String
@@ -637,7 +658,7 @@ model GroupPost {
   user        User           @relation(fields: [userId], references: [id])
   reactions   PostReaction[] @relation()
   postTags    GroupPostTaggedUser[]
-  scheduledPost ScheduledPost[]
+  scheduledPost ScheduledGroupPost[]
   groupPostComment GroupPostComment[]
 
   @@map("groupPosts")

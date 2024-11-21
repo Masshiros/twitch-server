@@ -3,6 +3,7 @@ import { EReactionType } from "libs/constants/enum"
 import { Comment } from "../entity/comments.entity"
 import { PostReactions } from "../entity/post-reactions.entity"
 import { Post } from "../entity/posts.entity"
+import { ScheduledPost } from "../entity/scheduled-post.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
 
 interface PostCreationProps {
@@ -11,6 +12,7 @@ interface PostCreationProps {
   visibility?: EUserPostVisibility
   totalViewCount?: number
   postReactions?: PostReactions[]
+  isPublic: boolean
 }
 interface PostReactionsCreationProps {
   groupPostId?: string
@@ -24,6 +26,12 @@ interface CommentCreationProps {
   parentId: string
   content: string
 }
+interface ScheduledPostCreationProps {
+  userId: string
+  postId: string
+  scheduledAt: Date
+  createdAt?: Date
+}
 export class PostFactory {
   static createPost(props: PostCreationProps): Post {
     return new Post({
@@ -33,6 +41,7 @@ export class PostFactory {
       visibility: props.visibility ?? EUserPostVisibility.PUBLIC,
       totalViewCount: props.totalViewCount ?? 0,
       postReactions: props.postReactions ?? [],
+      isPublic: props.isPublic,
       createdAt: new Date(),
     })
   }
@@ -51,6 +60,14 @@ export class PostFactory {
       postId: props.postId,
       parentId: props.parentId,
       content: props.content,
+    })
+  }
+  static createSchedulePost(props: ScheduledPostCreationProps): ScheduledPost {
+    return new ScheduledPost({
+      userId: props.userId,
+      postId: props.postId,
+      scheduledAt: props.scheduledAt,
+      createdAt: props.createdAt ?? new Date(),
     })
   }
 }

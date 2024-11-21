@@ -12,7 +12,7 @@ import { GroupPost } from "src/module/groups/domain/entity/group-posts.entity"
 import { GroupRule } from "src/module/groups/domain/entity/group-rule.entity"
 import { Group } from "src/module/groups/domain/entity/groups.entity"
 import { MemberRequest } from "src/module/groups/domain/entity/member-requests.entity"
-import { ScheduledPost } from "src/module/groups/domain/entity/scheduled-posts.entity"
+import { ScheduledGroupPost } from "src/module/groups/domain/entity/scheduled-posts.entity"
 import { IGroupRepository } from "src/module/groups/domain/repository/group.interface.repository"
 import { handlePrismaError } from "utils/prisma-error"
 import { v4 as uuidv4 } from "uuid"
@@ -1016,15 +1016,16 @@ export class GroupPrismaRepository implements IGroupRepository {
       this.handleDatabaseError(error)
     }
   }
-  async findDuePosts(currentTime: Date): Promise<ScheduledPost[]> {
+  async findDuePosts(currentTime: Date): Promise<ScheduledGroupPost[]> {
     try {
-      const scheduledPost = await this.prismaService.scheduledPost.findMany({
-        where: {
-          scheduledAt: {
-            lte: currentTime,
+      const scheduledPost =
+        await this.prismaService.scheduledGroupPost.findMany({
+          where: {
+            scheduledAt: {
+              lte: currentTime,
+            },
           },
-        },
-      })
+        })
       if (!scheduledPost) {
         return []
       }
@@ -1033,20 +1034,20 @@ export class GroupPrismaRepository implements IGroupRepository {
       this.handleDatabaseError(error)
     }
   }
-  async createScheduledPost(schedulePost: ScheduledPost): Promise<void> {
+  async createScheduledPost(schedulePost: ScheduledGroupPost): Promise<void> {
     try {
       const data = ScheduledPostMapper.toPersistence(schedulePost)
-      await this.prismaService.scheduledPost.create({
+      await this.prismaService.scheduledGroupPost.create({
         data,
       })
     } catch (error) {
       this.handleDatabaseError(error)
     }
   }
-  async deleteScheduledPost(data: ScheduledPost): Promise<void> {
+  async deleteScheduledPost(data: ScheduledGroupPost): Promise<void> {
     try {
       console.log(data.id)
-      await this.prismaService.scheduledPost.delete({
+      await this.prismaService.scheduledGroupPost.delete({
         where: {
           id: data.id,
         },

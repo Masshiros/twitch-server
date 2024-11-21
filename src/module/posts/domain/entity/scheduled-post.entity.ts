@@ -1,9 +1,9 @@
 import { randomUUID } from "crypto"
 import { BaseEntity } from "src/common/entity"
 
-interface ScheduledGroupPostProps {
+interface ScheduledPostProps {
   id?: string
-  groupId: string
+
   userId: string
   postId: string
   scheduledAt: Date
@@ -11,29 +11,20 @@ interface ScheduledGroupPostProps {
   updatedAt?: Date
 }
 
-export class ScheduledGroupPost extends BaseEntity {
-  private _groupId: string
+export class ScheduledPost extends BaseEntity {
   private _userId: string
   private _postId: string
   private _scheduledAt: Date
 
-  constructor(props: ScheduledGroupPostProps) {
+  constructor(props: ScheduledPostProps) {
     super()
     this._id = props.id ?? randomUUID()
     this._createdAt = props.createdAt ?? new Date()
     this._updatedAt = props.updatedAt
-    this._groupId = props.groupId
+
     this._userId = props.userId
     this._postId = props.postId
     this._scheduledAt = props.scheduledAt
-  }
-
-  public get groupId(): string {
-    return this._groupId
-  }
-
-  public set groupId(value: string) {
-    this._groupId = value
   }
 
   public get userId(): string {

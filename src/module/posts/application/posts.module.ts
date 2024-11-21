@@ -4,9 +4,11 @@ import { FollowersDatabaseModule } from "src/module/followers/infrastructure/dat
 import { FriendsDatabaseModule } from "src/module/friends/infrastructure/database/friend.database.module"
 import { ImageModule } from "src/module/image/application/image.module"
 import { UserDatabaseModule } from "src/module/users/infrastructure/database/user.database.module"
+import { PostCronModule } from "../infrastructure/cronjob/post.cronjob.module"
 import { PostsDatabaseModule } from "../infrastructure/database/posts.database.module"
 import { PostsController } from "../presentation/posts.controller"
 import { CreateCommentHandler } from "./command/create-comment/create-comment.handler"
+import { CreateScheduleUserPostHandler } from "./command/create-schedule-user-post/create-schedule-user-post.handler"
 import { CreateUserPostHandler } from "./command/create-user-post/create-user-post.handler"
 import { DeleteUserPostHandler } from "./command/delete-user-post/delete-user-post.handler"
 import { EditUserPostHandler } from "./command/edit-user-post/edit-user-post.handler"
@@ -31,6 +33,7 @@ const commandHandlers = [
   SharePostHandler,
   CreateCommentHandler,
   UpdateCommentHandler,
+  CreateScheduleUserPostHandler,
 ]
 const queryHandlers = [
   GetAllReactionsHandler,
@@ -50,6 +53,7 @@ const queryHandlers = [
     ImageModule,
     FriendsDatabaseModule,
     FollowersDatabaseModule,
+    PostCronModule,
   ],
 })
 export class PostsModule {}

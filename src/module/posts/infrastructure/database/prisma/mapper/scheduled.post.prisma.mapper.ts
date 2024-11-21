@@ -1,13 +1,10 @@
-import { ScheduledGroupPost as PrismaScheduledPost } from "@prisma/client"
-import { ScheduledGroupPost } from "src/module/groups/domain/entity/scheduled-posts.entity"
+import { ScheduledPost as PrismaScheduledPost } from "@prisma/client"
+import { ScheduledPost } from "src/module/posts/domain/entity/scheduled-post.entity"
 
 export class ScheduledPostMapper {
-  static toDomain(
-    prismaScheduledPost: PrismaScheduledPost,
-  ): ScheduledGroupPost {
-    return new ScheduledGroupPost({
+  static toDomain(prismaScheduledPost: PrismaScheduledPost): ScheduledPost {
+    return new ScheduledPost({
       id: prismaScheduledPost.id,
-      groupId: prismaScheduledPost.groupId,
       userId: prismaScheduledPost.userId,
       postId: prismaScheduledPost.postId,
       scheduledAt: prismaScheduledPost.scheduledAt,
@@ -17,11 +14,10 @@ export class ScheduledPostMapper {
   }
 
   static toPersistence(
-    domainScheduledPost: ScheduledGroupPost,
+    domainScheduledPost: ScheduledPost,
   ): PrismaScheduledPost {
     return {
       id: domainScheduledPost.id,
-      groupId: domainScheduledPost.groupId,
       userId: domainScheduledPost.userId,
       postId: domainScheduledPost.postId,
       scheduledAt: domainScheduledPost.scheduledAt,

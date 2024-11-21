@@ -11,6 +11,7 @@ interface PostProps {
   visibility: EUserPostVisibility
   totalViewCount?: number
   postReactions?: PostReactions[]
+  isPublic: boolean
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -21,6 +22,7 @@ export class Post extends BaseEntity {
   private _content: string
   private _visibility: EUserPostVisibility
   private _totalViewCount?: number
+  private _isPublic: boolean
   private _postReactions?: PostReactions[]
   constructor(props: PostProps) {
     super()
@@ -71,5 +73,11 @@ export class Post extends BaseEntity {
   }
   set visibility(value: EUserPostVisibility) {
     this._visibility = value || EUserPostVisibility.PUBLIC
+  }
+  get isPublic(): boolean {
+    return this._isPublic
+  }
+  set isPublic(value: boolean) {
+    this._isPublic = value
   }
 }

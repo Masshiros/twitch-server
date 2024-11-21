@@ -3,6 +3,7 @@ import { UserAggregate } from "src/module/users/domain/aggregate"
 import { Comment } from "../entity/comments.entity"
 import { PostReactions } from "../entity/post-reactions.entity"
 import { Post } from "../entity/posts.entity"
+import { ScheduledPost } from "../entity/scheduled-post.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
 import { ESharedType } from "../enum/shared-type.enum"
 
@@ -92,4 +93,8 @@ export abstract class IPostsRepository {
   updateComment: (comment: Comment) => Promise<void>
   deleteComment: (comment: Comment) => Promise<void>
   getRepliesByCommentId: (parentId: string) => Promise<Comment[]>
+  // schedule
+  findDuePosts: (currentTime: Date) => Promise<ScheduledPost[]>
+  createScheduledPost: (schedulePost: ScheduledPost) => Promise<void>
+  deleteScheduledPost: (data: ScheduledPost) => Promise<void>
 }

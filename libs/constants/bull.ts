@@ -11,6 +11,9 @@ export const Bull = {
     post: {
       schedule: "schedule-post",
     },
+    user_post: {
+      schedule: "schedule-user-post",
+    },
   },
   job: {
     image: {
@@ -20,6 +23,9 @@ export const Bull = {
     },
     post: {
       schedule: "schedule-job-post",
+    },
+    user_post: {
+      schedule: "schedule-job-user-post",
     },
   },
 }

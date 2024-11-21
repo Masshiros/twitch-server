@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
 import { CreateCommentCommand } from "./command/create-comment/create-comment.command"
+import { CreateScheduleUserPostCommand } from "./command/create-schedule-user-post/create-schedule-user-post.command"
 import { CreateUserPostCommand } from "./command/create-user-post/create-user-post.command"
 import { DeleteUserPostCommand } from "./command/delete-user-post/delete-user-post.command"
 import { EditUserPostCommand } from "./command/edit-user-post/edit-user-post.command"
@@ -62,5 +63,8 @@ export class PostsService {
   }
   async getPostComments(query: GetPostCommentQuery) {
     return this.queryBus.execute(query)
+  }
+  async createSchedulePost(command: CreateScheduleUserPostCommand) {
+    return this.commandBus.execute(command)
   }
 }

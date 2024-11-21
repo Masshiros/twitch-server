@@ -5,7 +5,7 @@ import { GroupPost } from "../entity/group-posts.entity"
 import { GroupRule } from "../entity/group-rule.entity"
 import { Group } from "../entity/groups.entity"
 import { MemberRequest } from "../entity/member-requests.entity"
-import { ScheduledPost } from "../entity/scheduled-posts.entity"
+import { ScheduledGroupPost } from "../entity/scheduled-posts.entity"
 import { EInvitationStatus } from "../enum/group-invitation-status.enum"
 import { EGroupPostStatus } from "../enum/group-post-status.enum"
 import { EGroupPrivacy } from "../enum/group-privacy.enum"
@@ -146,8 +146,8 @@ export class GroupFactory {
   }
   static createScheduledPost(
     props: ScheduledPostCreationsProps,
-  ): ScheduledPost {
-    return new ScheduledPost({
+  ): ScheduledGroupPost {
+    return new ScheduledGroupPost({
       groupId: props.groupId,
       postId: props.postId,
       userId: props.userId,

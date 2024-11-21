@@ -22,6 +22,7 @@ import { Permission } from "libs/decorator/permission.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { CreateCommentCommand } from "../application/command/create-comment/create-comment.command"
+import { CreateScheduleUserPostCommand } from "../application/command/create-schedule-user-post/create-schedule-user-post.command"
 import { CreateUserPostCommand } from "../application/command/create-user-post/create-user-post.command"
 import { DeleteUserPostCommand } from "../application/command/delete-user-post/delete-user-post.command"
 import { EditUserPostCommand } from "../application/command/edit-user-post/edit-user-post.command"
@@ -37,6 +38,7 @@ import { GetUserFeedQuery } from "../application/query/get-user-feed/get-user-fe
 import { GetUserPostsQuery } from "../application/query/get-user-posts/get-user-posts.query"
 import { SearchPostQuery } from "../application/query/search-post/search-post.query"
 import { CreateCommentRequestDTO } from "./dto/request/create-comment.request.dto"
+import { CreateScheduledUserPostRequestDto } from "./dto/request/create-schedule-user-post.request.dto"
 import { CreateUserPostRequestDto } from "./dto/request/create-user-post.request.dto"
 import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request.dto"
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
@@ -430,5 +432,35 @@ export class PostsController {
       commentId: param,
     })
     await this.service.updateComment(command)
+  }
+  // post: create schedule post
+  @ApiOperationDecorator({
+    summary: "Create schedule post",
+    description: "Create schedule post by user",
+    listBadRequestErrorMessages:
+      SwaggerErrorMessages.posts.createUserPost.badRequest,
+    listNotFoundErrorMessages:
+      SwaggerErrorMessages.posts.createUserPost.notFound,
+    auth: true,
+    fileFieldName: "images",
+  })
+  @Permission([Permissions.Posts.Create])
+  @ResponseMessage(SuccessMessages.posts.CREATE_SCHEDULE_USER_POST)
+  @UseInterceptors(FilesInterceptor("images"))
+  @Post("/schedule-post")
+  async createScheduledGroupPost(
+    @Body() data: CreateScheduledUserPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+
+    @UploadedFiles() images: Express.Multer.File[],
+  ): Promise<void> {
+    // console.log(data)
+    const command = new CreateScheduleUserPostCommand({
+      ...data,
+      images,
+
+      userId: user.id,
+    })
+    await this.service.createSchedulePost(command)
   }
 }
