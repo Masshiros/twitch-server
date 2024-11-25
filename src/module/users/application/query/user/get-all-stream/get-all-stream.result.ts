@@ -1,3 +1,6 @@
+import { Category } from "src/module/categories/domain/entity/categories.entity"
+import { Tag } from "src/module/categories/domain/entity/tags.entity"
+
 export class LiveStreamInfoResult {
   id: string
   userId: string
@@ -6,8 +9,8 @@ export class LiveStreamInfoResult {
   title: string
   isLive: boolean
   totalView: number
-  livestreamCategorieNames: string[]
-  livestreamTagsNames: string[]
+  livestreamCategories: Category[]
+  livestreamTags: Tag[]
 }
 
 export class GetLiveStreamResults {

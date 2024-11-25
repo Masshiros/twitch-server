@@ -96,15 +96,12 @@ export class LiveStreamController {
   @ApiOperationDecorator({
     summary: "Set stream is live",
     description: "Set stream is live",
-    auth: true,
   })
+  @Public()
   @ResponseMessage(SuccessMessages.livestream.SET_IS_LIVE)
   @Post("set-live")
-  async setIsLive(
-    @Body() body: SetIsLiveRequestDTO,
-    @CurrentUser() user: UserAggregate,
-  ) {
-    const command = new SetIsLiveCommand({ ...body, userId: user.id })
+  async setIsLive(@Body() body: SetIsLiveRequestDTO) {
+    const command = new SetIsLiveCommand({ ...body })
     await this.userService.setIsLive(command)
   }
   // patch: livestream update

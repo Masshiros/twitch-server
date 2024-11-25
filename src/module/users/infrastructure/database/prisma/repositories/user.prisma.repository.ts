@@ -1449,7 +1449,7 @@ export class PrismaUserRepository implements IUserRepository {
   async getAllLivingLiveStreamInfo({
     limit,
     offset = 0,
-    orderBy = "createdAt",
+    orderBy,
     order = "desc",
   }: {
     limit: number
@@ -1470,9 +1470,12 @@ export class PrismaUserRepository implements IUserRepository {
         return []
       }
       const ids = livestreamInfos.map((e) => e.id)
+      console.log(typeof orderBy === "undefined")
       const queryInfos = await this.prismaService.liveStreamInfo.findMany({
         where: { id: { in: ids } },
-        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
+        ...( typeof orderBy !== "undefined"
+          ? { orderBy: { [orderBy]: order } }
+          : {}),
       })
       if (!queryInfos) {
         return []
