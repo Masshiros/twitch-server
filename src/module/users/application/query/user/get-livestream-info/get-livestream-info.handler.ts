@@ -6,6 +6,7 @@ import {
 } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
+import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { LiveStreamInfoResult } from "../get-all-stream/get-all-stream.result"
 import { GetLivestreamInfoQuery } from "./get-livestream-info.query"
@@ -15,6 +16,7 @@ export class GetLivestreamInfoHandler {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly categoryRepository: ICategoriesRepository,
+    private readonly followerRepository: IFollowersRepository,
   ) {}
   async execute(query: GetLivestreamInfoQuery): Promise<LiveStreamInfoResult> {
     const { username } = query
@@ -36,12 +38,19 @@ export class GetLivestreamInfoHandler {
         })
       }
       const livestreamInfo = await this.userRepository.getStreamInfoByUser(user)
-      const [liveStreamCategories, liveStreamTags, liveStreams] =
-        await Promise.all([
-          this.userRepository.getLiveStreamInfoCategories(livestreamInfo.id),
-          this.userRepository.getLiveStreamInfoTags(livestreamInfo.id),
-          this.userRepository.getAllStreamSessions(user),
-        ])
+      const [
+        liveStreamCategories,
+        liveStreamTags,
+        liveStreams,
+        followers,
+        followings,
+      ] = await Promise.all([
+        this.userRepository.getLiveStreamInfoCategories(livestreamInfo.id),
+        this.userRepository.getLiveStreamInfoTags(livestreamInfo.id),
+        this.userRepository.getAllStreamSessions(user),
+        this.followerRepository.findFollowersByUser(user.id),
+        this.followerRepository.findFollowingByUser(user.id),
+      ])
       const categories = await Promise.all(
         liveStreamCategories.map((e) => {
           return this.categoryRepository.getCategoryById(e.categoryId)
@@ -61,6 +70,10 @@ export class GetLivestreamInfoHandler {
         userId: user.id,
         userName: user.name,
         userSlug: user.slug,
+        followersCount: followers.length,
+        followingsCount: followings.length,
+        bio: user.bio,
+        displayName: user.displayName,
         title: livestreamInfo.title,
         isLive: livestreamInfo.isLive,
         totalView: totalViews,

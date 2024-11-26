@@ -6,6 +6,10 @@ export class LiveStreamInfoResult {
   userId: string
   userName: string
   userSlug: string
+  bio: string
+  followersCount: number
+  followingsCount: number
+  displayName: string
   title: string
   isLive: boolean
   totalView: number

@@ -6,6 +6,7 @@ import {
 } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
+import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
 import { LiveStreamInfo } from "src/module/users/domain/entity/live-stream-info.entity"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { LiveStreamInfoResult } from "../get-all-stream/get-all-stream.result"
@@ -17,6 +18,7 @@ export class GetTop5StreamHandler {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly categoryRepository: ICategoriesRepository,
+    private readonly followerRepository: IFollowersRepository,
   ) {}
   async execute(query: GetTop5StreamQuery): Promise<GetTop5StreamResult> {
     try {
@@ -34,12 +36,19 @@ export class GetTop5StreamHandler {
               },
             })
           }
-          const [liveStreamCategories, liveStreamTags, liveStreams] =
-            await Promise.all([
-              this.userRepository.getLiveStreamInfoCategories(e.id),
-              this.userRepository.getLiveStreamInfoTags(e.id),
-              this.userRepository.getAllStreamSessions(user),
-            ])
+          const [
+            liveStreamCategories,
+            liveStreamTags,
+            liveStreams,
+            followers,
+            followings,
+          ] = await Promise.all([
+            this.userRepository.getLiveStreamInfoCategories(e.id),
+            this.userRepository.getLiveStreamInfoTags(e.id),
+            this.userRepository.getAllStreamSessions(user),
+            this.followerRepository.findFollowersByUser(user.id),
+            this.followerRepository.findFollowingByUser(user.id),
+          ])
           const categories = await Promise.all(
             liveStreamCategories.map((e) => {
               return this.categoryRepository.getCategoryById(e.categoryId)
@@ -59,6 +68,10 @@ export class GetTop5StreamHandler {
             userId: user?.id ?? "",
             userName: user?.name ?? "",
             userSlug: user?.slug ?? "",
+            followersCount: followers.length,
+            followingsCount: followings.length,
+            bio: user.bio,
+            displayName: user.displayName,
             title: e.title ?? "",
             isLive: e.isLive ?? true,
             totalView: totalViews,
