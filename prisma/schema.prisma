@@ -32,7 +32,7 @@ model User {
   view                  Int                      @default(0)
   bio                   String?                  @default("")
   thumbnail             String?
-  serverUrl             String?                  @unique()
+  serverUrl             String?                  
   streamKey             String?                  @unique()
   lastUsernameChangeAt  DateTime?
   createdAt             DateTime                 @default(now())
