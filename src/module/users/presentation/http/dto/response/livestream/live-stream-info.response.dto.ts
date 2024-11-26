@@ -14,4 +14,5 @@ export class LiveStreamInfoResponseDto {
   isLive: boolean
   livestreamCategories: Category[]
   livestreamTags: Tag[]
+  imageUrl: string
 }

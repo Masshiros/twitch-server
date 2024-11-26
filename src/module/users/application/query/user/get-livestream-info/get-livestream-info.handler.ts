@@ -7,6 +7,8 @@ import {
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
+import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { LiveStreamInfoResult } from "../get-all-stream/get-all-stream.result"
 import { GetLivestreamInfoQuery } from "./get-livestream-info.query"
@@ -17,6 +19,7 @@ export class GetLivestreamInfoHandler {
     private readonly userRepository: IUserRepository,
     private readonly categoryRepository: ICategoriesRepository,
     private readonly followerRepository: IFollowersRepository,
+    private readonly imageService: ImageService,
   ) {}
   async execute(query: GetLivestreamInfoQuery): Promise<LiveStreamInfoResult> {
     const { username } = query
@@ -44,13 +47,18 @@ export class GetLivestreamInfoHandler {
         liveStreams,
         followers,
         followings,
+        ownerImages,
       ] = await Promise.all([
         this.userRepository.getLiveStreamInfoCategories(livestreamInfo.id),
         this.userRepository.getLiveStreamInfoTags(livestreamInfo.id),
         this.userRepository.getAllStreamSessions(user),
         this.followerRepository.findFollowersByUser(user.id),
         this.followerRepository.findFollowingByUser(user.id),
+        this.imageService.getImageByApplicableId(user.id),
       ])
+      const ownerAvatar = ownerImages.find(
+        (e) => e.imageType === EImageType.AVATAR,
+      )
       const categories = await Promise.all(
         liveStreamCategories.map((e) => {
           return this.categoryRepository.getCategoryById(e.categoryId)
@@ -76,6 +84,7 @@ export class GetLivestreamInfoHandler {
         displayName: user.displayName,
         title: livestreamInfo.title,
         isLive: livestreamInfo.isLive,
+        imageUrl: ownerAvatar?.url ?? "",
         totalView: totalViews,
         livestreamCategories: categories.filter((e) => e !== null),
         livestreamTags: tags.filter((e) => e !== null),

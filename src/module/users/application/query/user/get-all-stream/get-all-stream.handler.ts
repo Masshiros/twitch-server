@@ -7,6 +7,8 @@ import {
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
+import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { LiveStreamInfo } from "src/module/users/domain/entity/live-stream-info.entity"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetAllStreamQuery } from "./get-all-stream.query"
@@ -21,6 +23,7 @@ export class GetAllStreamHandler {
     private readonly userRepository: IUserRepository,
     private readonly categoryRepository: ICategoriesRepository,
     private readonly followerRepository: IFollowersRepository,
+    private readonly imageService: ImageService,
   ) {}
   async execute(query: GetAllStreamQuery): Promise<GetLiveStreamResults> {
     const { limit, offset, order, orderBy } = query
@@ -50,13 +53,18 @@ export class GetAllStreamHandler {
             liveStreams,
             followers,
             followings,
+            ownerImages,
           ] = await Promise.all([
             this.userRepository.getLiveStreamInfoCategories(e.id),
             this.userRepository.getLiveStreamInfoTags(e.id),
             this.userRepository.getAllStreamSessions(user),
             this.followerRepository.findFollowersByUser(user.id),
             this.followerRepository.findFollowingByUser(user.id),
+            this.imageService.getImageByApplicableId(user.id),
           ])
+          const ownerAvatar = ownerImages.find(
+            (e) => e.imageType === EImageType.AVATAR,
+          )
           const categories = await Promise.all(
             liveStreamCategories.map((e) => {
               return this.categoryRepository.getCategoryById(e.categoryId)
@@ -80,6 +88,7 @@ export class GetAllStreamHandler {
             followingsCount: followings.length,
             bio: user.bio,
             displayName: user.displayName,
+            imageUrl: ownerAvatar?.url ?? "",
             title: e.title ?? "",
             isLive: e.isLive ?? true,
             totalView: totalViews,

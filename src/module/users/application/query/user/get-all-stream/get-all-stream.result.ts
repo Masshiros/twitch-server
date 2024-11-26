@@ -15,6 +15,7 @@ export class LiveStreamInfoResult {
   totalView: number
   livestreamCategories: Category[]
   livestreamTags: Tag[]
+  imageUrl: string
 }
 
 export class GetLiveStreamResults {

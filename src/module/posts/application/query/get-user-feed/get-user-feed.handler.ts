@@ -9,6 +9,7 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetUserFeedQuery } from "./get-user-feed.query"
@@ -68,14 +69,17 @@ export class GetUserFeedHandler {
             this.imageService.getImageByApplicableId(p.id),
             this.userRepository.findById(p.userId),
           ])
-          const ownerAvatar = await this.imageService.getImageByApplicableId(
+          const ownerImages = await this.imageService.getImageByApplicableId(
             owner.id,
+          )
+          const ownerAvatar = ownerImages.find(
+            (e) => e.imageType === EImageType.AVATAR,
           )
           return {
             user: {
               id: owner.id,
               username: owner.name,
-              avatar: ownerAvatar[0]?.url ?? "",
+              avatar: ownerAvatar?.url ?? "",
             },
             info: {
               createdAt: p.createdAt.toISOString().split("T")[0],
