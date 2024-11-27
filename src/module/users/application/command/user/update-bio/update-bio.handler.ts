@@ -69,9 +69,8 @@ export class UpdateBioCommandHandler {
     //   })
     // }
 
-    if (bio) {
-      targetUserAggregate.bio = bio
-    }
+    targetUserAggregate.bio = bio
+
     await this.userRepository.update(targetUserAggregate)
     try {
     } catch (error) {
