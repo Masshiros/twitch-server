@@ -4,6 +4,7 @@ import { generateSlug } from "../../../../../../utils/string-format"
 import { UserAggregate } from "../../aggregate"
 import { Device } from "../../entity/devices.entity"
 import { ExternalLink } from "../../entity/external-links.entity"
+import { Livestream } from "../../entity/livestream.entity"
 import { LoginHistory } from "../../entity/login-histories.entity"
 import { Role } from "../../entity/roles.entity"
 import { Token } from "../../entity/tokens.entity"
@@ -39,8 +40,39 @@ export type CreateUserAggregateParams = {
   externalLinks?: ExternalLink[]
   roles?: Role[]
 }
-
+export type CreateLivestreamParams = {
+  userId: string
+  slug: string
+  totalView: number
+  isChatEnabled?: boolean
+  isChatDelayed?: boolean
+  delayedSeconds?: string
+  isChatFollowersOnly?: boolean
+  ingressId: string
+  startStreamAt?: Date
+  endStreamAt?: Date
+  createdAt?: Date
+  updatedAt?: Date
+  deletedAt?: Date
+}
 export class UserFactory {
+  async createLivestream(params: CreateLivestreamParams): Promise<Livestream> {
+    return new Livestream({
+      userId: params.userId,
+      slug: params.slug,
+      totalView: params.totalView,
+      isChatEnabled: params.isChatEnabled,
+      isChatDelayed: params.isChatDelayed,
+      delayedSeconds: params.delayedSeconds,
+      isChatFollowersOnly: params.isChatFollowersOnly,
+      ingressId: params.ingressId,
+      startStreamAt: params.startStreamAt,
+      endStreamAt: params.endStreamAt,
+      createdAt: new Date(),
+      updatedAt: params.updatedAt,
+      deletedAt: params.deletedAt,
+    })
+  }
   async createAggregate(
     params: CreateUserAggregateParams,
   ): Promise<UserAggregate> {

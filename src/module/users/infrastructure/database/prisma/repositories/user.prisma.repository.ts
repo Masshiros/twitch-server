@@ -1473,7 +1473,7 @@ export class PrismaUserRepository implements IUserRepository {
       console.log(typeof orderBy === "undefined")
       const queryInfos = await this.prismaService.liveStreamInfo.findMany({
         where: { id: { in: ids } },
-        ...( typeof orderBy !== "undefined"
+        ...(typeof orderBy !== "undefined"
           ? { orderBy: { [orderBy]: order } }
           : {}),
       })
@@ -1510,6 +1510,50 @@ export class PrismaUserRepository implements IUserRepository {
       }
       const result = livestreams.map((e) => LivestreamMapper.toDomain(e))
       return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async getCurrentLivestreamSession(user: UserAggregate): Promise<Livestream> {
+    try {
+      const livestreams = await this.prismaService.livestream.findMany({
+        where: {
+          userId: user.id,
+        },
+      })
+      if (!livestreams) {
+        return null
+      }
+      const liveStream = livestreams.find((e) => e.endStreamAt === null)
+      return LivestreamMapper.toDomain(liveStream) ?? null
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
+  async createLivestreamSession(livestream: Livestream): Promise<void> {
+    try {
+      const data = LivestreamMapper.toPersistence(livestream)
+      await this.prismaService.livestream.create({
+        data,
+      })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)

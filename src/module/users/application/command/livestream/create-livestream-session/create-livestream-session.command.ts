@@ -1,20 +1,20 @@
-type UpdateLivestreamSessionCommandParams = {
+type CreateLivestreamSessionCommandParams = {
   ingressId: string
   userId: string
-  endStreamAt: Date
+  startStreamAt: Date
   totalView: number
   isLive: boolean
 }
-export class UpdateLivestreamSessionCommand {
+export class CreateLivestreamSessionCommand {
   ingressId: string
   userId: string
-  endStreamAt: Date
+  startStreamAt: Date
   totalView: number
   isLive: boolean
-  constructor(params: UpdateLivestreamSessionCommandParams) {
+  constructor(params: CreateLivestreamSessionCommandParams) {
     this.ingressId = params.ingressId
     this.userId = params.userId
-    this.endStreamAt = params.endStreamAt
+    this.startStreamAt = params.startStreamAt
     this.totalView = params.totalView
     this.isLive = params.isLive
   }

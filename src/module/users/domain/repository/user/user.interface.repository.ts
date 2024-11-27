@@ -125,4 +125,6 @@ export abstract class IUserRepository {
     order?: "asc" | "desc"
   }) => Promise<LiveStreamInfo[] | []>
   getAllStreamSessions: (user: UserAggregate) => Promise<Livestream[]>
+  getCurrentLivestreamSession: (user: UserAggregate) => Promise<Livestream>
+  createLivestreamSession: (livestream: Livestream) => Promise<void>
 }

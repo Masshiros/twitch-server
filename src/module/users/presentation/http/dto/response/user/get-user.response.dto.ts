@@ -41,4 +41,10 @@ export class GetUserResponseDto {
 
   @Expose()
   isLive: boolean
+  @Expose()
+  createdAt: Date
+  @Expose()
+  deletedAt: Date
+  @Expose()
+  roles: string[]
 }

@@ -46,6 +46,7 @@ export class PermissionGuard implements CanActivate {
         const userPermission = userPermissions.find(
           (e) => e.name === permission,
         )
+
         if (!userPermission) {
           throw new BadRequestException(
             "You do not have permission to access this resource",

@@ -206,6 +206,9 @@ export class UserController {
       thumbnail: userResult.user.thumbnail,
       isLive: userResult.user.isLive,
       categoryNames: userResult.categoryNames,
+      roles: userResult.roles,
+      createdAt: userResult.user.createdAt,
+      deletedAt: userResult.user.deletedAt,
       image: userResult.image
         ? {
             url: userResult.image.url,
@@ -373,7 +376,10 @@ export class UserController {
       id: userResult.user.id,
       email: userResult.user.email,
       phone: userResult.user.phone,
-      username: userResult.user.username,
+      username: userResult.user.name,
+      createdAt: userResult.user.createdAt,
+      deletedAt: userResult.user.deletedAt,
+      roles: userResult.roleNames,
       changedUsernameDaysLeft,
       allowedChangedUsername,
       numberOfFollowers: userResult.numberOfFollowers,
@@ -400,9 +406,10 @@ export class UserController {
     description: "Fetches a paginated list of users with optional filters",
 
     type: GetUserResponseDto,
+    auth: true,
   })
   @ResponseMessage(SuccessMessages.user.GET_ALL_USERS)
-  @Public()
+  @Permission([Permissions.Dashboard.Read])
   @Get("/")
   async getAllUsers(
     @Query() param: GetAllUsersRequestDto,
@@ -419,11 +426,14 @@ export class UserController {
         id: u.user.id,
         email: u.user.email,
         phone: u.user.phone,
-        username: u.user.username,
+        username: u.user.name,
+        roles: u.roles,
         displayName: u.user.displayName,
         bio: u.user.bio,
         thumbnail: u.user.thumbnail,
         isLive: u.user.isLive,
+        createdAt: u.user.createdAt,
+        deletedAt: u.user.deletedAt,
         image: u.image
           ? {
               url: u.image.url,

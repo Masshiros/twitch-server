@@ -155,7 +155,7 @@ async function main() {
       password: await hashPassword("strongPassword123@@AA"),
       phoneNumber: "0123456789",
       dob: new Date("1980-01-01T00:00:00.000Z"),
-      role: Roles.Admin,
+      roles: [Roles.Admin, Roles.User],
     },
     {
       name: "admin2",
@@ -165,7 +165,7 @@ async function main() {
       password: await hashPassword("strongPassword123@@AA"),
       phoneNumber: "0123456789",
       dob: new Date("1980-01-01T00:00:00.000Z"),
-      role: Roles.Admin,
+      roles: [Roles.Admin, Roles.User],
     },
     {
       name: "user1",
@@ -175,7 +175,7 @@ async function main() {
       password: await hashPassword("regularUserPass123!"),
       phoneNumber: "0987654321",
       dob: new Date("1990-01-01T00:00:00.000Z"),
-      role: Roles.User,
+      roles: [Roles.User],
     },
   ]
 
@@ -194,17 +194,19 @@ async function main() {
     })
     console.log(`User created: ${user.email}`)
 
-    const role = await prisma.role.findUnique({
-      where: { name: userData.role },
-    })
-    if (role) {
-      await prisma.userRole.create({
-        data: {
-          userId: user.id,
-          roleId: role.id,
-        },
+    for (const roleName of userData.roles) {
+      const role = await prisma.role.findUnique({
+        where: { name: roleName },
       })
-      console.log(`Role '${userData.role}' assigned to user: ${user.email}`)
+      if (role) {
+        await prisma.userRole.create({
+          data: {
+            userId: user.id,
+            roleId: role.id,
+          },
+        })
+        console.log(`Role '${roleName}' assigned to user: ${user.email}`)
+      }
     }
 
     // Create LivestreamInfo for the user

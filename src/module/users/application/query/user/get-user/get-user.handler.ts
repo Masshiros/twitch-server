@@ -8,6 +8,7 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { ICategoriesRepository } from "src/module/categories/domain/repository/categories.interface.repository"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
@@ -67,6 +68,7 @@ export class GetUserQueryHandler {
       // get user image
       const images: any[] | null =
         await this.imageService.getImageByApplicableId(targetUserAggregate.id)
+      const avatar = images.find((e) => e.imageType === EImageType.AVATAR)
       // get user categories
       let categoryNames = []
 
@@ -90,31 +92,20 @@ export class GetUserQueryHandler {
       }
 
       // get number of followers and followings
-      const [followers, followings] = await Promise.all([
+      const [followers, followings, roles] = await Promise.all([
         this.followersRepository.findFollowersByUser(targetUserAggregate.id),
         this.followersRepository.findFollowingByUser(targetUserAggregate.id),
+        this.userRepository.getUserRoles(targetUserAggregate),
       ])
-
-      // const categoryNames = userCategories.map((e) => e.name)
-      if (images.length > 0) {
-        return {
-          user: targetUserAggregate,
-          categoryNames: categoryNames ?? [],
-          numberOfFollowers: followers.length,
-          numberOfFollowings: followings.length,
-          image: {
-            url: images[0].url || "",
-            publicId: images[0].publicId || "",
-          },
-        }
-      }
+      const roleNames = roles.map((e) => e.name)
 
       return {
         user: targetUserAggregate,
+        roleNames,
         categoryNames: categoryNames ?? [],
         numberOfFollowers: followers.length,
         numberOfFollowings: followings.length,
-        image: { url: "", publicId: "" },
+        image: { url: avatar?.url ?? "", publicId: avatar?.public ?? "" },
       }
     } catch (err) {
       console.error(err.stack)

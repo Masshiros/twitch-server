@@ -2,6 +2,7 @@ import { QueryHandler } from "@nestjs/cqrs"
 import { QueryError, QueryErrorCode } from "libs/exception/application/query"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetAllUsersQuery } from "./get-all-user.query"
@@ -25,18 +26,25 @@ export class GetAllUsersQueryHandler {
         offset,
         filters,
       })
+
       const result = await Promise.all(
         user.map(async (u) => {
-          const userImage = await this.imageService.getImageByApplicableId(u.id)
-          if (userImage.length > 0) {
-            return {
-              user: u,
-              image: { url: userImage[0].url, publicId: userImage[0].publicId },
-            }
-          }
+          const [userImage, roles] = await Promise.all([
+            this.imageService.getImageByApplicableId(u.id),
+            this.userRepository.getUserRoles(u),
+          ])
+          const userAvatar = userImage.find(
+            (e) => e.imageType === EImageType.AVATAR,
+          )
+          const roleNames = roles.map((e) => e.name)
+
           return {
             user: u,
-            image: { url: "", publicId: "" },
+            roles: roleNames,
+            image: {
+              url: userAvatar?.url ?? "",
+              publicId: userAvatar?.publicId ?? "",
+            },
           }
         }),
       )

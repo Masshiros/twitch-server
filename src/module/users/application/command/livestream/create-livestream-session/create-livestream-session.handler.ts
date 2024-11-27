@@ -6,14 +6,19 @@ import {
 } from "libs/exception/application/command"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { UserAggregate } from "src/module/users/domain/aggregate"
+import { Livestream } from "src/module/users/domain/entity/livestream.entity"
+import { UserFactory } from "src/module/users/domain/factory/user"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { UpdateLivestreamSessionCommand } from "./update-livestream-session.command"
+import { CreateLivestreamSessionCommand } from "./create-livestream-session.command"
 
-@CommandHandler(UpdateLivestreamSessionCommand)
-export class UpdateLivestreamSessionHandler {
-  constructor(private readonly userRepository: IUserRepository) {}
-  async execute(command: UpdateLivestreamSessionCommand) {
-    const { ingressId, userId, endStreamAt, totalView, isLive } = command
+@CommandHandler(CreateLivestreamSessionCommand)
+export class CreateLivestreamSessionHandler {
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly userFactory: UserFactory,
+  ) {}
+  async execute(command: CreateLivestreamSessionCommand) {
+    const { ingressId, userId, startStreamAt, totalView, isLive } = command
     try {
       if (!userId && userId.length === 0) {
         throw new CommandError({
@@ -31,10 +36,10 @@ export class UpdateLivestreamSessionHandler {
         })
       }
 
-      if (!endStreamAt) {
+      if (!startStreamAt) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "endStreamAt can not be empty",
+          message: "startStreamAt can not be empty",
         })
       }
       if (!totalView) {
@@ -65,19 +70,24 @@ export class UpdateLivestreamSessionHandler {
         })
       }
       liveStreamInfo.isLive = isLive
-      const liveStream =
-        await this.userRepository.getCurrentLivestreamSession(user)
+      const liveStream = await this.userFactory.createLivestream({
+        userId: user.id,
+        slug: user.slug,
+        totalView,
+        ingressId,
+        startStreamAt,
+      })
       if (!liveStream) {
         throw new CommandError({
           code: CommandErrorCode.NOT_FOUND,
-          message: "Livestream not found",
+          message: "Cannot create now",
           info: {
             errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
           },
         })
       }
 
-      liveStream.endStreamAt = endStreamAt
+      liveStream.startStreamAt = startStreamAt
       await Promise.all([
         this.userRepository.updateLivestream(liveStream),
         this.userRepository.updateLivestreamInfo(liveStreamInfo),

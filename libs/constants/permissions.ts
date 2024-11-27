@@ -16,6 +16,7 @@ export class Permissions {
   public static Groups = createPermissions("Groups")
   public static LiveStreams = createPermissions("LiveStreams")
   public static Comments = createPermissions("Comments")
+  public static Dashboard = createPermissions("Dashboard")
 }
 
 function createPermissions(resource: string) {
