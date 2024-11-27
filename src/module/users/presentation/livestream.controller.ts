@@ -108,8 +108,8 @@ export class LiveStreamController {
   @ApiOperationDecorator({
     summary: "Update livestream session",
     description: "Update livestream session",
-    auth: true,
   })
+  @Public()
   @ResponseMessage(SuccessMessages.livestream.SET_IS_LIVE)
   @Patch("live-stream-session")
   async updateLivestreamSession(
