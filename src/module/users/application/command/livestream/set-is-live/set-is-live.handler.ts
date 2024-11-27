@@ -24,7 +24,7 @@ export class SetIsLiveHandler {
           },
         })
       }
-      if (!isLive) {
+      if (isLive === null) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
           message: "Islive can not be empty",
