@@ -48,6 +48,7 @@ export class GetAllUsersQueryHandler {
           }
         }),
       )
+      
       return { result }
     } catch (err) {
       console.error(err.stack)

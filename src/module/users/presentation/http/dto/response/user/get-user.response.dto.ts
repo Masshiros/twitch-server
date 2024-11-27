@@ -1,4 +1,5 @@
 import { Expose, Type } from "class-transformer"
+import { EUserStatus } from "src/module/users/domain/enum/user-status.enum"
 
 export class ImageResponseDto {
   @Expose()
@@ -47,4 +48,6 @@ export class GetUserResponseDto {
   deletedAt: Date
   @Expose()
   roles: string[]
+  @Expose()
+  status: EUserStatus
 }

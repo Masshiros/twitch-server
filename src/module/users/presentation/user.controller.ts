@@ -209,6 +209,7 @@ export class UserController {
       roles: userResult.roles,
       createdAt: userResult.user.createdAt,
       deletedAt: userResult.user.deletedAt,
+      status: userResult.user.status,
       image: userResult.image
         ? {
             url: userResult.image.url,
@@ -389,6 +390,7 @@ export class UserController {
       thumbnail: userResult.user.thumbnail,
       isLive: userResult.user.isLive,
       categoryNames: userResult.categoryNames,
+      status: userResult.user.status,
       image: userResult.image
         ? {
             url: userResult.image.url,
@@ -421,6 +423,7 @@ export class UserController {
     if (!users.result) {
       return null
     }
+    console.log(users)
     const result = users.result.map((u) => {
       const user = {
         id: u.user.id,
@@ -434,6 +437,7 @@ export class UserController {
         isLive: u.user.isLive,
         createdAt: u.user.createdAt,
         deletedAt: u.user.deletedAt,
+        status: u.user.status,
         image: u.image
           ? {
               url: u.image.url,
