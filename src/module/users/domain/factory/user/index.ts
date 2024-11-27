@@ -65,7 +65,7 @@ export class UserFactory {
         is2FA: params.is2FA ?? false,
         view: params.view ?? 0,
         bio: params.bio ?? "",
-        lastUsernameChangeAt: params.lastUsernameChangeAt ?? new Date(),
+        lastUsernameChangeAt: params.lastUsernameChangeAt,
         thumbnail: params.thumbnail ?? "",
         serverUrl: params.serverUrl,
         streamKey: params.streamKey,
