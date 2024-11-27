@@ -8,7 +8,14 @@ import {
   Min,
 } from "class-validator"
 
-export class UpdateLivestreamSessionRequestDTO {
+export class CreateLivestreamSessionRequestDTO {
+  @ApiProperty({
+    description:
+      "Unique identifier for the ingress related to the livestream session",
+    example: "ingress123",
+  })
+  @IsString()
+  ingressId: string
   @ApiProperty({
     description: "Unique identifier for the user",
     example: "user123",
@@ -17,13 +24,13 @@ export class UpdateLivestreamSessionRequestDTO {
   userId: string
 
   @ApiProperty({
-    description: "The end date and time of the livestream",
-    example: "2023-01-01T14:00:00Z",
+    description: "The start date and time of the livestream",
+    example: "2023-01-01T12:00:00Z",
     type: String,
   })
   @IsISO8601()
   @IsNotEmpty()
-  endStreamAt: Date
+  startStreamAt: Date
 
   @ApiProperty({
     description: "Total number of views for the livestream session",

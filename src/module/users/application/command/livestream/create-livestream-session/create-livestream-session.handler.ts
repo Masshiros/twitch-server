@@ -89,7 +89,7 @@ export class CreateLivestreamSessionHandler {
 
       liveStream.startStreamAt = startStreamAt
       await Promise.all([
-        this.userRepository.updateLivestream(liveStream),
+        this.userRepository.createLivestreamSession(liveStream),
         this.userRepository.updateLivestreamInfo(liveStreamInfo),
       ])
     } catch (err) {

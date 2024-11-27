@@ -7,13 +7,13 @@ import {
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { UpdateLivestreamSessionCommand } from "./update-livestream-session.command"
+import { SetViewCommand } from "./set-view.command"
 
-@CommandHandler(UpdateLivestreamSessionCommand)
-export class UpdateLivestreamSessionHandler {
+@CommandHandler(SetViewCommand)
+export class SetViewHandler {
   constructor(private readonly userRepository: IUserRepository) {}
-  async execute(command: UpdateLivestreamSessionCommand) {
-    const { userId, endStreamAt, totalView, isLive } = command
+  async execute(command: SetViewCommand) {
+    const { userId, view } = command
     try {
       if (!userId && userId.length === 0) {
         throw new CommandError({
@@ -24,17 +24,10 @@ export class UpdateLivestreamSessionHandler {
           },
         })
       }
-
-      if (!endStreamAt) {
+      if (!view) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "endStreamAt can not be empty",
-        })
-      }
-      if (!totalView) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "totalView can not be empty",
+          message: "view can not be empty",
         })
       }
       const user: UserAggregate | null =
@@ -48,17 +41,6 @@ export class UpdateLivestreamSessionHandler {
           },
         })
       }
-      const liveStreamInfo = await this.userRepository.getStreamInfoByUser(user)
-      if (!liveStreamInfo) {
-        throw new CommandError({
-          code: CommandErrorCode.NOT_FOUND,
-          message: "Livestream info not found",
-          info: {
-            errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
-          },
-        })
-      }
-      liveStreamInfo.isLive = isLive
       const liveStream =
         await this.userRepository.getCurrentLivestreamSession(user)
       if (!liveStream) {
@@ -70,14 +52,8 @@ export class UpdateLivestreamSessionHandler {
           },
         })
       }
-
-      liveStream.endStreamAt = endStreamAt
-      liveStream.totalView = totalView
-      
-      await Promise.all([
-        this.userRepository.updateLivestream(liveStream),
-        this.userRepository.updateLivestreamInfo(liveStreamInfo),
-      ])
+      liveStream.totalView = view
+      await this.userRepository.updateLivestream(liveStream)
     } catch (err) {
       if (err instanceof CommandError || err instanceof InfrastructureError) {
         throw err

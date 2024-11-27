@@ -24,8 +24,11 @@ import { SignInCommandHandler } from "./command/auth/signin/signin.handler"
 import { SignupWithEmailCommandHandler } from "./command/auth/signup-with-email/signup-with-email.handler"
 import { SignupWithPhoneCommandHandler } from "./command/auth/signup-with-phone/signup-with-phone.handler"
 import { ToggleTwoFaCommandHandler } from "./command/auth/toggle-two-fa/toggle-two-fa.handler"
+import { CreateLivestreamSessionHandler } from "./command/livestream/create-livestream-session/create-livestream-session.handler"
 import { SetIsLiveHandler } from "./command/livestream/set-is-live/set-is-live.handler"
 import { SetStreamInfoHandler } from "./command/livestream/set-stream-info/set-stream-info.handler"
+import { SetViewHandler } from "./command/livestream/set-view/set-view.handler"
+import { UpdateLivestreamSessionHandler } from "./command/livestream/update-livestream-session/update-livestream-session.handler"
 import { AssignPermissionToRoleHandler } from "./command/role/assign-permission-to-role/assign-permission-to-role.handler"
 import { AssignRoleToUserHandler } from "./command/role/assign-role-to-user/assign-role-to-user.handler"
 import { AddProfilePictureHandler } from "./command/user/add-profile-picture/add-profile-picture.handler"
@@ -78,6 +81,9 @@ const commandHandlers = [
   SetStreamKeyHandler,
   SetStreamInfoHandler,
   SetIsLiveHandler,
+  SetViewHandler,
+  CreateLivestreamSessionHandler,
+  UpdateLivestreamSessionHandler,
 ]
 const queryHandlers = [
   GetUserQueryHandler,

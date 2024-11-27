@@ -50,7 +50,7 @@ export class Livestream extends BaseEntity {
     this.props.startStreamAt = value
   }
   set endStreamAt(value: Date) {
-    this.props.endStreamAt
+    this.props.endStreamAt = value
   }
   get userId(): string {
     return this.props.userId
@@ -65,6 +65,9 @@ export class Livestream extends BaseEntity {
 
   get totalView(): number {
     return this.props.totalView
+  }
+  set totalView(value: number) {
+    this.props.totalView = value
   }
 
   get isChatEnabled(): boolean {

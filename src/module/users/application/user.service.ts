@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common"
 import { CommandBus, QueryBus } from "@nestjs/cqrs"
+import { CreateLivestreamSessionCommand } from "./command/livestream/create-livestream-session/create-livestream-session.command"
 import { SetIsLiveCommand } from "./command/livestream/set-is-live/set-is-live.command"
 import { SetStreamInfoCommand } from "./command/livestream/set-stream-info/set-stream-info.command"
+import { SetViewCommand } from "./command/livestream/set-view/set-view.command"
 import { UpdateLivestreamSessionCommand } from "./command/livestream/update-livestream-session/update-livestream-session.command"
 import { AssignPermissionToRoleCommand } from "./command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "./command/role/assign-role-to-user/assign-role-to-user.command"
@@ -114,5 +116,11 @@ export class UserService {
   }
   getLiveStreamInfo(query: GetLivestreamInfoQuery) {
     return this.queryBus.execute(query)
+  }
+  createLiveStreamSession(command: CreateLivestreamSessionCommand) {
+    return this.commandBus.execute(command)
+  }
+  setView(command: SetViewCommand) {
+    return this.commandBus.execute(command)
   }
 }

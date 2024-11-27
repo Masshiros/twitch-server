@@ -16,8 +16,10 @@ import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
+import { CreateLivestreamSessionCommand } from "../application/command/livestream/create-livestream-session/create-livestream-session.command"
 import { SetIsLiveCommand } from "../application/command/livestream/set-is-live/set-is-live.command"
 import { SetStreamInfoCommand } from "../application/command/livestream/set-stream-info/set-stream-info.command"
+import { SetViewCommand } from "../application/command/livestream/set-view/set-view.command"
 import { UpdateLivestreamSessionCommand } from "../application/command/livestream/update-livestream-session/update-livestream-session.command"
 import { GetAllStreamQuery } from "../application/query/user/get-all-stream/get-all-stream.query"
 import { GetLivestreamInfoQuery } from "../application/query/user/get-livestream-info/get-livestream-info.query"
@@ -28,10 +30,12 @@ import { GetAllLivingStreamInfosRequestDto } from "./http/dto/request/livestream
 import { GetLiveStreamInfoRequestDto } from "./http/dto/request/livestream/get-live-stream-info.request.dto"
 import { SetIsLiveRequestDTO } from "./http/dto/request/livestream/set-is-live.request.dto"
 import { SetStreamInfoRequestDto } from "./http/dto/request/livestream/set-stream-info.request.dto"
+import { CreateLivestreamSessionRequestDTO } from "./http/dto/response/livestream/create-livestream-session.request.dto"
 import { GetAllLivingStreamInfosResponseDto } from "./http/dto/response/livestream/get-all-living-stream-infos.response.dto"
 import { GetTop5StreamResponseDto } from "./http/dto/response/livestream/get-top-5-stream.response.dto"
 import { LiveStreamInfoResponseDto } from "./http/dto/response/livestream/live-stream-info.response.dto"
 import { UpdateLivestreamSessionRequestDTO } from "./http/dto/response/livestream/update-livestream-session.request.dto"
+import { UpdateStreamViewRequestDto } from "./http/dto/response/livestream/update-stream-view.request.dto"
 
 @ApiTags("Livestreams")
 @Controller("livestreams")
@@ -106,21 +110,49 @@ export class LiveStreamController {
   }
   // patch: livestream update
   @ApiOperationDecorator({
-    summary: "Update livestream session",
-    description: "Update livestream session",
+    summary: "End livestream session",
+    description: "End livestream session",
   })
   @Public()
-  @ResponseMessage(SuccessMessages.livestream.SET_IS_LIVE)
-  @Patch("live-stream-session")
+  @ResponseMessage(SuccessMessages.livestream.END_LIVESTREAM)
+  @Patch("end-live-stream-session")
   async updateLivestreamSession(
     @Body() data: UpdateLivestreamSessionRequestDTO,
-    @CurrentUser() user: UserAggregate,
   ) {
     const command = new UpdateLivestreamSessionCommand({
       ...data,
-      userId: user.id,
     })
+   
     await this.userService.updateLivestreamSession(command)
+  }
+  // patch: create live stream session
+  @ApiOperationDecorator({
+    summary: "Start livestream session",
+    description: "Start livestream session",
+  })
+  @Public()
+  @ResponseMessage(SuccessMessages.livestream.START_LIVESTREAM)
+  @Patch("start-live-stream-session")
+  async startLivestreamSession(
+    @Body() data: CreateLivestreamSessionRequestDTO,
+  ) {
+    const command = new CreateLivestreamSessionCommand({
+      ...data,
+    })
+
+    await this.userService.createLiveStreamSession(command)
+  }
+  // patch: update stream view
+  @ApiOperationDecorator({
+    summary: "Update stream view",
+    description: "Update stream view",
+  })
+  @Public()
+  @ResponseMessage(SuccessMessages.livestream.UPDATE_VIEW_STREAM_SESSION)
+  @Patch("stream-view")
+  async updateLivestreamSessionView(@Body() data: UpdateStreamViewRequestDto) {
+    const command = new SetViewCommand({ ...data })
+    await this.userService.setView(command)
   }
   // get: get livestream info of user
   @ApiOperationDecorator({

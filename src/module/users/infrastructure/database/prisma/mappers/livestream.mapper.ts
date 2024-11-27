@@ -2,9 +2,6 @@ import { Livestream as PrismaLivestream } from "@prisma/client"
 import { Livestream } from "src/module/users/domain/entity/livestream.entity"
 
 export class LivestreamMapper {
-  /**
-   * Converts a Prisma Livestream object to a domain Livestream entity.
-   */
   static toDomain(prismaLivestream: PrismaLivestream): Livestream {
     return new Livestream(
       {

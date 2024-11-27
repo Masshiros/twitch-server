@@ -1168,7 +1168,9 @@ export class PrismaUserRepository implements IUserRepository {
   }
   async updateLivestream(livestream: Livestream): Promise<void> {
     try {
+     
       const data = LivestreamMapper.toPersistence(livestream)
+     
       await this.prismaService.livestream.update({
         where: { id: data.id },
         data: data,
@@ -1230,13 +1232,14 @@ export class PrismaUserRepository implements IUserRepository {
   }
   async findLivestreamByIngressId(ingressId: string): Promise<Livestream> {
     try {
-      const livestream = await this.prismaService.livestream.findUnique({
+      const livestream = await this.prismaService.livestream.findMany({
         where: { ingressId },
       })
       if (!livestream) {
         return null
       }
-      return LivestreamMapper.toDomain(livestream) ?? null
+      const result = livestream.find((e) => e.endStreamAt === null)
+      return LivestreamMapper.toDomain(result) ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)
