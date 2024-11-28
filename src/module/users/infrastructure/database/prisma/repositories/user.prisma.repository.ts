@@ -402,9 +402,19 @@ export class PrismaUserRepository implements IUserRepository {
   }): Promise<UserAggregate[] | null> {
     try {
       // fetch users with filters
+      const cleanedFilters = Object.fromEntries(
+        Object.entries(filters).filter(([_, value]) => value !== undefined),
+      )
+      const whereConditions = {
+        AND: Object.entries(cleanedFilters).map(([key, value]) => {
+          return { [key]: value }
+        }),
+      }
 
+      console.log(cleanedFilters)
+      console.log(whereConditions)
       const users = await this.prismaService.user.findMany({
-        where: { ...filters },
+        where: { ...whereConditions },
         ...(offset !== null ? { skip: offset } : {}),
         ...(limit !== null ? { take: limit } : {}),
 
@@ -412,6 +422,7 @@ export class PrismaUserRepository implements IUserRepository {
           id: true,
         },
       })
+
       if (!users) {
         return null
       }
@@ -425,6 +436,7 @@ export class PrismaUserRepository implements IUserRepository {
         return null
       }
       const results = queryUsers.map((e) => UserMapper.toDomain(e))
+
       return results ?? null
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

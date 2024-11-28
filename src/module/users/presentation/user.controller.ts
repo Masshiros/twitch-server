@@ -415,13 +415,12 @@ export class UserController {
   @Get("/")
   async getAllUsers(
     @Query() param: GetAllUsersRequestDto,
-    @Query() data: UserFilters,
   ): Promise<GetAllUsersResponseDto | null> {
     const query = new GetAllUsersQuery({ ...param })
     query.limit = param.limit ?? 5
     query.offset = param.page ? (param.page - 1) * param.limit : null
 
-    query.filters = data
+    query.filters = { isLive: param.isLive, isActive: param.isActive }
 
     const users = await this.userService.getAllUsers(query)
     if (!users.result) {

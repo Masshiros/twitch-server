@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger"
-import { Type } from "class-transformer"
-import { IsNumber, IsOptional, ValidateNested } from "class-validator"
+import { Transform, Type } from "class-transformer"
+import { IsBoolean, IsNumber, IsOptional } from "class-validator"
 import { UserFilters } from "src/common/interface"
 
 export class GetAllUsersRequestDto {
@@ -21,4 +21,32 @@ export class GetAllUsersRequestDto {
   @Type(() => Number)
   @IsNumber()
   page?: number
+  @ApiPropertyOptional({
+    description: "Whether the user is live or not",
+    example: true,
+    nullable: true,
+    type: Boolean,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === "true") return true
+    if (value === "false") return false
+    return null
+  })
+  @IsBoolean()
+  isLive?: boolean | null
+  @ApiPropertyOptional({
+    description: "Whether the user is active or not",
+    example: true,
+    nullable: true,
+    type: Boolean,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === "true") return true
+    if (value === "false") return false
+    return null
+  })
+  @IsBoolean()
+  isActive?: boolean | null
 }

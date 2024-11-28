@@ -21,7 +21,6 @@ export class GetAllUsersQueryHandler {
     const { limit, offset, filters } = query
 
     try {
-      console.log(query)
       const user = await this.userRepository.getAllWithPagination({
         limit,
         offset,
@@ -53,7 +52,11 @@ export class GetAllUsersQueryHandler {
           }
         }),
       )
-      const result = queryUser.filter((e) => e.isLive === filters?.isLive)
+      const result =
+        filters?.isLive !== undefined
+          ? queryUser.filter((e) => e.isLive === filters?.isLive)
+          : queryUser
+
       return { result }
     } catch (err) {
       console.error(err.stack)
