@@ -26,7 +26,6 @@ model User {
   phoneVerifyToken      String                   @default("")
   forgotPasswordToken   String                   @default("")
   otpToken              String                   @default("")
-  isLive                Boolean                  @default(false)
   isActive              Boolean                  @default(true)
   is2FA                 Boolean                  @default(false)
   view                  Int                      @default(0)
@@ -72,7 +71,6 @@ model User {
   postComments  PostComment[]
   groupPostComments GroupPostComment[]
   scheduledPost ScheduledPost[]
-  @@index([isLive])
   @@index([isActive])
   @@map("users")
 }

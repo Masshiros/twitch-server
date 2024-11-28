@@ -1168,9 +1168,8 @@ export class PrismaUserRepository implements IUserRepository {
   }
   async updateLivestream(livestream: Livestream): Promise<void> {
     try {
-     
       const data = LivestreamMapper.toPersistence(livestream)
-     
+
       await this.prismaService.livestream.update({
         where: { id: data.id },
         data: data,

@@ -48,9 +48,11 @@ export class GetListFollowersQueryHandler {
       const result = await Promise.all(
         followers.map(async (follower) => {
           const user = await this.userRepository.findById(follower.sourceUserId)
-          const userImage = await this.imageService.getImageByApplicableId(
-            user.id,
-          )
+          const [userImage, liveStreamInfo] = await Promise.all([
+            this.imageService.getImageByApplicableId(user.id),
+            this.userRepository.getStreamInfoByUser(user),
+          ])
+
           if (user) {
             if (userImage && userImage.length > 0) {
               return {
@@ -62,7 +64,7 @@ export class GetListFollowersQueryHandler {
                   url: userImage[0]?.url ?? "",
                   publicId: userImage[0]?.publicId ?? "",
                 },
-                isLive: user.isLive,
+                isLive: liveStreamInfo.isLive,
                 followDate: follower.followDate,
               }
             }
@@ -75,7 +77,7 @@ export class GetListFollowersQueryHandler {
                 url: "",
                 publicId: "",
               },
-              isLive: user.isLive,
+              isLive: liveStreamInfo.isLive,
               followDate: follower.followDate,
             }
           }

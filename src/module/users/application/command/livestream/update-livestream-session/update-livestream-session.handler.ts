@@ -73,7 +73,7 @@ export class UpdateLivestreamSessionHandler {
 
       liveStream.endStreamAt = endStreamAt
       liveStream.totalView = totalView
-      
+
       await Promise.all([
         this.userRepository.updateLivestream(liveStream),
         this.userRepository.updateLivestreamInfo(liveStreamInfo),

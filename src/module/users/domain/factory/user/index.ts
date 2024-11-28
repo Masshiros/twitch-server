@@ -92,7 +92,6 @@ export class UserFactory {
         phoneVerifyToken: params.phoneVerifyToken ?? "",
         forgotPasswordToken: params.forgotPasswordToken ?? "",
         otpToken: params.otpToken ?? "",
-        isLive: params.isLive ?? false,
         isActive: params.isActive ?? true,
         is2FA: params.is2FA ?? false,
         view: params.view ?? 0,

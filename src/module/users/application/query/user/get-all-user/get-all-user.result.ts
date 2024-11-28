@@ -5,6 +5,7 @@ export class GetAllUsersQueryResult {
     | {
         user: UserAggregate
         roles: string[]
+        isLive: boolean
         image: {
           url: string
           publicId: string

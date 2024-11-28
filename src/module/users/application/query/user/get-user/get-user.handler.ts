@@ -101,6 +101,7 @@ export class GetUserQueryHandler {
 
       return {
         user: targetUserAggregate,
+        isLive: liveStreamInfo.isLive,
         roleNames,
         categoryNames: categoryNames ?? [],
         numberOfFollowers: followers.length,

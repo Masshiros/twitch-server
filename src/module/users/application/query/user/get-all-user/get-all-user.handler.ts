@@ -29,9 +29,10 @@ export class GetAllUsersQueryHandler {
 
       const result = await Promise.all(
         user.map(async (u) => {
-          const [userImage, roles] = await Promise.all([
+          const [userImage, roles, liveStreamInfo] = await Promise.all([
             this.imageService.getImageByApplicableId(u.id),
             this.userRepository.getUserRoles(u),
+            this.userRepository.getStreamInfoByUser(u),
           ])
           const userAvatar = userImage.find(
             (e) => e.imageType === EImageType.AVATAR,
@@ -41,6 +42,7 @@ export class GetAllUsersQueryHandler {
           return {
             user: u,
             roles: roleNames,
+            isLive: liveStreamInfo.isLive,
             image: {
               url: userAvatar?.url ?? "",
               publicId: userAvatar?.publicId ?? "",
@@ -48,7 +50,7 @@ export class GetAllUsersQueryHandler {
           }
         }),
       )
-      
+
       return { result }
     } catch (err) {
       console.error(err.stack)

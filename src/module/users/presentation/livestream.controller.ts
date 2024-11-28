@@ -122,7 +122,7 @@ export class LiveStreamController {
     const command = new UpdateLivestreamSessionCommand({
       ...data,
     })
-   
+
     await this.userService.updateLivestreamSession(command)
   }
   // patch: create live stream session

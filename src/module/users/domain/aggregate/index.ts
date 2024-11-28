@@ -31,7 +31,6 @@ interface UserAggregateProps {
   phoneVerifyToken?: string
   forgotPasswordToken?: string
   otpToken?: string
-  isLive?: boolean
   isActive?: boolean
   is2FA?: boolean
   view?: number
@@ -95,9 +94,6 @@ export class UserAggregate extends BaseAggregate {
 
   @IsBoolean()
   @Expose()
-  private _isLive: boolean = false
-  @IsBoolean()
-  @Expose()
   private _isActive: boolean = true
   @IsBoolean()
   @Expose()
@@ -153,7 +149,6 @@ export class UserAggregate extends BaseAggregate {
     this._phoneVerifyToken = props.phoneVerifyToken ?? ""
     this._forgotPasswordToken = props.forgotPasswordToken ?? ""
     this._otpToken = props.otpToken ?? ""
-    this._isLive = props.isLive ?? false
     this._isActive = props.isActive ?? true
     this._is2FA = props.is2FA ?? false
     this._view = props.view ?? 0
@@ -269,14 +264,6 @@ export class UserAggregate extends BaseAggregate {
 
   set otpToken(value: string) {
     this._otpToken = value
-  }
-
-  get isLive(): boolean {
-    return this._isLive
-  }
-
-  set isLive(value: boolean) {
-    this._isLive = value
   }
 
   get isActive(): boolean {
