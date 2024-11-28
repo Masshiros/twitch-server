@@ -21,13 +21,16 @@ export class GetAllUsersQueryHandler {
     const { limit, offset, filters } = query
 
     try {
+      console.log(query)
       const user = await this.userRepository.getAllWithPagination({
         limit,
         offset,
-        filters,
+        filters: {
+          isActive: filters?.isActive !== undefined ? filters.isActive : true,
+        },
       })
 
-      const result = await Promise.all(
+      const queryUser = await Promise.all(
         user.map(async (u) => {
           const [userImage, roles, liveStreamInfo] = await Promise.all([
             this.imageService.getImageByApplicableId(u.id),
@@ -50,7 +53,7 @@ export class GetAllUsersQueryHandler {
           }
         }),
       )
-
+      const result = queryUser.filter((e) => e.isLive === filters?.isLive)
       return { result }
     } catch (err) {
       console.error(err.stack)

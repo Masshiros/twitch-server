@@ -213,6 +213,7 @@ async function main() {
     await prisma.liveStreamInfo.create({
       data: {
         userId: user.id,
+        isLive: false,
       },
     })
     console.log(`LivestreamInfo created for user: ${user.email}`)

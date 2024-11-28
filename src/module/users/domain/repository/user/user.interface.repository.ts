@@ -35,7 +35,7 @@ export abstract class IUserRepository {
   }: {
     limit: number
     offset: number
-    filters: UserFilters
+    filters: any
   }) => Promise<UserAggregate[] | null>
   generateToken: (
     payload: TokenPayload,

@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger"
 import { Type } from "class-transformer"
-import { IsNumber, IsOptional } from "class-validator"
+import { IsNumber, IsOptional, ValidateNested } from "class-validator"
 import { UserFilters } from "src/common/interface"
 
 export class GetAllUsersRequestDto {
@@ -21,11 +21,4 @@ export class GetAllUsersRequestDto {
   @Type(() => Number)
   @IsNumber()
   page?: number
-
-  @ApiPropertyOptional({
-    description: "Filters to apply to the user list",
-    type: UserFilters,
-  })
-  @IsOptional()
-  filters?: UserFilters
 }

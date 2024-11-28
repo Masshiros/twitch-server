@@ -1,4 +1,5 @@
 import { IQuery } from "@nestjs/cqrs"
+import { cloneDeep } from "lodash"
 import { UserFilters } from "src/common/interface"
 
 type GetAllUsersQueryParams = {
@@ -8,7 +9,7 @@ type GetAllUsersQueryParams = {
 }
 
 export class GetAllUsersQuery implements IQuery {
-  readonly filters: UserFilters
+  filters: UserFilters
   limit: number
   offset: number
 

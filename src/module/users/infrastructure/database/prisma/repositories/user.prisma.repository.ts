@@ -398,7 +398,7 @@ export class PrismaUserRepository implements IUserRepository {
   }: {
     limit: number
     offset: number
-    filters: UserFilters
+    filters: any
   }): Promise<UserAggregate[] | null> {
     try {
       // fetch users with filters

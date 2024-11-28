@@ -26,7 +26,7 @@ import { Permission } from "libs/decorator/permission.decorator"
 import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { FileValidationPipe } from "libs/pipe/image-validation.pipe"
-import { TokenPayload } from "src/common/interface"
+import { TokenPayload, UserFilters } from "src/common/interface"
 import { AssignPermissionToRoleCommand } from "../application/command/role/assign-permission-to-role/assign-permission-to-role.command"
 import { AssignRoleToUserCommand } from "../application/command/role/assign-role-to-user/assign-role-to-user.command"
 import { AddProfilePictureCommand } from "../application/command/user/add-profile-picture/add-profile-picture.command"
@@ -415,15 +415,18 @@ export class UserController {
   @Get("/")
   async getAllUsers(
     @Query() param: GetAllUsersRequestDto,
+    @Query() data: UserFilters,
   ): Promise<GetAllUsersResponseDto | null> {
-    const query = new GetAllUsersQuery(param)
+    const query = new GetAllUsersQuery({ ...param })
     query.limit = param.limit ?? 5
     query.offset = param.page ? (param.page - 1) * param.limit : null
+
+    query.filters = data
+
     const users = await this.userService.getAllUsers(query)
     if (!users.result) {
       return null
     }
-    console.log(users)
     const result = users.result.map((u) => {
       const user = {
         id: u.user.id,

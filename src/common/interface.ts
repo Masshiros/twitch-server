@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger"
+import { Transform, Type } from "class-transformer"
 import { IsBoolean, IsOptional } from "class-validator"
 import { JwtPayload } from "jsonwebtoken"
 import { tokenType } from "libs/constants/enum"
@@ -9,16 +10,28 @@ export class UserFilters {
     description: "Whether the user is live or not",
     example: true,
     nullable: true,
+    type: Boolean,
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (value === "true") return true
+    if (value === "false") return false
+    return null
+  })
   @IsBoolean()
   isLive?: boolean | null
   @ApiPropertyOptional({
     description: "Whether the user is active or not",
     example: true,
     nullable: true,
+    type: Boolean,
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (value === "true") return true
+    if (value === "false") return false
+    return null
+  })
   @IsBoolean()
   isActive?: boolean | null
 }
