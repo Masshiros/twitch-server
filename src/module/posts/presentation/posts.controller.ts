@@ -87,7 +87,7 @@ export class PostsController {
       images,
       userId: user.id,
     })
-    console.log(data)
+    console.log(command)
 
     await this.service.createUserPost(command)
   }

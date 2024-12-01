@@ -30,6 +30,8 @@ export class ImageService {
     private readonly imageUploadQueue: Queue,
     @InjectQueue(Bull.queue.image.remove)
     private readonly imageRemoveQueue: Queue,
+    @InjectQueue(Bull.queue.image.upload_multiple)
+    private readonly multipleImagesUploadQueue: Queue,
     private readonly imageRepository: IImageRepository,
   ) {}
   async uploadMultiImages(
@@ -40,42 +42,26 @@ export class ImageService {
     imageType?: EImageType,
   ) {
     try {
-      const uploadJobs = files.map((file) => {
-        return this.imageUpdateFlow.add({
-          name: Bull.job.image.upload,
-          queueName: Bull.queue.image.upload,
-          data: {
-            file,
-            folder,
-            applicableId,
-            applicableType,
-            imageType,
-          },
-          children: [
-            {
-              name: Bull.job.image.optimize,
-              queueName: Bull.queue.image.optimize,
-              data: { file, folder },
-            },
-          ],
-        })
-      })
-      const rootJobs = await Promise.all(uploadJobs)
-      const failedJobs = await Promise.all(
-        rootJobs.map(async (rootJob) => {
-          const state = await rootJob.job.getState()
-          return state === "failed" ? rootJob.job : null
+      const [job, failedUploadJobs] = await Promise.all([
+        this.multipleImagesUploadQueue.add(Bull.job.image.upload_multiple, {
+          files,
+          folder,
+          applicableId,
+          applicableType,
+          imageType,
         }),
-      )
-      failedJobs.filter(Boolean).forEach((failedJob) => {
-        throw new CommandError({
-          code: CommandErrorCode.INTERNAL_SERVER_ERROR,
-          message: failedJob.failedReason,
-        })
-      })
-      this.imageUpdateFlow.on("error", (error) => {
-        this.logger.error("Error in image flow", error)
-      })
+        this.multipleImagesUploadQueue.getFailed(),
+      ])
+      if ((await job.getState()) === "failed") {
+        if (failedUploadJobs || failedUploadJobs.length !== 0) {
+          failedUploadJobs.map((failedJob) => {
+            throw new CommandError({
+              code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+              message: failedJob.failedReason,
+            })
+          })
+        }
+      }
     } catch (err) {
       console.log("err", err)
       if (

@@ -25,6 +25,10 @@ import { ImageService } from "./image.service"
       name: Bull.queue.image.remove,
       prefix: "TWITCH",
     }),
+    BullModule.registerQueue({
+      name: Bull.queue.image.upload_multiple,
+      prefix: "TWITCH",
+    }),
     ImageProcessorModule,
   ],
   providers: [ImageService],

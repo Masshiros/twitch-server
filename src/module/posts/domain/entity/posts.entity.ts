@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
 import { BaseEntity } from "src/common/entity"
+import { Image } from "src/module/image/domain/entity/image.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
 import { PostReactions } from "./post-reactions.entity"
 
@@ -11,6 +12,7 @@ interface PostProps {
   visibility: EUserPostVisibility
   totalViewCount?: number
   postReactions?: PostReactions[]
+  postImages?: string[]
   isPublic: boolean
   createdAt?: Date
   updatedAt?: Date
@@ -24,6 +26,7 @@ export class Post extends BaseEntity {
   private _totalViewCount?: number
   private _isPublic: boolean
   private _postReactions?: PostReactions[]
+  private _postImages?: string[]
   constructor(props: PostProps) {
     super()
     this._id = props.id ?? randomUUID()
@@ -36,6 +39,7 @@ export class Post extends BaseEntity {
     this._createdAt = props.createdAt ?? new Date()
     this._updatedAt = props.updatedAt
     this._deletedAt = props.deletedAt
+    this._postImages = props.postImages ?? []
   }
   get userId(): string {
     return this._userId
@@ -79,5 +83,11 @@ export class Post extends BaseEntity {
   }
   set isPublic(value: boolean) {
     this._isPublic = value
+  }
+  get postImages(): string[] {
+    return this._postImages
+  }
+  set postImages(value: string[]) {
+    this._postImages = value
   }
 }

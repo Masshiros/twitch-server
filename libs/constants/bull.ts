@@ -6,6 +6,7 @@ export const Bull = {
     image: {
       optimize: "image-optimize",
       upload: "image-upload",
+      upload_multiple: "multiple-image-upload",
       remove: "image-remove",
     },
     post: {
@@ -13,12 +14,14 @@ export const Bull = {
     },
     user_post: {
       schedule: "schedule-user-post",
+      cache_post: "cache-user-post",
     },
   },
   job: {
     image: {
       optimize: "image-job-optimize",
       upload: "image-job-upload",
+      upload_multiple: "multiple-image-job-upload",
       remove: "image-job-remove",
     },
     post: {
@@ -26,6 +29,7 @@ export const Bull = {
     },
     user_post: {
       schedule: "schedule-job-user-post",
+      cache_post: "cache-job-user-post",
     },
   },
 }

@@ -1,4 +1,5 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { Job } from "bullmq"
 import { Folder } from "libs/constants/folder"
 import {
   CommandError,
@@ -37,6 +38,7 @@ export class CreateUserPostHandler {
     } = command
     let savedImages
     let post: Post
+    let imageUrls
     try {
       if (!userId || userId.length === 0) {
         throw new CommandError({
@@ -112,7 +114,7 @@ export class CreateUserPostHandler {
         )
       }
       if (images && images.length > 0) {
-        await this.imageService.uploadMultiImages(
+        const jobs = await this.imageService.uploadMultiImages(
           images,
           Folder.image.user_post,
           post.id,
@@ -126,6 +128,7 @@ export class CreateUserPostHandler {
         user,
         listUserViewIds,
       )
+      console.log(imageUrls)
     } catch (err) {
       console.log(err)
       savedImages = await this.imageService.getImageByApplicableId(post.id)

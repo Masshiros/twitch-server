@@ -1,5 +1,6 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq"
 import { Logger } from "@nestjs/common"
+import { EventEmitter2 } from "@nestjs/event-emitter"
 import { Job } from "bullmq"
 import { Bull } from "libs/constants/bull"
 import {
@@ -18,7 +19,7 @@ export class ImageUploadProcessor extends WorkerHost {
   constructor(
     private readonly cloudinaryService: CloudinaryService,
     private readonly imageRepository: IImageRepository,
-    private readonly prismaService: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super()
   }
@@ -45,7 +46,7 @@ export class ImageUploadProcessor extends WorkerHost {
     })
   }
 
-  async process(job: Job, token?: string): Promise<any> {
+  async process(job: Job, token?: string) {
     let result
     try {
       const { file, folder, applicableId, applicableType, imageType } = job.data
@@ -72,7 +73,7 @@ export class ImageUploadProcessor extends WorkerHost {
         applicableType,
         imageType,
       })
-      // Save the image in the repository
+
       await this.imageRepository.save(image)
     } catch (error) {
       await this.cloudinaryService.deleteImage(result.public_id)

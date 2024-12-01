@@ -5,6 +5,7 @@ import { ImageDatabaseModule } from "../database/image.database.module"
 import { ImageOptimizationProcessor } from "./optimize-image.processor"
 import { ImageRemoveProcessor } from "./remove-image.processor"
 import { ImageUploadProcessor } from "./upload-image.processor"
+import { UploadMultipleImagesProcessor } from "./upload-multiple-images.processor"
 
 @Module({
   imports: [ImageDatabaseModule, CloudinaryModule, DatabaseModule],
@@ -12,11 +13,13 @@ import { ImageUploadProcessor } from "./upload-image.processor"
     ImageOptimizationProcessor,
     ImageUploadProcessor,
     ImageRemoveProcessor,
+    UploadMultipleImagesProcessor,
   ],
   exports: [
     ImageOptimizationProcessor,
     ImageUploadProcessor,
     ImageRemoveProcessor,
+    UploadMultipleImagesProcessor,
   ],
 })
 export class ImageProcessorModule {}

@@ -1,11 +1,15 @@
+import { BullModule } from "@nestjs/bullmq"
 import { Module } from "@nestjs/common"
 import { CqrsModule } from "@nestjs/cqrs"
+import { Bull } from "libs/constants/bull"
 import { FollowersDatabaseModule } from "src/module/followers/infrastructure/database/followers.database.module"
 import { FriendsDatabaseModule } from "src/module/friends/infrastructure/database/friend.database.module"
 import { ImageModule } from "src/module/image/application/image.module"
 import { UserDatabaseModule } from "src/module/users/infrastructure/database/user.database.module"
 import { PostCronModule } from "../infrastructure/cronjob/post.cronjob.module"
 import { PostsDatabaseModule } from "../infrastructure/database/posts.database.module"
+import { PostListener } from "../infrastructure/event-listener/post.listener"
+import { PostProcessorModule } from "../infrastructure/processor/post.processor.module"
 import { PostsController } from "../presentation/posts.controller"
 import { CreateCommentHandler } from "./command/create-comment/create-comment.handler"
 import { CreateScheduleUserPostHandler } from "./command/create-schedule-user-post/create-schedule-user-post.handler"
@@ -45,8 +49,12 @@ const queryHandlers = [
 ]
 @Module({
   controllers: [PostsController],
-  providers: [PostsService, ...commandHandlers, ...queryHandlers],
+  providers: [PostsService, ...commandHandlers, ...queryHandlers, PostListener],
   imports: [
+    BullModule.registerQueue({
+      name: Bull.queue.user_post.cache_post,
+      prefix: "TWITCH",
+    }),
     CqrsModule,
     PostsDatabaseModule,
     UserDatabaseModule,
@@ -54,6 +62,7 @@ const queryHandlers = [
     FriendsDatabaseModule,
     FollowersDatabaseModule,
     PostCronModule,
+    PostProcessorModule,
   ],
 })
 export class PostsModule {}

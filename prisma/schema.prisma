@@ -434,28 +434,7 @@ model PostComment {
   @@index([userId])
   @@map("postComments")
 }
-model GroupPostComment {
-  id          String   @id @default(uuid())
-  groupPostId      String
-  userId      String
-  groupId     String
-  parentId    String? 
-  content     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
 
-  // Relations
-  post        GroupPost      @relation(fields: [groupPostId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group       Group     @relation(fields:[groupId],references: [id],onDelete: Cascade)
-  parent      GroupPostComment? @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
-  replies     GroupPostComment[] @relation("ParentChild")
-
-  @@index([groupPostId])
-  @@index([userId])
-  @@map("groupPostComments")
-}
 model SharedPost{
    id            String    @id @default(uuid())
   postId        String
@@ -557,6 +536,28 @@ model Group {
   groupPostComment GroupPostComment[]
 
   @@map("groups")
+}
+model GroupPostComment {
+  id          String   @id @default(uuid())
+  groupPostId      String
+  userId      String
+  groupId     String
+  parentId    String? 
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  post        GroupPost      @relation(fields: [groupPostId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group       Group     @relation(fields:[groupId],references: [id],onDelete: Cascade)
+  parent      GroupPostComment? @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     GroupPostComment[] @relation("ParentChild")
+
+  @@index([groupPostId])
+  @@index([userId])
+  @@map("groupPostComments")
 }
 model ScheduledGroupPost {
   id          String   @id @default(uuid())

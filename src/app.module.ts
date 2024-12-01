@@ -2,6 +2,7 @@ import { BullModule } from "@nestjs/bullmq"
 import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
 import { APP_GUARD } from "@nestjs/core"
+import { EventEmitterModule } from "@nestjs/event-emitter"
 import config, { validate } from "libs/config"
 import { AuthGuard } from "./guard/auth.guard"
 import { PermissionGuard } from "./guard/permission.guard"
@@ -26,6 +27,7 @@ import { UserDatabaseModule } from "./module/users/infrastructure/database/user.
         },
       }),
     }),
+    EventEmitterModule.forRoot(),
 
     ImageModule,
     UserModule,
