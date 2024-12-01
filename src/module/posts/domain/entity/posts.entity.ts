@@ -40,6 +40,7 @@ export class Post extends BaseEntity {
     this._updatedAt = props.updatedAt
     this._deletedAt = props.deletedAt
     this._postImages = props.postImages ?? []
+    this._isPublic = props.isPublic
   }
   get userId(): string {
     return this._userId

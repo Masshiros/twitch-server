@@ -28,20 +28,7 @@ export abstract class IPostsRepository {
       order?: "asc" | "desc"
     },
   ) => Promise<Post[]>
-  getPostOfUsers: (
-    userIds: string[],
-    {
-      limit,
-      offset,
-      orderBy,
-      order,
-    }: {
-      limit?: number
-      offset?: number
-      orderBy?: string
-      order?: "asc" | "desc"
-    },
-  ) => Promise<Post[]>
+  getPostOfUsers: (userIds: string[]) => Promise<Post[]>
   getPostsByVisibility: (
     userId: string,
     visibility: EUserPostVisibility,

@@ -7,12 +7,14 @@ import { ScheduledPost } from "../entity/scheduled-post.entity"
 import { EUserPostVisibility } from "../enum/posts.enum"
 
 interface PostCreationProps {
+  id?: string
   userId: string
   content: string
   visibility?: EUserPostVisibility
   totalViewCount?: number
   postReactions?: PostReactions[]
   isPublic: boolean
+  images?: string[]
 }
 interface PostReactionsCreationProps {
   groupPostId?: string
@@ -35,8 +37,10 @@ interface ScheduledPostCreationProps {
 export class PostFactory {
   static createPost(props: PostCreationProps): Post {
     return new Post({
+      id: props.id,
       userId: props.userId,
       // groupId: props.groupId,
+      postImages: props.images ?? [],
       content: props.content,
       visibility: props.visibility ?? EUserPostVisibility.PUBLIC,
       totalViewCount: props.totalViewCount ?? 0,

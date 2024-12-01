@@ -4,11 +4,14 @@ import { OnEvent } from "@nestjs/event-emitter"
 import { Queue } from "bullmq"
 import { Bull } from "libs/constants/bull"
 import { Events } from "libs/constants/events"
+import {
+  CommandError,
+  CommandErrorCode,
+} from "libs/exception/application/command"
 import { ImageService } from "src/module/image/application/image.service"
 import { ImagesUploadedEvent } from "src/module/image/domain/event/images-uploaded.event"
 import { IPostsRepository } from "../../domain/repository/posts.interface.repository"
 import { PostRedisDatabase } from "../database/redis/post.redis.database"
-import { CommandError, CommandErrorCode } from "libs/exception/application/command"
 
 @Injectable()
 export class PostListener {

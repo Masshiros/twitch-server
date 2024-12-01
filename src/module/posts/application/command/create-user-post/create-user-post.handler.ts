@@ -87,6 +87,7 @@ export class CreateUserPostHandler {
         visibility,
         isPublic: true,
       })
+      console.log(post)
       if (!post) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,

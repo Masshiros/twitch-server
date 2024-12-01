@@ -331,11 +331,9 @@ export class PostsController {
   @Get("/get/my-feed")
   async getMyFeed(
     @CurrentUser() user: UserAggregate,
-    @Query() data: GetUserFeedRequestDto,
   ): Promise<GetUserPostsResponseDto> {
     const query = new GetUserFeedQuery({ userId: user.id })
-    query.limit = data.limit ?? 5
-    query.offset = data.page ? (data.page - 1) * data.limit : null
+
     return await this.service.getUserFeed(query)
   }
 

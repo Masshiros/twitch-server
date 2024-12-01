@@ -26,6 +26,7 @@ export class PostsRepository implements IPostsRepository {
   async createPost(post: Post, taggedUserIds?: string[] | null): Promise<void> {
     try {
       const data = PostMapper.toPersistence(post)
+
       const existPost = await this.prismaService.post.findUnique({
         where: { id: data.id },
       })
@@ -187,28 +188,14 @@ export class PostsRepository implements IPostsRepository {
       this.handleDatabaseError(error)
     }
   }
-  async getPostOfUsers(
-    userIds: string[],
-    {
-      limit,
-      offset,
-      orderBy,
-      order,
-    }: {
-      limit?: number
-      offset?: number
-      orderBy?: string
-      order?: "asc" | "desc"
-    },
-  ): Promise<Post[]> {
+  async getPostOfUsers(userIds: string[]): Promise<Post[]> {
     try {
       const postEntries = await this.prismaService.post.findMany({
         where: {
           userId: { in: userIds },
           deletedAt: null,
         },
-        ...(offset !== null ? { skip: offset } : {}),
-        ...(limit !== null ? { take: limit } : {}),
+
         select: {
           id: true,
         },
@@ -223,7 +210,6 @@ export class PostsRepository implements IPostsRepository {
             in: postIds,
           },
         },
-        orderBy: { [orderBy]: order },
       })
       if (!posts) {
         return []
