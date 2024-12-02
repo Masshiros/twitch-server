@@ -30,6 +30,7 @@ import { ReactToPostCommand } from "../application/command/react-to-post/react-t
 import { SharePostCommand } from "../application/command/share-post/share-post.command"
 import { ToggleHidePostsFromUserCommand } from "../application/command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { UpdateCommentCommand } from "../application/command/update-comment/update-comment.command"
+import { ViewPostCommand } from "../application/command/view-post/view-post.command"
 import { PostsService } from "../application/posts.service"
 import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
 import { GetPostCommentQuery } from "../application/query/get-post-comment/get-post-comment.query"
@@ -53,6 +54,7 @@ import { SharePostToMeRequestDto } from "./dto/request/share-post-to-me.request.
 import { SharePostToOtherRequestDto } from "./dto/request/share-post.request.dto"
 import { ToggleHidePostsFromUserRequestDto } from "./dto/request/toggle-hide-posts-from-user.request.dto"
 import { UpdateCommentRequestDTO } from "./dto/request/update-comment.request.dto"
+import { ViewPostRequestDto } from "./dto/request/view-post.request.dto"
 import { GetAllReactionsResponseDto } from "./dto/response/get-all-reactions.response.dto"
 import { GetReactionsByTypeResponseDto } from "./dto/response/get-reactions-by-type.response.dto"
 import { GetUserPostsResponseDto } from "./dto/response/get-user-posts.response.dto"
@@ -161,6 +163,22 @@ export class PostsController {
   ): Promise<void> {
     const command = new ReactToPostCommand({ ...data, userId: user.id })
     await this.service.reactToPost(command)
+  }
+  //POST: View Post
+  @ApiOperationDecorator({
+    summary: "View post",
+    description: "view post",
+    auth: true,
+  })
+  @Permission([Permissions.Reactions.Read])
+  @ResponseMessage(SuccessMessages.posts.VIEW_POST)
+  @Patch("view-post/:postId")
+  async viewPost(
+    @Param() data: ViewPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    const command = new ViewPostCommand({ ...data })
+    await this.service.viewPost(command)
   }
   //POST: Share Post to others
   @ApiOperationDecorator({

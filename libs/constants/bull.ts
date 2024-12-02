@@ -15,6 +15,7 @@ export const Bull = {
     user_post: {
       schedule: "schedule-user-post",
       cache_post: "cache-user-post",
+      post_view: "post_view",
     },
   },
   job: {
@@ -30,6 +31,7 @@ export const Bull = {
     user_post: {
       schedule: "schedule-job-user-post",
       cache_post: "cache-job-user-post",
+      post_view: "post_job_view",
     },
   },
 }

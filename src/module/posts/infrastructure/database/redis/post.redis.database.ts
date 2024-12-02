@@ -26,6 +26,28 @@ export class PostRedisDatabase {
     await this.redisClient.set(cacheKey, JSON.stringify(existingPosts))
     console.log(`Post for user ${userId} cached with key ${cacheKey}`)
   }
+  async createPostView(postId: string): Promise<void> {
+    const cacheKey = `postView:${postId}`
+    await this.redisClient.incr(cacheKey)
+  }
+  async getPostView() {
+    const keys = await this.redisClient.keys("postView:*")
+    const result = await Promise.all(
+      keys.map(async (key) => {
+        const postId = key.split(":")[1]
+        const view = parseInt(await this.redisClient.get(key), 10) || 0
+        return { postId, view }
+      }),
+    )
+    return result
+  }
+  async invalidatePostView(postId: string): Promise<void> {
+    const cacheKey = `postView:${postId}`
+
+    await this.redisClient.del(cacheKey)
+
+    console.log(`View count cache for post ${postId} deleted`)
+  }
   async getPostByUserId(userId: string): Promise<any> {
     const cacheKey = `newPost:${userId}`
     const postData = await this.redisClient.get(cacheKey)

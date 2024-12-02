@@ -20,6 +20,7 @@ import { ReactToPostHandler } from "./command/react-to-post/react-to-post.handle
 import { SharePostHandler } from "./command/share-post/share-post.handler"
 import { ToggleHidePostsFromUserHandler } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.handler"
 import { UpdateCommentHandler } from "./command/update-comment/update-comment.handler"
+import { ViewPostHandler } from "./command/view-post/view-post.handler"
 import { PostsService } from "./posts.service"
 import { GetAllReactionsHandler } from "./query/get-all-reactions/get-all-reactions.handler"
 import { GetPostCommentHandler } from "./query/get-post-comment/get-post-comment.handler"
@@ -38,6 +39,7 @@ const commandHandlers = [
   CreateCommentHandler,
   UpdateCommentHandler,
   CreateScheduleUserPostHandler,
+  ViewPostHandler,
 ]
 const queryHandlers = [
   GetAllReactionsHandler,
@@ -53,6 +55,10 @@ const queryHandlers = [
   imports: [
     BullModule.registerQueue({
       name: Bull.queue.user_post.cache_post,
+      prefix: "TWITCH",
+    }),
+    BullModule.registerQueue({
+      name: Bull.queue.user_post.post_view,
       prefix: "TWITCH",
     }),
     CqrsModule,

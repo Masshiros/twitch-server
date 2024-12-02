@@ -58,7 +58,6 @@ export class UploadMultipleImagesProcessor extends WorkerHost {
   async process(job: Job): Promise<string[]> {
     const { files, folder, applicableId, applicableType, imageType } = job.data
     let uploadedImages = []
-
     try {
       await Promise.all(
         files.map(async (file) => {
@@ -82,7 +81,6 @@ export class UploadMultipleImagesProcessor extends WorkerHost {
               },
             })
           }
-
           const image = ImageFactory.createImage({
             url: result.secure_url,
             publicId: result.public_id,
@@ -96,7 +94,6 @@ export class UploadMultipleImagesProcessor extends WorkerHost {
           uploadedImages.push(result.secure_url)
         }),
       )
-
       return uploadedImages
     } catch (error) {
       this.logger.error(`Error processing image uploads: ${error.message}`)

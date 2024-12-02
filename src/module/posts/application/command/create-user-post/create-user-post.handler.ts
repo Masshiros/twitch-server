@@ -70,7 +70,6 @@ export class CreateUserPostHandler {
           },
         })
       }
-
       const user = await this.userRepository.findById(userId)
       if (!user) {
         throw new CommandError({
@@ -97,7 +96,6 @@ export class CreateUserPostHandler {
           },
         })
       }
-      console.log(taggedUserIds.length)
       if (taggedUserIds && taggedUserIds.length > 0) {
         await Promise.all(
           taggedUserIds.map(async (id) => {
@@ -162,7 +160,6 @@ export class CreateUserPostHandler {
         case EUserPostVisibility.PUBLIC:
           break
         case EUserPostVisibility.FRIENDS_ONLY:
-          //TODO(friend): get friend lists
           const friends = await this.friendRepository.getFriends(user)
           if (friends && friends.length > 0) {
             const listUserView = await Promise.all(

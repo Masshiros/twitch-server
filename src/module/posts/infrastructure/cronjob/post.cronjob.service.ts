@@ -4,6 +4,7 @@ import { Cron, CronExpression } from "@nestjs/schedule"
 import { Queue } from "bullmq"
 import { Bull } from "libs/constants/bull"
 import { IPostsRepository } from "../../domain/repository/posts.interface.repository"
+import { PostRedisDatabase } from "../database/redis/post.redis.database"
 
 @Injectable()
 export class PostCronjobService {
@@ -11,10 +12,30 @@ export class PostCronjobService {
   constructor(
     @InjectQueue(Bull.queue.user_post.schedule) private queue: Queue,
     private readonly postRepository: IPostsRepository,
+    private readonly postRedisDatabase: PostRedisDatabase,
   ) {}
   @Cron(CronExpression.EVERY_10_SECONDS)
   async test() {
     this.logger.log("Post cron run")
+  }
+  @Cron(CronExpression.EVERY_MINUTE)
+  async handlePostView() {
+    this.logger.log("Update post view")
+    try {
+      const listPostViews = await this.postRedisDatabase.getPostView()
+      await Promise.all(
+        listPostViews.map(async (e) => {
+          const post = await this.postRepository.findPostById((await e).postId)
+          if (post) {
+            post.totalViewCount += e.view
+            await Promise.all([
+              this.postRedisDatabase.invalidatePostView(post.id),
+              this.postRepository.updatePost(post),
+            ])
+          }
+        }),
+      )
+    } catch (error) {}
   }
   @Cron(CronExpression.EVERY_MINUTE)
   async processScheduledPost() {

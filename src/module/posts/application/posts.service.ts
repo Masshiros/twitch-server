@@ -9,6 +9,7 @@ import { ReactToPostCommand } from "./command/react-to-post/react-to-post.comman
 import { SharePostCommand } from "./command/share-post/share-post.command"
 import { ToggleHidePostsFromUserCommand } from "./command/toggle-hide-posts-from-user/toggle-hide-posts-from-user.command"
 import { UpdateCommentCommand } from "./command/update-comment/update-comment.command"
+import { ViewPostCommand } from "./command/view-post/view-post.command"
 import { GetAllReactionsQuery } from "./query/get-all-reactions/get-all-reactions.query"
 import { GetPostCommentQuery } from "./query/get-post-comment/get-post-comment.query"
 import { GetReactionsByTypeQuery } from "./query/get-reactions-by-type/get-reactions-by-type.query"
@@ -65,6 +66,9 @@ export class PostsService {
     return this.queryBus.execute(query)
   }
   async createSchedulePost(command: CreateScheduleUserPostCommand) {
+    return this.commandBus.execute(command)
+  }
+  async viewPost(command: ViewPostCommand) {
     return this.commandBus.execute(command)
   }
 }
