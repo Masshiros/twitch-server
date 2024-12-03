@@ -93,6 +93,7 @@ export const SuccessMessages = {
     GET_USER_POSTS: "Get user's posts successfully",
     GET_MY_POSTS: "Get my posts successfully",
     GET_MY_FEED: "Get my feed successfully",
+    GET_POST: "Get post successfully",
     HIDE_POST_FROM_USER: "Hide posts from this user successfully",
     DELETE_POST: "Delete post successfully",
     UPDATE_POST: "Update post successfully",

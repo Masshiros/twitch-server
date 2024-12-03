@@ -51,6 +51,8 @@ import { GetAllUsersQueryHandler } from "./query/user/get-all-user/get-all-user.
 import { GetLivestreamInfoHandler } from "./query/user/get-livestream-info/get-livestream-info.handler"
 import { GetStreamKeyHandler } from "./query/user/get-stream-key/get-stream-key.handler"
 import { GetTop5StreamHandler } from "./query/user/get-top-5-stream/get-top-5-stream.handler"
+import { GetUserByUserNameHandler } from "./query/user/get-user-by-username/get-user-by-username.handler"
+import { GetUserByUserNameQuery } from "./query/user/get-user-by-username/get-user-by-username.query"
 import { GetUserQueryHandler } from "./query/user/get-user/get-user.handler"
 import { IsValidUserNameHandler } from "./query/user/is-valid-username/is-valid-username.handler"
 import { UserService } from "./user.service"
@@ -99,6 +101,7 @@ const queryHandlers = [
   GetTop5StreamHandler,
   GetAllStreamHandler,
   GetLivestreamInfoHandler,
+  GetUserByUserNameHandler,
 ]
 @Module({
   controllers: [AuthController, UserController, LiveStreamController],

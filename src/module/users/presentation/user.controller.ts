@@ -46,6 +46,7 @@ import { GetUserPermissionsQuery } from "../application/query/role/get-user-perm
 import { GetUserRoleQuery } from "../application/query/role/get-user-role/get-user-role.query"
 import { GetAllUsersQuery } from "../application/query/user/get-all-user/get-all-user.query"
 import { GetStreamKeyQuery } from "../application/query/user/get-stream-key/get-stream-key.query"
+import { GetUserByUserNameQuery } from "../application/query/user/get-user-by-username/get-user-by-username.query"
 import { GetUserQuery } from "../application/query/user/get-user/get-user.query"
 import { IsValidUserNameQuery } from "../application/query/user/is-valid-username/is-valid-username.query"
 import { UserService } from "../application/user.service"
@@ -390,6 +391,49 @@ export class UserController {
       thumbnail: userResult.user.thumbnail,
       isLive: userResult.isLive,
       categoryNames: userResult.categoryNames,
+      status: userResult.user.status,
+      image: userResult.image
+        ? {
+            url: userResult.image.url,
+            publicId: userResult.image.publicId,
+          }
+        : undefined,
+    }
+
+    return result
+  }
+  // GET: Get User by username
+  @ApiOperationDecorator({
+    summary: "Get user by username",
+    description: "Fetches a user by the given username",
+    listBadRequestErrorMessages: SwaggerErrorMessages.user.getUser.badRequest,
+    listNotFoundErrorMessages: SwaggerErrorMessages.user.getUser.notFound,
+    type: GetUserResponseDto,
+  })
+  @ResponseMessage(SuccessMessages.user.GET_ONE_USER)
+  @Public()
+  @Get("/specific-user-by-name/:username")
+  async getUserByUsername(@Param("username") param: string) {
+    const query = new GetUserByUserNameQuery({ username: param })
+    const userResult = await this.userService.getUserByUsername(query)
+    if (!userResult) {
+      return null
+    }
+
+    const result = {
+      id: userResult.user.id,
+      email: userResult.user.email,
+      phone: userResult.user.phone,
+      username: userResult.user.name,
+      createdAt: userResult.user.createdAt,
+      deletedAt: userResult.user.deletedAt,
+
+      numberOfFollowers: userResult.numberOfFollowers,
+      numberOfFollowings: userResult.numberOfFollowings,
+      displayName: userResult.user.displayName,
+      bio: userResult.user.bio,
+      thumbnail: userResult.user.thumbnail,
+
       status: userResult.user.status,
       image: userResult.image
         ? {

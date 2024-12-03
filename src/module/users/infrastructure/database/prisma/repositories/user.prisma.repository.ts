@@ -248,6 +248,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async findByUsername(username: string): Promise<UserAggregate | null> {
     try {
+      console.log(username)
       const user = await this.prismaService.user.findFirst({
         where: { name: username },
       })

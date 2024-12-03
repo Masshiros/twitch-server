@@ -28,7 +28,7 @@ export class GetUserFeedHandler {
     private readonly cachePostDatabase: PostRedisDatabase,
   ) {}
   async execute(query: GetUserFeedQuery): Promise<GetUserFeedResult> {
-    const { userId } = query
+    const { userId, limit, offset, order, orderBy } = query
     let posts: Post[] = []
 
     let result
@@ -71,8 +71,8 @@ export class GetUserFeedHandler {
         }),
       )
       if (postsFromCache && postsFromCache.length > 0) {
-        posts = postsFromCache
-        console.log("Get from cache")
+        posts = postsFromCache.slice(offset, offset + limit)
+
         result = await Promise.all(
           posts.map(async (p) => {
             const owner = await this.userRepository.findById(p.userId)
@@ -101,6 +101,12 @@ export class GetUserFeedHandler {
       } else {
         posts = await this.postRepository.getPostOfUsers(
           uniqueUserIds.filter((id) => !hiddenUserIds.includes(id)),
+          {
+            limit,
+            offset,
+            order,
+            orderBy,
+          },
         )
         result = await Promise.all(
           posts.map(async (p) => {

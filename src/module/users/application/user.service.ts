@@ -27,6 +27,7 @@ import { GetAllUsersQuery } from "./query/user/get-all-user/get-all-user.query"
 import { GetLivestreamInfoQuery } from "./query/user/get-livestream-info/get-livestream-info.query"
 import { GetStreamKeyQuery } from "./query/user/get-stream-key/get-stream-key.query"
 import { GetTop5StreamQuery } from "./query/user/get-top-5-stream/get-top-5-stream.query"
+import { GetUserByUserNameQuery } from "./query/user/get-user-by-username/get-user-by-username.query"
 import { GetUserQuery } from "./query/user/get-user/get-user.query"
 import { IsValidUserNameQuery } from "./query/user/is-valid-username/is-valid-username.query"
 
@@ -59,6 +60,9 @@ export class UserService {
   }
   getUser(getUserQuery: GetUserQuery) {
     return this.queryBus.execute(getUserQuery)
+  }
+  getUserByUsername(query: GetUserByUserNameQuery) {
+    return this.queryBus.execute(query)
   }
   getAllUsers(getAllUsersQuery: GetAllUsersQuery) {
     return this.queryBus.execute(getAllUsersQuery)

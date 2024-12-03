@@ -48,6 +48,7 @@ export class PostRedisDatabase {
     }
     const posts = JSON.parse(postData)
     const result = posts.map((p) => this.rehydratePost(p))
+
     return result
   }
   private rehydratePost(data: any): Post {
@@ -55,11 +56,11 @@ export class PostRedisDatabase {
       id: data._id,
       userId: data._userId,
       content: data._content,
-      visibility: data._visibility || EUserPostVisibility.PUBLIC,
-      images: data._postImages || [],
-      totalViewCount: data._totalViewCount || 0,
-      postReactions: data._postReactions || [],
-      isPublic: data._isPublic || true,
+      visibility: data._visibility ?? EUserPostVisibility.PUBLIC,
+      images: data._postImages ?? [],
+      totalViewCount: data._totalViewCount ?? 0,
+      postReactions: data._postReactions ?? [],
+      isPublic: data._isPublic ?? true,
     })
   }
 

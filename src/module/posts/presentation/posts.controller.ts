@@ -19,6 +19,7 @@ import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
 import { ApiOperationDecorator } from "libs/decorator/api-operation.decorator"
 import { CurrentUser } from "libs/decorator/current-user.decorator"
 import { Permission } from "libs/decorator/permission.decorator"
+import { Public } from "libs/decorator/public.decorator"
 import { ResponseMessage } from "libs/decorator/response-message.decorator"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { CreateCommentCommand } from "../application/command/create-comment/create-comment.command"
@@ -34,6 +35,7 @@ import { ViewPostCommand } from "../application/command/view-post/view-post.comm
 import { PostsService } from "../application/posts.service"
 import { GetAllReactionsQuery } from "../application/query/get-all-reactions/get-all-reactions.query"
 import { GetPostCommentQuery } from "../application/query/get-post-comment/get-post-comment.query"
+import { GetPostQuery } from "../application/query/get-post/get-post.query"
 import { GetReactionsByTypeQuery } from "../application/query/get-reactions-by-type/get-reactions-by-type.query"
 import { GetUserFeedQuery } from "../application/query/get-user-feed/get-user-feed.query"
 import { GetUserPostsQuery } from "../application/query/get-user-posts/get-user-posts.query"
@@ -45,6 +47,7 @@ import { DeleteUserPostRequestDto } from "./dto/request/delete-user-post.request
 import { EditUserPostRequestDto } from "./dto/request/edit-user-post.request.dto"
 import { GetAllReactionsRequestDto } from "./dto/request/get-all-reactions.request.dto"
 import { GetPostCommentRequestDto } from "./dto/request/get-post-comment.request.dto"
+import { GetPostRequestDto } from "./dto/request/get-post-request.dto"
 import { GetReactionsByTypeRequestDto } from "./dto/request/get-reactions-by-type.request.dto"
 import { GetUserFeedRequestDto } from "./dto/request/get-user-feed.request.dto"
 import { GetUserPostsRequestDto } from "./dto/request/get-user-posts.request.dto"
@@ -180,6 +183,22 @@ export class PostsController {
     const command = new ViewPostCommand({ ...data })
     await this.service.viewPost(command)
   }
+  //POST: get Post details
+  @ApiOperationDecorator({
+    summary: "get post details",
+    description: "get post details",
+    auth: true,
+  })
+  @Permission([Permissions.Reactions.Read])
+  @ResponseMessage(SuccessMessages.posts.GET_POST)
+  @Get("details/:postId")
+  async getPost(
+    @Param() data: GetPostRequestDto,
+    @CurrentUser() user: UserAggregate,
+  ): Promise<void> {
+    const query = new GetPostQuery({ ...data, userId: user.id })
+    return await this.service.getPost(query)
+  }
   //POST: Share Post to others
   @ApiOperationDecorator({
     summary: "Share post",
@@ -269,20 +288,20 @@ export class PostsController {
       SwaggerErrorMessages.posts.getUserPosts.badRequest,
     listNotFoundErrorMessages: SwaggerErrorMessages.posts.getUserPosts.notFound,
     type: GetUserPostsResponseDto,
-    auth: true,
+    // auth: true,
   })
-  @Permission([Permissions.Reactions.Read])
+  @Public()
   @ResponseMessage(SuccessMessages.posts.GET_USER_POSTS)
-  @Get("/:userId")
+  @Get("/:username")
   async getUserPosts(
-    @Param("userId") userId: string,
-    @CurrentUser() currentUser: UserAggregate,
+    @Param("username") username: string,
+    // @CurrentUser() currentUser: UserAggregate,
     @Query() data: GetUserPostsRequestDto,
   ): Promise<GetUserPostsResponseDto> {
     const query = new GetUserPostsQuery({
       ...data,
-      userId: userId,
-      currentUserId: currentUser.id,
+      username: username,
+      // currentUserId: currentUser.id,
     })
     query.limit = data.limit ?? 5
     query.offset = data.page ? (data.page - 1) * data.limit : null
@@ -327,7 +346,7 @@ export class PostsController {
   ): Promise<GetUserPostsResponseDto> {
     const query = new GetUserPostsQuery({
       ...data,
-      userId: user.id,
+      username: user.name,
       currentUserId: currentUser.id,
     })
     query.limit = data.limit ?? 5
@@ -348,10 +367,13 @@ export class PostsController {
   @ResponseMessage(SuccessMessages.posts.GET_MY_FEED)
   @Get("/get/my-feed")
   async getMyFeed(
+    @Query() data: GetUserFeedRequestDto,
     @CurrentUser() user: UserAggregate,
   ): Promise<GetUserPostsResponseDto> {
     const query = new GetUserFeedQuery({ userId: user.id })
 
+    query.limit = data.limit ?? 5
+    query.offset = data.page ? (data.page - 1) * data.limit : null
     return await this.service.getUserFeed(query)
   }
 

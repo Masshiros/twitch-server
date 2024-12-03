@@ -24,6 +24,7 @@ import { ViewPostHandler } from "./command/view-post/view-post.handler"
 import { PostsService } from "./posts.service"
 import { GetAllReactionsHandler } from "./query/get-all-reactions/get-all-reactions.handler"
 import { GetPostCommentHandler } from "./query/get-post-comment/get-post-comment.handler"
+import { GetPostHandler } from "./query/get-post/get-post.handler"
 import { GetReactionsByTypeHandler } from "./query/get-reactions-by-type/get-reactions-by-type.handler"
 import { GetUserFeedHandler } from "./query/get-user-feed/get-user-feed.handler"
 import { GetUserPostsHandler } from "./query/get-user-posts/get-user-posts.handler"
@@ -47,6 +48,7 @@ const queryHandlers = [
   GetUserPostsHandler,
   GetUserFeedHandler,
   GetPostCommentHandler,
+  GetPostHandler,
   SearchPostHandler,
 ]
 @Module({

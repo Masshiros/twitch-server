@@ -12,6 +12,7 @@ import { UpdateCommentCommand } from "./command/update-comment/update-comment.co
 import { ViewPostCommand } from "./command/view-post/view-post.command"
 import { GetAllReactionsQuery } from "./query/get-all-reactions/get-all-reactions.query"
 import { GetPostCommentQuery } from "./query/get-post-comment/get-post-comment.query"
+import { GetPostQuery } from "./query/get-post/get-post.query"
 import { GetReactionsByTypeQuery } from "./query/get-reactions-by-type/get-reactions-by-type.query"
 import { GetUserFeedQuery } from "./query/get-user-feed/get-user-feed.query"
 import { GetUserPostsQuery } from "./query/get-user-posts/get-user-posts.query"
@@ -48,6 +49,9 @@ export class PostsService {
     return this.queryBus.execute(query)
   }
   async getUserPosts(query: GetUserPostsQuery) {
+    return this.queryBus.execute(query)
+  }
+  async getPost(query: GetPostQuery) {
     return this.queryBus.execute(query)
   }
   async getUserFeed(query: GetUserFeedQuery) {

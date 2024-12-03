@@ -142,7 +142,7 @@ export class NotificationRepository implements INotificationRepository {
         where: {
           id: { in: notificationIds },
         },
-        orderBy: { [orderBy]: order },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       const result = notifications.map((prismaNotification) =>
         NotificationMapper.toDomain(prismaNotification),

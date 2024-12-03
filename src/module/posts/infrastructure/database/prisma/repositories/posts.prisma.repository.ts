@@ -148,8 +148,8 @@ export class PostsRepository implements IPostsRepository {
   async getUserPost(
     userId: string,
     {
-      limit = 1,
-      offset = 0,
+      limit,
+      offset,
       orderBy = "createdAt",
       order = "desc",
     }: {
@@ -174,7 +174,7 @@ export class PostsRepository implements IPostsRepository {
       const ids = posts.map((post) => post.id)
       const queryPost = await this.prismaService.post.findMany({
         where: { id: { in: ids } },
-        orderBy: { [orderBy]: order },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!queryPost) {
         return []
@@ -188,14 +188,28 @@ export class PostsRepository implements IPostsRepository {
       this.handleDatabaseError(error)
     }
   }
-  async getPostOfUsers(userIds: string[]): Promise<Post[]> {
+  async getPostOfUsers(
+    userIds: string[],
+    {
+      limit,
+      offset,
+      orderBy = "createdAt",
+      order = "desc",
+    }: {
+      limit?: number
+      offset?: number
+      orderBy?: string
+      order?: "asc" | "desc"
+    },
+  ): Promise<Post[]> {
     try {
       const postEntries = await this.prismaService.post.findMany({
         where: {
           userId: { in: userIds },
           deletedAt: null,
         },
-
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
         select: {
           id: true,
         },
@@ -210,6 +224,7 @@ export class PostsRepository implements IPostsRepository {
             in: postIds,
           },
         },
+        ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
       if (!posts) {
         return []
