@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -8,6 +10,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ImageService } from "src/module/image/application/image.service"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
+import { PostDeleteEvent } from "src/module/posts/infrastructure/event-listener/events/post-delete.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { DeleteUserPostCommand } from "./delete-user-post.command"
 
@@ -17,6 +20,7 @@ export class DeleteUserPostHandler {
     private readonly postRepository: IPostsRepository,
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async execute(command: DeleteUserPostCommand): Promise<void> {
     const { userId, postId } = command
@@ -71,8 +75,14 @@ export class DeleteUserPostHandler {
           },
         })
       }
-      console.log(post)
-      await this.postRepository.deletePost(post)
+      const images = await this.imageService.getImageByApplicableId(post.id)
+      if (images && images.length > 0) {
+        await this.imageService.removeMultipleImages(images)
+      }
+      await Promise.all([
+        this.postRepository.deletePost(post),
+        this.eventEmitter.emit(Events.post.delete, new PostDeleteEvent(post)),
+      ])
     } catch (err) {
       if (
         err instanceof DomainError ||

@@ -10,8 +10,11 @@ import {
 } from "libs/exception/application/command"
 import { ImageService } from "src/module/image/application/image.service"
 import { ImagesUploadedEvent } from "src/module/image/domain/event/images-uploaded.event"
+import { Post } from "../../domain/entity/posts.entity"
 import { IPostsRepository } from "../../domain/repository/posts.interface.repository"
 import { PostRedisDatabase } from "../database/redis/post.redis.database"
+import { PostCreateEvent } from "./events/post-create.event"
+import { PostDeleteEvent } from "./events/post-delete.event"
 
 @Injectable()
 export class PostListener {
@@ -19,6 +22,7 @@ export class PostListener {
     private readonly postRepository: IPostsRepository,
     @InjectQueue(Bull.queue.user_post.cache_post)
     private readonly cachePostProcessorQueue: Queue,
+    private readonly postRedisDatabase: PostRedisDatabase,
   ) {}
 
   @OnEvent(Events.image.multiple_upload)
@@ -32,11 +36,104 @@ export class PostListener {
       return
     }
     post.postImages = imageUrl ?? []
-    console.log(post.postImages)
+    const existingPosts = await this.postRedisDatabase.getPostByUserId(
+      post.userId,
+    )
+    const postIndex = existingPosts.findIndex((e) => e.id === post.id)
+    if (postIndex !== -1) {
+      existingPosts[postIndex] = {
+        ...existingPosts[postIndex],
+        ...post,
+      } as Post
+    } else {
+      existingPosts.push(post)
+    }
+
     const [job, failedUploadJobs] = await Promise.all([
       this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
         userId: post.userId,
-        post,
+        posts: existingPosts,
+      }),
+      this.cachePostProcessorQueue.getFailed(),
+    ])
+    if ((await job.getState()) === "failed") {
+      if (failedUploadJobs || failedUploadJobs.length !== 0) {
+        failedUploadJobs.map((failedJob) => {
+          throw new CommandError({
+            code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+            message: failedJob.failedReason,
+          })
+        })
+      }
+    }
+  }
+  @OnEvent(Events.post.create)
+  async handlePostCreate(event: PostCreateEvent) {
+    const { post } = event
+    const existingPosts = await this.postRedisDatabase.getPostByUserId(
+      post.userId,
+    )
+    existingPosts.push(post)
+    const [job, failedUploadJobs] = await Promise.all([
+      this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
+        userId: post.userId,
+        posts: existingPosts,
+      }),
+      this.cachePostProcessorQueue.getFailed(),
+    ])
+    if ((await job.getState()) === "failed") {
+      if (failedUploadJobs || failedUploadJobs.length !== 0) {
+        failedUploadJobs.map((failedJob) => {
+          throw new CommandError({
+            code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+            message: failedJob.failedReason,
+          })
+        })
+      }
+    }
+  }
+  @OnEvent(Events.post.update)
+  async handlePostUpdate(event: PostCreateEvent) {
+    const { post } = event
+    const existingPosts = await this.postRedisDatabase.getPostByUserId(
+      post.userId,
+    )
+    const postIndex = existingPosts.findIndex((e) => e.id === post.id)
+    if (postIndex !== -1) {
+      existingPosts[postIndex] = {
+        ...existingPosts[postIndex],
+        ...post,
+      } as Post
+    }
+    const [job, failedUploadJobs] = await Promise.all([
+      this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
+        userId: post.userId,
+        posts: existingPosts,
+      }),
+      this.cachePostProcessorQueue.getFailed(),
+    ])
+    if ((await job.getState()) === "failed") {
+      if (failedUploadJobs || failedUploadJobs.length !== 0) {
+        failedUploadJobs.map((failedJob) => {
+          throw new CommandError({
+            code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+            message: failedJob.failedReason,
+          })
+        })
+      }
+    }
+  }
+  @OnEvent(Events.post.delete)
+  async handleDeletePost(event: PostDeleteEvent) {
+    const { post } = event
+    const existingPosts = await this.postRedisDatabase.getPostByUserId(
+      post.userId,
+    )
+    const updatedPosts = existingPosts.filter((e) => e.id !== post.id)
+    const [job, failedUploadJobs] = await Promise.all([
+      this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
+        userId: post.userId,
+        posts: updatedPosts,
       }),
       this.cachePostProcessorQueue.getFailed(),
     ])

@@ -9,23 +9,13 @@ import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
 export class PostRedisDatabase {
   constructor(@Inject(IORedisKey) private readonly redisClient: Redis) {}
 
-  async createNewPost(userId: string, postData: any): Promise<void> {
+  async savePosts(userId: string, postsData: any[]): Promise<void> {
     const cacheKey = `newPost:${userId}`
 
-    const existingPostsJson = await this.redisClient.get(cacheKey)
-
-    let existingPosts = []
-    if (existingPostsJson) {
-      existingPosts = JSON.parse(existingPostsJson)
-      console.log(existingPosts)
-    }
-    existingPosts.push({
-      ...postData,
-    })
-
-    await this.redisClient.set(cacheKey, JSON.stringify(existingPosts))
-    console.log(`Post for user ${userId} cached with key ${cacheKey}`)
+    await this.redisClient.del(cacheKey)
+    await this.redisClient.set(cacheKey, JSON.stringify(postsData))
   }
+
   async createPostView(postId: string): Promise<void> {
     const cacheKey = `postView:${postId}`
     await this.redisClient.incr(cacheKey)
@@ -48,7 +38,7 @@ export class PostRedisDatabase {
 
     console.log(`View count cache for post ${postId} deleted`)
   }
-  async getPostByUserId(userId: string): Promise<any> {
+  async getPostByUserId(userId: string): Promise<Post[]> {
     const cacheKey = `newPost:${userId}`
     const postData = await this.redisClient.get(cacheKey)
 

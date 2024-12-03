@@ -30,9 +30,9 @@ export class CachePostProcessor extends WorkerHost {
     throw new Error(`Image upload failed: ${error.message}`)
   }
   async process(job: Job, token?: string): Promise<any> {
-    const { userId, post } = job.data
+    const { userId, posts } = job.data
     try {
-      await this.postRedisDatabase.createNewPost(userId, post)
+      await this.postRedisDatabase.savePosts(userId, posts)
     } catch (error) {
       this.logger.error(`Error processing post cache: ${error.message}`)
       throw new InfrastructureError({

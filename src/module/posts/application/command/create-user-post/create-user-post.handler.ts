@@ -1,7 +1,9 @@
 import { InjectQueue } from "@nestjs/bullmq"
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
 import { Job, Queue } from "bullmq"
 import { Bull } from "libs/constants/bull"
+import { Events } from "libs/constants/events"
 import { Folder } from "libs/constants/folder"
 import {
   CommandError,
@@ -17,6 +19,7 @@ import { Post } from "src/module/posts/domain/entity/posts.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
 import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
+import { PostCreateEvent } from "src/module/posts/infrastructure/event-listener/events/post-create.event"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { CreateUserPostCommand } from "./create-user-post.command"
@@ -28,8 +31,7 @@ export class CreateUserPostHandler {
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
     private readonly friendRepository: IFriendRepository,
-    @InjectQueue(Bull.queue.user_post.cache_post)
-    private readonly cachePostProcessorQueue: Queue,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async execute(command: CreateUserPostCommand): Promise<void> {
     const {
@@ -125,23 +127,7 @@ export class CreateUserPostHandler {
         )
       }
       if (!images || images.length === 0) {
-        const [job, failedUploadJobs] = await Promise.all([
-          this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
-            userId: post.userId,
-            post,
-          }),
-          this.cachePostProcessorQueue.getFailed(),
-        ])
-        if ((await job.getState()) === "failed") {
-          if (failedUploadJobs || failedUploadJobs.length !== 0) {
-            failedUploadJobs.map((failedJob) => {
-              throw new CommandError({
-                code: CommandErrorCode.INTERNAL_SERVER_ERROR,
-                message: failedJob.failedReason,
-              })
-            })
-          }
-        }
+        this.eventEmitter.emit(Events.post.create, new PostCreateEvent(post))
       }
       await this.postRepository.createPost(post, taggedUserIds)
       await this.handleVisibilityPermission(
