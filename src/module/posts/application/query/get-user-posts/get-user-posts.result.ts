@@ -8,4 +8,5 @@ export class GetUserPostsResult {
   }[]
   pageTotalPosts: number
   totalPosts: number
+  totalPage: number
 }

@@ -74,9 +74,8 @@ export class GetUserPostsHandler {
         user.id,
       )
       if (postFromCache && postFromCache.length > 0) {
-        combinedPosts = postFromCache
-          .filter((e) => e.isPublic === true)
-          .slice(offset, offset + limit)
+        combinedPosts = postFromCache.filter((e) => e.isPublic === true)
+
         console.log(combinedPosts)
       } else {
         ;[userPosts, userSharedPosts, userTaggedPosts] = await Promise.all([
@@ -88,10 +87,12 @@ export class GetUserPostsHandler {
       }
 
       const totalPosts = combinedPosts.length
-      // pagination
+      const totalPage = Math.ceil(totalPosts / limit)
+
       const paginatedPosts = combinedPosts.slice(offset, offset + limit)
 
       const pageTotalPosts = paginatedPosts.length
+
       const result = await Promise.all(
         paginatedPosts.map(async (p) => {
           const [images, owner] = await Promise.all([
@@ -159,6 +160,7 @@ export class GetUserPostsHandler {
         posts: result.filter((p) => p !== null),
         totalPosts,
         pageTotalPosts,
+        totalPage,
       }
     } catch (err) {
       if (

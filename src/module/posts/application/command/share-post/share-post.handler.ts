@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -8,6 +10,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ESharedType } from "src/module/posts/domain/enum/shared-type.enum"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
+import { PostCreateEvent } from "src/module/posts/infrastructure/event-listener/events/post-create.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { SharePostCommand } from "./share-post.command"
 
@@ -16,6 +19,7 @@ export class SharePostHandler {
   constructor(
     private readonly postRepository: IPostsRepository,
     private readonly userRepository: IUserRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async execute(command: SharePostCommand) {
     const { postId, sharedById, sharedToId, shareToType, customContent } =
@@ -107,13 +111,19 @@ export class SharePostHandler {
         default:
           break
       }
-      await this.postRepository.sharePost(
-        post,
-        shareBy,
-        shareTo,
-        shareToType,
-        customContent,
-      )
+      await Promise.all([
+        this.postRepository.sharePost(
+          post,
+          shareBy,
+          shareTo,
+          shareToType,
+          customContent,
+        ),
+        this.eventEmitter.emit(
+          Events.post.create,
+          new PostCreateEvent(post, sharedById),
+        ),
+      ])
     } catch (err) {
       if (
         err instanceof DomainError ||

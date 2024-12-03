@@ -127,7 +127,10 @@ export class CreateUserPostHandler {
         )
       }
       if (!images || images.length === 0) {
-        this.eventEmitter.emit(Events.post.create, new PostCreateEvent(post))
+        this.eventEmitter.emit(
+          Events.post.create,
+          new PostCreateEvent(post, userId),
+        )
       }
       await this.postRepository.createPost(post, taggedUserIds)
       await this.handleVisibilityPermission(
