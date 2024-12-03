@@ -1,5 +1,7 @@
+import { InjectQueue } from "@nestjs/bullmq"
 import { CommandHandler } from "@nestjs/cqrs"
-import { Job } from "bullmq"
+import { Job, Queue } from "bullmq"
+import { Bull } from "libs/constants/bull"
 import { Folder } from "libs/constants/folder"
 import {
   CommandError,
@@ -26,6 +28,8 @@ export class CreateUserPostHandler {
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
     private readonly friendRepository: IFriendRepository,
+    @InjectQueue(Bull.queue.user_post.cache_post)
+    private readonly cachePostProcessorQueue: Queue,
   ) {}
   async execute(command: CreateUserPostCommand): Promise<void> {
     const {
@@ -119,6 +123,25 @@ export class CreateUserPostHandler {
           post.id,
           EImage.POST,
         )
+      }
+      if (!images || images.length === 0) {
+        const [job, failedUploadJobs] = await Promise.all([
+          this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
+            userId: post.userId,
+            post,
+          }),
+          this.cachePostProcessorQueue.getFailed(),
+        ])
+        if ((await job.getState()) === "failed") {
+          if (failedUploadJobs || failedUploadJobs.length !== 0) {
+            failedUploadJobs.map((failedJob) => {
+              throw new CommandError({
+                code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+                message: failedJob.failedReason,
+              })
+            })
+          }
+        }
       }
       await this.postRepository.createPost(post, taggedUserIds)
       await this.handleVisibilityPermission(

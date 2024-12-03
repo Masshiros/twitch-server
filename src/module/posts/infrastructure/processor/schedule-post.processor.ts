@@ -40,16 +40,16 @@ export class SchedulePostProcessor extends WorkerHost {
     const { plainData } = job.data
     // console.log(plainData)
     try {
-      const groupPost = await this.postRepository.findPostById(plainData.postId)
-      if (!groupPost) {
+      const post = await this.postRepository.findPostById(plainData.postId)
+      if (!post) {
         this.logger.warn(
-          `GroupPost not found for scheduledPostId: ${plainData.postId}`,
+          `Post not found for scheduledPostId: ${plainData.postId}`,
         )
         return
       }
-      groupPost.isPublic = true
+      post.isPublic = true
       await Promise.all([
-        this.postRepository.updatePost(groupPost),
+        this.postRepository.updatePost(post),
         this.postRepository.deleteScheduledPost(plainData),
       ])
       this.logger.log(`Processed scheduled post: ${plainData.id}`)
