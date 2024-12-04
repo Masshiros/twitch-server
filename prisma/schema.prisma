@@ -71,6 +71,8 @@ model User {
   postComments  PostComment[]
   groupPostComments GroupPostComment[]
   scheduledPost ScheduledPost[]
+   conversations  Conversation[] @relation("CreatorConversations")
+  receivedConversations Conversation[] @relation("ReceiverConversations")
   @@index([isActive])
   @@map("users")
 }
@@ -677,6 +679,22 @@ model GroupInvitation{
   inviter       User           @relation("InviterUser", fields: [inviterId], references: [id])
 
   @@map("groupInvitations")
+}
+// 1-1 chat
+model Conversation{
+  id      String  @id @default(uuid())
+  creatorId String 
+  receiverId  String
+  creator       User      @relation("CreatorConversations", fields: [creatorId], references: [id])
+  receiver      User      @relation("ReceiverConversations", fields: [receiverId], references: [id])
+  createdAt     DateTime  @default(now())
+  deletedAt     DateTime  
+  @@map("conversations")
+}
+model Message{
+  id      String  @id @default(uuid())
+  content String
+  authorId  String
 }
 enum ENotification {
   USER

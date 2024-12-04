@@ -197,6 +197,7 @@ export class PostsController {
     @CurrentUser() user: UserAggregate,
   ): Promise<void> {
     const query = new GetPostQuery({ ...data, userId: user.id })
+
     return await this.service.getPost(query)
   }
   //POST: Share Post to others

@@ -19,7 +19,6 @@ import { INotificationRepository } from "../../domain/repositories/notification.
   cors: {
     origin: "*",
   },
-  transports: ["websocket"],
 })
 @Injectable()
 export class NotificationsGateway
@@ -34,6 +33,7 @@ export class NotificationsGateway
   async handleConnection(client: Socket, ...args: any[]) {
     try {
       const token = client.handshake.headers.authorization
+      console.log(client.handshake.headers?.authorization)
       if (!token) {
         client.disconnect()
         return

@@ -20,64 +20,35 @@ export class GetPostHandler {
   ) {}
   async execute(query: GetPostQuery): Promise<GetPostResult> {
     const { userId, postId } = query
-    let posts
-    let post
+
     try {
-      const postFromCache = await this.cachePostDatabase.getPostByUserId(userId)
-      if (postFromCache && postFromCache.length > 0) {
-        posts = postFromCache
-        post = posts.find((p) => p.id === postId)
-        const owner = await this.userRepository.findById(post.id)
-        const images = post.postImages
-        const ownerImages = await this.imageService.getImageByApplicableId(
-          owner.id,
-        )
-        const ownerAvatar = ownerImages.find(
-          (e) => e.imageType === EImageType.AVATAR,
-        )
-        return {
-          post: {
-            user: {
-              id: owner.id,
-              username: owner.name,
-              avatar: ownerAvatar?.url ?? "",
-            },
-            info: {
-              id: post.id,
-              createdAt: post.createdAt.toISOString().split("T")[0],
-              visibility: post.visibility,
-              content: post.content,
-              images: images,
-            },
+      const post = await this.postRepository.findPostById(postId)
+      const [images, owner] = await Promise.all([
+        this.imageService.getImageByApplicableId(post.id),
+        this.userRepository.findById(post.userId),
+      ])
+
+      const ownerImages = await this.imageService.getImageByApplicableId(
+        owner.id,
+      )
+      const ownerAvatar = ownerImages.find(
+        (e) => e.imageType === EImageType.AVATAR,
+      )
+      return {
+        post: {
+          user: {
+            id: owner.id,
+            username: owner.name,
+            avatar: ownerAvatar?.url ?? "",
           },
-        }
-      } else {
-        posts = await this.postRepository.getUserPost(userId, {})
-        post = posts.find((p) => p.id === postId)
-        const owner = await this.userRepository.findById(post.id)
-        const images = post.postImages
-        const ownerImages = await this.imageService.getImageByApplicableId(
-          owner.id,
-        )
-        const ownerAvatar = ownerImages.find(
-          (e) => e.imageType === EImageType.AVATAR,
-        )
-        return {
-          post: {
-            user: {
-              id: owner.id,
-              username: owner.name,
-              avatar: ownerAvatar?.url ?? "",
-            },
-            info: {
-              id: post.id,
-              createdAt: post.createdAt.toISOString().split("T")[0],
-              visibility: post.visibility,
-              content: post.content,
-              images: images,
-            },
+          info: {
+            id: post.id,
+            createdAt: post.createdAt,
+            visibility: post.visibility,
+            content: post.content,
+            images: images.map((i) => ({ url: i.url })),
           },
-        }
+        },
       }
     } catch (err) {
       if (
