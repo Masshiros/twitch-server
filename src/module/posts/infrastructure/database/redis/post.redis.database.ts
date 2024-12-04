@@ -61,6 +61,7 @@ export class PostRedisDatabase {
       totalViewCount: data._totalViewCount ?? 0,
       postReactions: data._postReactions ?? [],
       isPublic: data._isPublic ?? true,
+      createdAt: data._createdAt,
     })
   }
 

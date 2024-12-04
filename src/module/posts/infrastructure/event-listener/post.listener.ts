@@ -40,6 +40,7 @@ export class PostListener {
       post.userId,
     )
     existingPosts = existingPosts !== null ? existingPosts : []
+    console.log(existingPosts)
     if (existingPosts !== null || existingPosts.length > 0) {
       const postIndex = existingPosts.findIndex((e) => e.id === post.id)
       if (postIndex !== -1) {
@@ -74,10 +75,11 @@ export class PostListener {
   @OnEvent(Events.post.create)
   async handlePostCreate(event: PostCreateEvent) {
     const { post } = event
-    const existingPosts = await this.postRedisDatabase.getPostByUserId(
+    let existingPosts = await this.postRedisDatabase.getPostByUserId(
       post.userId,
     )
-    existingPosts.push(post)
+    existingPosts = existingPosts !== null ? existingPosts : []
+    console.log(existingPosts)
     const [job, failedUploadJobs] = await Promise.all([
       this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
         userId: post.userId,
@@ -99,9 +101,11 @@ export class PostListener {
   @OnEvent(Events.post.update)
   async handlePostUpdate(event: PostCreateEvent) {
     const { post } = event
-    const existingPosts = await this.postRedisDatabase.getPostByUserId(
+    let existingPosts = await this.postRedisDatabase.getPostByUserId(
       post.userId,
     )
+    existingPosts = existingPosts !== null ? existingPosts : []
+    console.log(existingPosts)
     const postIndex = existingPosts.findIndex((e) => e.id === post.id)
     if (postIndex !== -1) {
       existingPosts[postIndex] = {

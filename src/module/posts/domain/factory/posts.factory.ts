@@ -15,6 +15,7 @@ interface PostCreationProps {
   postReactions?: PostReactions[]
   isPublic: boolean
   images?: string[]
+  createdAt?: Date
 }
 interface PostReactionsCreationProps {
   groupPostId?: string
@@ -46,7 +47,7 @@ export class PostFactory {
       totalViewCount: props.totalViewCount ?? 0,
       postReactions: props.postReactions ?? [],
       isPublic: props.isPublic,
-      createdAt: new Date(),
+      createdAt: props.createdAt ?? new Date(),
     })
   }
   static createCreation(props: PostReactionsCreationProps): PostReactions {

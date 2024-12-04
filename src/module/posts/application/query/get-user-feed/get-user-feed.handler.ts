@@ -83,6 +83,7 @@ export class GetUserFeedHandler {
             const ownerAvatar = ownerImages.find(
               (e) => e.imageType === EImageType.AVATAR,
             )
+
             return {
               user: {
                 id: owner.id,
