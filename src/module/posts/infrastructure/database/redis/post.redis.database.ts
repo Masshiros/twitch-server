@@ -13,6 +13,7 @@ export class PostRedisDatabase {
     const cacheKey = `newPost:${userId}`
 
     await this.redisClient.del(cacheKey)
+    console.log(postsData)
     await this.redisClient.set(cacheKey, JSON.stringify(postsData))
   }
 

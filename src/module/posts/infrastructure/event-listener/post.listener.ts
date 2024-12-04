@@ -79,7 +79,8 @@ export class PostListener {
       post.userId,
     )
     existingPosts = existingPosts !== null ? existingPosts : []
-    console.log(existingPosts)
+    existingPosts.push(post)
+    // console.log(existingPosts)
     const [job, failedUploadJobs] = await Promise.all([
       this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
         userId: post.userId,
