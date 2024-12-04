@@ -121,6 +121,7 @@ export class GetUserPostsHandler {
                 avatar: ownerAvatar?.url ?? "",
               },
               info: {
+                id: p.id,
                 createdAt: p.createdAt.toISOString().split("T")[0],
                 visibility: p.visibility,
                 content: p.content,
@@ -141,6 +142,7 @@ export class GetUserPostsHandler {
               avatar: ownerAvatar?.url ?? "",
             },
             info: {
+              id: p.id,
               createdAt: p.createdAt.toISOString().split("T")[0],
               visibility: p.visibility,
               content: p.content,

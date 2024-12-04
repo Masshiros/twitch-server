@@ -43,6 +43,7 @@ export class GetPostHandler {
               avatar: ownerAvatar?.url ?? "",
             },
             info: {
+              id: post.id,
               createdAt: post.createdAt.toISOString().split("T")[0],
               visibility: post.visibility,
               content: post.content,
@@ -69,6 +70,7 @@ export class GetPostHandler {
               avatar: ownerAvatar?.url ?? "",
             },
             info: {
+              id: post.id,
               createdAt: post.createdAt.toISOString().split("T")[0],
               visibility: post.visibility,
               content: post.content,

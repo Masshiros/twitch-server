@@ -3,6 +3,9 @@ import { Expose, Type } from "class-transformer"
 import { ImageResponseDto } from "./image.response.dto"
 
 export class PostInfoResponseDto {
+  @ApiProperty({ description: " Post's id", type: String })
+  @Expose()
+  id: string
   @ApiProperty({ description: "Post creation date", type: String })
   @Expose()
   createdAt: string
