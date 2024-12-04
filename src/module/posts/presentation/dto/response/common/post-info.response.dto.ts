@@ -8,7 +8,7 @@ export class PostInfoResponseDto {
   id: string
   @ApiProperty({ description: "Post creation date", type: String })
   @Expose()
-  createdAt: string
+  createdAt: Date
 
   @ApiProperty({ description: "Post visibility" })
   @Expose()

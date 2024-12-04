@@ -3,7 +3,7 @@ import { ImageResult } from "./image.result"
 
 export interface PostResult {
   id: string
-  createdAt: string
+  createdAt: Date
   visibility: EUserPostVisibility
   content: string
   images: ImageResult[]

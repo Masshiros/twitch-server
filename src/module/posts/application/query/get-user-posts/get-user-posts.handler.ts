@@ -122,7 +122,7 @@ export class GetUserPostsHandler {
               },
               info: {
                 id: p.id,
-                createdAt: p.createdAt.toISOString().split("T")[0],
+                createdAt: p.createdAt,
                 visibility: p.visibility,
                 content: p.content,
                 images: [],
@@ -143,7 +143,7 @@ export class GetUserPostsHandler {
             },
             info: {
               id: p.id,
-              createdAt: p.createdAt.toISOString().split("T")[0],
+              createdAt: p.createdAt,
               visibility: p.visibility,
               content: p.content,
               images: images.map((i) => ({ url: i.url })),
