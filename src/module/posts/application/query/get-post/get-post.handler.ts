@@ -23,6 +23,7 @@ export class GetPostHandler {
 
     try {
       const post = await this.postRepository.findPostById(postId)
+      console.log(post)
       const [images, owner] = await Promise.all([
         this.imageService.getImageByApplicableId(post.id),
         this.userRepository.findById(post.userId),

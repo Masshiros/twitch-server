@@ -36,19 +36,23 @@ export class PostListener {
       return
     }
     post.postImages = imageUrl ?? []
-    const existingPosts = await this.postRedisDatabase.getPostByUserId(
+    let existingPosts = await this.postRedisDatabase.getPostByUserId(
       post.userId,
     )
-    const postIndex = existingPosts.findIndex((e) => e.id === post.id)
-    if (postIndex !== -1) {
-      existingPosts[postIndex] = {
-        ...existingPosts[postIndex],
-        ...post,
-      } as Post
+    existingPosts = existingPosts !== null ? existingPosts : []
+    if (existingPosts !== null || existingPosts.length > 0) {
+      const postIndex = existingPosts.findIndex((e) => e.id === post.id)
+      if (postIndex !== -1) {
+        existingPosts[postIndex] = {
+          ...existingPosts[postIndex],
+          ...post,
+        } as Post
+      } else {
+        existingPosts.push(post)
+      }
     } else {
       existingPosts.push(post)
     }
-
     const [job, failedUploadJobs] = await Promise.all([
       this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
         userId: post.userId,

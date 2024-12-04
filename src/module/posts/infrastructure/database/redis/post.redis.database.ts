@@ -47,9 +47,9 @@ export class PostRedisDatabase {
       return null
     }
     const posts = JSON.parse(postData)
-    const result = posts.map((p) => this.rehydratePost(p))
-
-    return result
+    const result: Post[] = posts.map((p) => this.rehydratePost(p))
+    console.log("result", result)
+    return result !== null ? result : []
   }
   private rehydratePost(data: any): Post {
     return PostFactory.createPost({
