@@ -54,6 +54,7 @@ export class SearchPostHandler {
               visibility: p.visibility,
               content: p.content,
               images: images.map((i) => ({ url: i.url })),
+              viewCount: p.totalViewCount,
             },
           }
         }),

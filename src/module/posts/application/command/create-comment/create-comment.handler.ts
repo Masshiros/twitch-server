@@ -70,6 +70,19 @@ export class CreateCommentHandler {
           },
         })
       }
+      if (parentId) {
+        const parentComment =
+          await this.postRepository.findCommentById(parentId)
+        if (!parentComment) {
+          throw new CommandError({
+            code: CommandErrorCode.BAD_REQUEST,
+            message: "Comment to reply not found. Refresh",
+            info: {
+              errorCode: CommandErrorDetailCode.USER_NOT_FOUND,
+            },
+          })
+        }
+      }
       console.log(parentId)
       const comment = PostFactory.createComment({
         postId: post.id,

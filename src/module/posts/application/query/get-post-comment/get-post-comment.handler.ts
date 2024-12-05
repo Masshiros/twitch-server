@@ -81,6 +81,7 @@ export class GetPostCommentHandler {
 
     const replies = await this.loadReplies(comment.id)
     return {
+      id: comment.id,
       user: userResult,
       content: comment.content,
       replies: replies,
