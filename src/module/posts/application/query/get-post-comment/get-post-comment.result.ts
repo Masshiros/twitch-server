@@ -4,6 +4,7 @@ export class postCommentResult {
   id: string
   user: UserResult
   content: string
+  created: Date
   replies: postCommentResult[]
 }
 export class getPostCommentResult {

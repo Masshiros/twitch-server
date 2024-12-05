@@ -8,6 +8,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ImageService } from "src/module/image/application/image.service"
 import { EImageType } from "src/module/image/domain/enum/image-type.enum"
+import { Comment } from "src/module/posts/domain/entity/comments.entity"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { GetPostCommentQuery } from "./get-post-comment.query"
@@ -68,7 +69,9 @@ export class GetPostCommentHandler {
       })
     }
   }
-  private async mapCommentToResult(comment): Promise<postCommentResult> {
+  private async mapCommentToResult(
+    comment: Comment,
+  ): Promise<postCommentResult> {
     const owner = await this.userRepository.findById(comment.userId)
     const ownerImages = await this.imageService.getImageByApplicableId(owner.id)
     const ownerAvatar = ownerImages.find(
@@ -86,6 +89,7 @@ export class GetPostCommentHandler {
       user: userResult,
       content: comment.content,
       replies: replies,
+      created: comment.createdAt,
     }
   }
 
