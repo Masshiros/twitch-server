@@ -48,6 +48,7 @@ export class GetPostHandler {
             visibility: post.visibility,
             content: post.content,
             images: images.map((i) => ({ url: i.url })),
+            viewCount: post.totalViewCount,
           },
         },
       }

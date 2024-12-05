@@ -9,4 +9,5 @@ export interface PostResult {
   images: ImageResult[]
   isShared?: boolean
   isTagged?: boolean
+  viewCount: number
 }

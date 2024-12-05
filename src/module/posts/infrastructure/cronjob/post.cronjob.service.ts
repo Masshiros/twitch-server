@@ -18,7 +18,7 @@ export class PostCronjobService {
   async test() {
     this.logger.log("Post cron run")
   }
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_SECOND)
   async handlePostView() {
     this.logger.log("Update post view")
     try {

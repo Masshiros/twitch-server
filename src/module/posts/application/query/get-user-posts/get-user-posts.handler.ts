@@ -132,6 +132,7 @@ export class GetUserPostsHandler {
                 isTagged: userTaggedPosts.some(
                   (taggedPost) => taggedPost.id === p.id,
                 ),
+                viewCount: p.totalViewCount,
               },
             }
           }
@@ -153,6 +154,7 @@ export class GetUserPostsHandler {
               isTagged: userTaggedPosts.some(
                 (taggedPost) => taggedPost.id === p.id,
               ),
+              viewCount: p.totalViewCount,
             },
           }
         }),

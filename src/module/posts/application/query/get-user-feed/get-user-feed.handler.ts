@@ -77,13 +77,14 @@ export class GetUserFeedHandler {
           posts.map(async (p) => {
             const owner = await this.userRepository.findById(p.userId)
             const images = p.postImages
+            //TODO(cache) refactor to store all this data to cache later
             const ownerImages = await this.imageService.getImageByApplicableId(
               owner.id,
             )
             const ownerAvatar = ownerImages.find(
               (e) => e.imageType === EImageType.AVATAR,
             )
-
+            const viewCount = p.totalViewCount
             return {
               user: {
                 id: owner.id,
@@ -96,6 +97,7 @@ export class GetUserFeedHandler {
                 visibility: p.visibility,
                 content: p.content,
                 images: images,
+                viewCount,
               },
             }
           }),
