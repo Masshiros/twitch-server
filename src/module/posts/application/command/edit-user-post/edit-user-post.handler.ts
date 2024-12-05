@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import { Folder } from "libs/constants/folder"
 import {
   CommandError,
@@ -13,6 +15,7 @@ import { EImage } from "src/module/image/domain/enum/image.enum"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
+import { PostUpdateEvent } from "src/module/posts/infrastructure/event-listener/events/post-update.event"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { EditUserPostCommand } from "./edit-user-post.command"
@@ -24,6 +27,8 @@ export class EditUserPostHandler {
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
     private readonly friendRepository: IFriendRepository,
+
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async execute(command: EditUserPostCommand) {
     const {
@@ -128,6 +133,9 @@ export class EditUserPostHandler {
           post.id,
           EImage.POST,
         )
+      }
+      if (!images || images.length === 0) {
+        this.eventEmitter.emit(Events.post.create, new PostUpdateEvent(post))
       }
       await this.postRepository.updatePost(post, taggedUserIds)
     } catch (err) {
