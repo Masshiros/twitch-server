@@ -26,7 +26,7 @@ interface PostReactionsCreationProps {
 interface CommentCreationProps {
   postId: string
   userId: string
-  parentId: string
+  parentId?: string
   content: string
 }
 interface ScheduledPostCreationProps {

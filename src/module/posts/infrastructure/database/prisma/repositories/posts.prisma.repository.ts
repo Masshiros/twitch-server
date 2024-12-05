@@ -769,6 +769,7 @@ export class PostsRepository implements IPostsRepository {
   async createComment(comment: Comment): Promise<void> {
     try {
       const data = CommentMapper.toPersistence(comment)
+      console.log(data)
       await this.prismaService.postComment.create({ data })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

@@ -70,12 +70,14 @@ export class CreateCommentHandler {
           },
         })
       }
+      console.log(parentId)
       const comment = PostFactory.createComment({
         postId: post.id,
         userId: user.id,
         content: content,
         parentId: parentId,
       })
+
       if (!comment) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,

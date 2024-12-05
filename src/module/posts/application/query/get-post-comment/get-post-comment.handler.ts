@@ -36,6 +36,7 @@ export class GetPostCommentHandler {
           },
         })
       }
+
       const post = await this.postRepository.findPostById(postId)
       if (!post) {
         throw new QueryError({

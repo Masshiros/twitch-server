@@ -414,12 +414,13 @@ export class PostsController {
   })
   @Permission([Permissions.Comments.Read])
   @ResponseMessage(SuccessMessages.posts.GET_POST_COMMENTS)
-  @Get("comments")
+  @Get("/all/comments/:postId")
   async getPostComments(
     @Param() param: GetPostCommentRequestDto,
     @CurrentUser() user: UserAggregate,
   ) {
-    const query = new GetPostCommentQuery({ ...param })
+    const query = new GetPostCommentQuery({ postId: param.postId })
+
     return await this.service.getPostComments(query)
   }
   // post: create comment
