@@ -44,7 +44,8 @@ export class GetPostCommentHandler {
           message: "Post not found",
         })
       }
-      const comments = await this.postRepository.getCommentByPost(post)
+      let comments = await this.postRepository.getCommentByPost(post)
+      comments = comments.filter((c) => c.parentId === null)
       if (!comments) {
         return { comments: [] }
       }
@@ -89,6 +90,7 @@ export class GetPostCommentHandler {
   }
 
   private async loadReplies(commentId: string): Promise<postCommentResult[]> {
+    console.log(commentId)
     const replies = await this.postRepository.getRepliesByCommentId(commentId)
     return Promise.all(replies.map((reply) => this.mapCommentToResult(reply)))
   }
