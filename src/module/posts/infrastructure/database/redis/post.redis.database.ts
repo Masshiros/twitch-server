@@ -32,6 +32,15 @@ export class PostRedisDatabase {
     )
     return result
   }
+  async getPostViewByPostId(postId: string): Promise<number> {
+    const cacheKey = `postView:${postId}`
+    const viewData = JSON.parse(await this.redisClient.get(cacheKey))
+
+    if (!viewData) {
+      return 0
+    }
+    return parseInt(viewData)
+  }
   async invalidatePostView(postId: string): Promise<void> {
     const cacheKey = `postView:${postId}`
 

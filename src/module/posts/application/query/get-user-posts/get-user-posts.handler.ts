@@ -22,6 +22,7 @@ export class GetUserPostsHandler {
     private readonly userRepository: IUserRepository,
     private readonly imageService: ImageService,
     private readonly postRedisDatabase: PostRedisDatabase,
+    private readonly cachePostDatabase: PostRedisDatabase,
   ) {}
   async execute(query: GetUserPostsQuery): Promise<GetUserPostsResult> {
     const { currentUserId, username, limit, offset, order, orderBy } = query
@@ -105,6 +106,9 @@ export class GetUserPostsHandler {
           const ownerAvatar = ownerImages.find(
             (e) => e.imageType === EImageType.AVATAR,
           )
+          const viewCount = await this.cachePostDatabase.getPostViewByPostId(
+            p.id,
+          )
           // if (currentUserId !== user.id) {
           //   const hasPermission =
           //     await this.postRepository.hasUserViewPermission(p, currentUser)
@@ -132,7 +136,7 @@ export class GetUserPostsHandler {
                 isTagged: userTaggedPosts.some(
                   (taggedPost) => taggedPost.id === p.id,
                 ),
-                viewCount: p.totalViewCount,
+                viewCount: viewCount ?? p.totalViewCount,
               },
             }
           }
@@ -154,7 +158,7 @@ export class GetUserPostsHandler {
               isTagged: userTaggedPosts.some(
                 (taggedPost) => taggedPost.id === p.id,
               ),
-              viewCount: p.totalViewCount,
+              viewCount: viewCount ?? p.totalViewCount,
             },
           }
         }),

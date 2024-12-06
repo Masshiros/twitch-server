@@ -84,7 +84,9 @@ export class GetUserFeedHandler {
             const ownerAvatar = ownerImages.find(
               (e) => e.imageType === EImageType.AVATAR,
             )
-            const viewCount = p.totalViewCount
+            const viewCount = await this.cachePostDatabase.getPostViewByPostId(
+              p.id,
+            )
             return {
               user: {
                 id: owner.id,
@@ -137,6 +139,7 @@ export class GetUserFeedHandler {
                 visibility: p.visibility,
                 content: p.content,
                 images: images.map((i) => ({ url: i.url })),
+                viewCount: p.totalViewCount,
               },
             }
           }),

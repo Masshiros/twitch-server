@@ -25,13 +25,10 @@ export class PostCronjobService {
       const listPostViews = await this.postRedisDatabase.getPostView()
       await Promise.all(
         listPostViews.map(async (e) => {
-          const post = await this.postRepository.findPostById((await e).postId)
+          const post = await this.postRepository.findPostById(e.postId)
           if (post) {
-            post.totalViewCount += e.view
-            await Promise.all([
-              this.postRedisDatabase.invalidatePostView(post.id),
-              this.postRepository.updatePost(post),
-            ])
+            post.totalViewCount = e.view
+            await this.postRepository.updatePost(post)
           }
         }),
       )
