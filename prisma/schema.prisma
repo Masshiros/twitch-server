@@ -487,19 +487,17 @@ model UserPostViewPermission {
 }
 
 model PostReaction {
-  id              String                   @id @default(uuid())
+
   userId    String
-  postId       String?      
-  groupPostId  String?
+  postId      String     
+
   type      EReactionType
   createdAt DateTime      @default(now())
   deletedAt DateTime?
   updatedAt DateTime      @default(now()) @updatedAt
-  post      Post?          @relation(fields: [postId], references: [id])
+  post      Post         @relation(fields: [postId], references: [id])
   user      User          @relation(fields: [userId], references: [id])
-  groupPost GroupPost?     @relation(fields: [groupPostId], references: [id])
-
-
+ @@id([userId,postId])
   @@map("postReactions")
 }
 
@@ -657,7 +655,6 @@ model GroupPost {
 
   group       Group          @relation(fields: [groupId], references: [id])
   user        User           @relation(fields: [userId], references: [id])
-  reactions   PostReaction[] @relation()
   postTags    GroupPostTaggedUser[]
   scheduledPost ScheduledGroupPost[]
   groupPostComment GroupPostComment[]

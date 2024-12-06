@@ -18,7 +18,6 @@ interface PostCreationProps {
   createdAt?: Date
 }
 interface PostReactionsCreationProps {
-  groupPostId?: string
   userId: string
   postId?: string
   type: EReactionType
@@ -52,7 +51,6 @@ export class PostFactory {
   }
   static createCreation(props: PostReactionsCreationProps): PostReactions {
     return new PostReactions({
-      groupPostId: props.groupPostId,
       userId: props.userId,
       postId: props.postId,
       type: props.type,

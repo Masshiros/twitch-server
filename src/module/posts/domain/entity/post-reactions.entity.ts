@@ -3,26 +3,26 @@ import { EReactionType } from "libs/constants/enum"
 import { BaseEntity } from "src/common/entity"
 
 interface PostReactionsProps {
-  id?: string
   userId: string
-  postId?: string
-  groupPostId?: string
+  postId: string
+
   type: EReactionType
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
 }
-export class PostReactions extends BaseEntity {
+export class PostReactions {
   private _userId: string
   private _postId?: string
-  private _groupPostId?: string
+
   private _type: EReactionType
+  private _createdAt?: Date
+  private _updatedAt?: Date
+  private _deletedAt?: Date
   constructor(props: PostReactionsProps) {
-    super()
-    this._id = randomUUID()
     this._userId = props.userId
     this._postId = props.postId
-    this._groupPostId = props.groupPostId
+
     this._type = props.type
     this._createdAt = props.createdAt || new Date()
     this._updatedAt = props.updatedAt
@@ -32,7 +32,7 @@ export class PostReactions extends BaseEntity {
     return this._userId
   }
   set userId(value: string) {
-    this._userId = this.userId
+    this._userId = value
   }
   get type(): EReactionType {
     return this._type
@@ -47,10 +47,20 @@ export class PostReactions extends BaseEntity {
   set postId(value: string) {
     this._postId = value
   }
-  get groupPostId(): string {
-    return this._groupPostId
+
+  get createdAt(): Date {
+    return this._createdAt
   }
-  set groupPostId(value: string) {
-    this._groupPostId = value
+  get updatedAt(): Date {
+    return this._updatedAt
+  }
+  set updatedAt(value: Date) {
+    this._updatedAt = value
+  }
+  get deletedAt(): Date {
+    return this._deletedAt
+  }
+  set deletedAt(value: Date) {
+    this._deletedAt = value
   }
 }

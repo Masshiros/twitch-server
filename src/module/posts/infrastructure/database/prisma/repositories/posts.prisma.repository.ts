@@ -399,17 +399,35 @@ export class PostsRepository implements IPostsRepository {
     try {
       const existReact = await this.prismaService.postReaction.findUnique({
         where: {
-          id: reaction.id,
+          userId_postId: {
+            userId: reaction.userId,
+            postId: reaction.postId,
+          },
         },
       })
       const data = PostReactionMapper.toPersistence(reaction)
+
       if (existReact) {
-        await this.prismaService.postReaction.update({
-          where: {
-            id: reaction.id,
-          },
-          data,
-        })
+        if (data.type === existReact.type) {
+          await this.prismaService.postReaction.delete({
+            where: {
+              userId_postId: {
+                userId: reaction.userId,
+                postId: reaction.postId,
+              },
+            },
+          })
+        } else {
+          await this.prismaService.postReaction.update({
+            where: {
+              userId_postId: {
+                userId: reaction.userId,
+                postId: reaction.postId,
+              },
+            },
+            data,
+          })
+        }
       } else {
         await this.prismaService.postReaction.create({
           data,
@@ -423,13 +441,19 @@ export class PostsRepository implements IPostsRepository {
     try {
       const existReact = await this.prismaService.postReaction.findUnique({
         where: {
-          id: reaction.id,
+          userId_postId: {
+            userId: reaction.userId,
+            postId: reaction.postId,
+          },
         },
       })
       if (existReact) {
         await this.prismaService.postReaction.delete({
           where: {
-            id: reaction.id,
+            userId_postId: {
+              userId: reaction.userId,
+              postId: reaction.postId,
+            },
           },
         })
       }
