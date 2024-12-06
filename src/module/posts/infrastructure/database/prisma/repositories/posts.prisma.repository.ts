@@ -882,6 +882,7 @@ export class PostsRepository implements IPostsRepository {
     try {
       const comments = await this.prismaService.postComment.findMany({
         where: { postId: post.id },
+        orderBy: { createdAt: "desc" },
       })
       if (!comments) {
         return []

@@ -35,6 +35,11 @@ export class GetPostHandler {
       const ownerAvatar = ownerImages.find(
         (e) => e.imageType === EImageType.AVATAR,
       )
+      const [reactions, comments] = await Promise.all([
+        this.postRepository.getPostReactions(post),
+        this.postRepository.getCommentByPost(post),
+      ])
+
       return {
         post: {
           user: {
@@ -49,6 +54,8 @@ export class GetPostHandler {
             content: post.content,
             images: images.map((i) => ({ url: i.url })),
             viewCount: post.totalViewCount,
+            commentCount: comments.length ?? 0,
+            reactionCount: reactions.length ?? 0,
           },
         },
       }

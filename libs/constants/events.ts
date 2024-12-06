@@ -7,4 +7,9 @@ export const Events = {
     update: "post.update",
     delete: "post.delete",
   },
+  comment: {
+    create: "comment.create",
+    update: "comment.update",
+    delete: "comment.delete",
+  },
 }

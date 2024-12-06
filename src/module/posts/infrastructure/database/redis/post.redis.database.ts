@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { Redis } from "ioredis"
 import { IORedisKey } from "src/integration/cache/redis/redis.module"
+import { Comment } from "src/module/posts/domain/entity/comments.entity"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
 import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
@@ -87,5 +88,59 @@ export class PostRedisDatabase {
       await this.redisClient.del(...keys)
       console.log(`All posts deleted from cache`)
     }
+  }
+  async saveComments(postId: string, commentsData: any[]): Promise<void> {
+    const cacheKey = `postComments:${postId}`
+    await this.redisClient.del(cacheKey)
+    console.log(commentsData)
+    await this.redisClient.set(cacheKey, JSON.stringify(commentsData))
+  }
+  async getCommentsByPostId(postId: string): Promise<Comment[]> {
+    const cacheKey = `postComments:${postId}`
+    const commentData = await this.redisClient.get(cacheKey)
+
+    if (!commentData) {
+      console.log(`Comments for post ${postId} not found in cache`)
+      return []
+    }
+
+    const comments = JSON.parse(commentData)
+    const result: Comment[] = comments.map((c) => this.rehydrateComment(c))
+
+    return result
+  }
+
+  private rehydrateComment(data: any): Comment {
+    return PostFactory.createComment({
+      id: data._id,
+      postId: data._postId,
+      userId: data._userId,
+      parentId: data._parentId,
+      content: data._content,
+      createdAt: data._createdAt,
+      updatedAt: data._updatedAt,
+      deletedAt: data._deletedAt,
+    })
+  }
+  async deleteComment(postId: string, commentId: string): Promise<void> {
+    const cacheKey = `postComments:${postId}`
+    const commentData = await this.redisClient.get(cacheKey)
+
+    if (!commentData) {
+      console.log(`Comments for post ${postId} not found in cache`)
+      return
+    }
+
+    const comments = JSON.parse(commentData)
+    const updatedComments = comments.filter(
+      (comment: any) => comment._id !== commentId,
+    )
+
+    await this.redisClient.set(cacheKey, JSON.stringify(updatedComments))
+    console.log(`Comment ${commentId} deleted from cache for post ${postId}`)
+  }
+  async invalidateComments(postId: string): Promise<void> {
+    const cacheKey = `postComments:${postId}`
+    await this.redisClient.del(cacheKey)
   }
 }

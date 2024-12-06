@@ -23,10 +23,14 @@ interface PostReactionsCreationProps {
   type: EReactionType
 }
 interface CommentCreationProps {
+  id?: string
   postId: string
   userId: string
   parentId?: string
   content: string
+  createdAt?: Date
+  updatedAt?: Date
+  deletedAt?: Date
 }
 interface ScheduledPostCreationProps {
   userId: string
@@ -59,10 +63,14 @@ export class PostFactory {
   }
   static createComment(props: CommentCreationProps): Comment {
     return new Comment({
+      id: props.id,
       userId: props.userId,
       postId: props.postId,
       parentId: props.parentId,
       content: props.content,
+      createdAt: props.createdAt,
+      updatedAt: props.updatedAt,
+      deletedAt: props.deletedAt,
     })
   }
   static createSchedulePost(props: ScheduledPostCreationProps): ScheduledPost {

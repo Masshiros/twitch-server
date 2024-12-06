@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -8,6 +10,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
+import { CommentCreateEvent } from "src/module/posts/infrastructure/event-listener/events/comment-create.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { CreateCommentCommand } from "./create-comment.command"
 
@@ -16,6 +19,7 @@ export class CreateCommentHandler {
   constructor(
     private readonly postRepository: IPostsRepository,
     private readonly userRepository: IUserRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async execute(command: CreateCommentCommand): Promise<void> {
     const { content, userId, postId, parentId } = command
@@ -101,6 +105,10 @@ export class CreateCommentHandler {
         })
       }
       await this.postRepository.createComment(comment)
+      this.eventEmitter.emit(
+        Events.comment.create,
+        new CommentCreateEvent(comment, parentId),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||

@@ -42,6 +42,10 @@ export class SearchPostHandler {
           const ownerAvatar = await this.imageService.getImageByApplicableId(
             owner.id,
           )
+          const [reactions, comments] = await Promise.all([
+            this.postRepository.getPostReactions(p),
+            this.postRepository.getCommentByPost(p),
+          ])
           return {
             user: {
               id: owner.id,
@@ -55,6 +59,8 @@ export class SearchPostHandler {
               content: p.content,
               images: images.map((i) => ({ url: i.url })),
               viewCount: p.totalViewCount,
+              commentCount: comments.length ?? 0,
+              reactionCount: reactions.length ?? 0,
             },
           }
         }),

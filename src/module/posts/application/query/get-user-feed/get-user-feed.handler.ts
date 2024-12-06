@@ -78,15 +78,17 @@ export class GetUserFeedHandler {
             const owner = await this.userRepository.findById(p.userId)
             const images = p.postImages
             //TODO(cache) refactor to store all this data to cache later
-            const ownerImages = await this.imageService.getImageByApplicableId(
-              owner.id,
-            )
+            const [ownerImages, reactions, viewCount, comments] =
+              await Promise.all([
+                this.imageService.getImageByApplicableId(owner.id),
+                this.postRepository.getPostReactions(p),
+                this.cachePostDatabase.getPostViewByPostId(p.id),
+                this.cachePostDatabase.getCommentsByPostId(p.id),
+              ])
             const ownerAvatar = ownerImages.find(
               (e) => e.imageType === EImageType.AVATAR,
             )
-            const viewCount = await this.cachePostDatabase.getPostViewByPostId(
-              p.id,
-            )
+
             return {
               user: {
                 id: owner.id,
@@ -99,7 +101,9 @@ export class GetUserFeedHandler {
                 visibility: p.visibility,
                 content: p.content,
                 images: images,
-                viewCount,
+                viewCount: viewCount ?? p.totalViewCount,
+                commentCount: comments.length,
+                reactionCount: reactions.length,
               },
             }
           }),
@@ -121,9 +125,11 @@ export class GetUserFeedHandler {
               this.userRepository.findById(p.userId),
             ])
 
-            const ownerImages = await this.imageService.getImageByApplicableId(
-              owner.id,
-            )
+            const [ownerImages, comments, reactions] = await Promise.all([
+              this.imageService.getImageByApplicableId(owner.id),
+              this.postRepository.getCommentByPost(p),
+              this.postRepository.getPostReactions(p),
+            ])
             const ownerAvatar = ownerImages.find(
               (e) => e.imageType === EImageType.AVATAR,
             )
@@ -140,6 +146,8 @@ export class GetUserFeedHandler {
                 content: p.content,
                 images: images.map((i) => ({ url: i.url })),
                 viewCount: p.totalViewCount,
+                commentCount: comments.length,
+                reactionCount: reactions.length,
               },
             }
           }),

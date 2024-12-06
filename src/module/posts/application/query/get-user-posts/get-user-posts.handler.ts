@@ -100,15 +100,17 @@ export class GetUserPostsHandler {
             this.imageService.getImageByApplicableId(p.id),
             this.userRepository.findById(p.userId),
           ])
-          const ownerImages = await this.imageService.getImageByApplicableId(
-            owner.id,
-          )
+          const [ownerImages, reactions, viewCount, comments] =
+            await Promise.all([
+              this.imageService.getImageByApplicableId(owner.id),
+              this.postRepository.getPostReactions(p),
+              this.cachePostDatabase.getPostViewByPostId(p.id),
+              this.cachePostDatabase.getCommentsByPostId(p.id),
+            ])
           const ownerAvatar = ownerImages.find(
             (e) => e.imageType === EImageType.AVATAR,
           )
-          const viewCount = await this.cachePostDatabase.getPostViewByPostId(
-            p.id,
-          )
+
           // if (currentUserId !== user.id) {
           //   const hasPermission =
           //     await this.postRepository.hasUserViewPermission(p, currentUser)
@@ -137,6 +139,8 @@ export class GetUserPostsHandler {
                   (taggedPost) => taggedPost.id === p.id,
                 ),
                 viewCount: viewCount ?? p.totalViewCount,
+                commentCount: comments.length,
+                reactionCount: reactions.length,
               },
             }
           }
@@ -159,6 +163,8 @@ export class GetUserPostsHandler {
                 (taggedPost) => taggedPost.id === p.id,
               ),
               viewCount: viewCount ?? p.totalViewCount,
+              commentCount: comments.length,
+              reactionCount: reactions.length,
             },
           }
         }),

@@ -60,6 +60,10 @@ const queryHandlers = [
       prefix: "TWITCH",
     }),
     BullModule.registerQueue({
+      name: Bull.queue.user_post.cache_comment,
+      prefix: "TWITCH",
+    }),
+    BullModule.registerQueue({
       name: Bull.queue.user_post.post_view,
       prefix: "TWITCH",
     }),

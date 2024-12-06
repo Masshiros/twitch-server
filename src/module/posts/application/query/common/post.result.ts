@@ -10,4 +10,6 @@ export interface PostResult {
   isShared?: boolean
   isTagged?: boolean
   viewCount: number
+  reactionCount?: number
+  commentCount?: number
 }

@@ -13,6 +13,8 @@ import { ImagesUploadedEvent } from "src/module/image/domain/event/images-upload
 import { Post } from "../../domain/entity/posts.entity"
 import { IPostsRepository } from "../../domain/repository/posts.interface.repository"
 import { PostRedisDatabase } from "../database/redis/post.redis.database"
+import { CommentCreateEvent } from "./events/comment-create.event"
+import { CommentUpdateEvent } from "./events/comment-update.event"
 import { PostCreateEvent } from "./events/post-create.event"
 import { PostDeleteEvent } from "./events/post-delete.event"
 
@@ -22,6 +24,8 @@ export class PostListener {
     private readonly postRepository: IPostsRepository,
     @InjectQueue(Bull.queue.user_post.cache_post)
     private readonly cachePostProcessorQueue: Queue,
+    @InjectQueue(Bull.queue.user_post.cache_comment)
+    private readonly cacheCommentProcessorQueue: Queue,
     private readonly postRedisDatabase: PostRedisDatabase,
   ) {}
 
@@ -145,6 +149,37 @@ export class PostListener {
         posts: updatedPosts,
       }),
       this.cachePostProcessorQueue.getFailed(),
+    ])
+    if ((await job.getState()) === "failed") {
+      if (failedUploadJobs || failedUploadJobs.length !== 0) {
+        failedUploadJobs.map((failedJob) => {
+          throw new CommandError({
+            code: CommandErrorCode.INTERNAL_SERVER_ERROR,
+            message: failedJob.failedReason,
+          })
+        })
+      }
+    }
+  }
+  @OnEvent(Events.comment.create)
+  async handleCommentCreate(event: CommentCreateEvent) {
+    const { comment } = event
+    console.log(event)
+    let existingComments = await this.postRedisDatabase.getCommentsByPostId(
+      comment.postId,
+    )
+    console.log("EXISTING 1 ", existingComments)
+    existingComments = existingComments !== null ? existingComments : []
+    console.log("EXISTING 2", existingComments)
+    existingComments.push(comment)
+    console.log("EXISTING 3", existingComments)
+    // console.log(existingComments)
+    const [job, failedUploadJobs] = await Promise.all([
+      this.cacheCommentProcessorQueue.add(Bull.job.user_post.cache_comment, {
+        postId: comment.postId,
+        comments: existingComments,
+      }),
+      this.cacheCommentProcessorQueue.getFailed(),
     ])
     if ((await job.getState()) === "failed") {
       if (failedUploadJobs || failedUploadJobs.length !== 0) {

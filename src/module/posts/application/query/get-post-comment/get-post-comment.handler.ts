@@ -47,6 +47,9 @@ export class GetPostCommentHandler {
       }
       let comments = await this.postRepository.getCommentByPost(post)
       comments = comments.filter((c) => c.parentId === null)
+      comments = comments.sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      )
       if (!comments) {
         return { comments: [] }
       }
@@ -96,6 +99,12 @@ export class GetPostCommentHandler {
   private async loadReplies(commentId: string): Promise<postCommentResult[]> {
     console.log(commentId)
     const replies = await this.postRepository.getRepliesByCommentId(commentId)
-    return Promise.all(replies.map((reply) => this.mapCommentToResult(reply)))
+    const sortedReplies = replies.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
+
+    return Promise.all(
+      sortedReplies.map((reply) => this.mapCommentToResult(reply)),
+    )
   }
 }

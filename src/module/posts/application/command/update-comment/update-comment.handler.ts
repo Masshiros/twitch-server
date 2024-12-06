@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -7,6 +9,7 @@ import {
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
+import { CommentUpdateEvent } from "src/module/posts/infrastructure/event-listener/events/comment-update.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { UpdateCommentCommand } from "./update-comment.command"
 
@@ -15,6 +18,7 @@ export class UpdateCommentHandler {
   constructor(
     private readonly postRepository: IPostsRepository,
     private readonly userRepository: IUserRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async execute(command: UpdateCommentCommand): Promise<void> {
     const { userId, content, commentId } = command
@@ -63,6 +67,11 @@ export class UpdateCommentHandler {
       }
       comment.content = content
       await this.postRepository.updateComment(comment)
+
+      this.eventEmitter.emit(
+        Events.comment.create,
+        new CommentUpdateEvent(comment),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||
