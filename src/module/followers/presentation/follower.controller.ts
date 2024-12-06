@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from "@nestjs/common"
+import { Controller, Get, Param, Post, Query } from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
 import { SuccessMessages } from "libs/constants/success"
 import { SwaggerErrorMessages } from "libs/constants/swagger-error-messages"
@@ -11,6 +11,7 @@ import { UnfollowCommand } from "../application/command/unfollow/unfollow.comman
 import { FollowerService } from "../application/follower.service"
 import { GetListFollowersQuery } from "../application/query/get-list-followers/get-list-followers.query"
 import { GetListFollowingsQuery } from "../application/query/get-list-followings/get-list-followings.query"
+import { IsFollowQuery } from "../application/query/is-follow/is-follow.query"
 import { FollowRequestDto } from "./http/dto/request/follow.request.dto"
 import { UnfollowRequestDto } from "./http/dto/request/unfollow.request.dto"
 import { GetFollowerResponseDto } from "./http/dto/response/get-follower.response.dto"
@@ -71,7 +72,7 @@ export class FollowerController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.followers.GET_LIST_FOLLOWERS)
-  @Post("/list-followers")
+  @Get("/list-followers")
   async getListFollowers(
     @CurrentUser() user: UserAggregate,
   ): Promise<GetFollowerResponseDto[] | null> {
@@ -88,11 +89,29 @@ export class FollowerController {
     auth: true,
   })
   @ResponseMessage(SuccessMessages.followers.GET_LIST_FOLLOWINGS)
-  @Post("/list-following")
+  @Get("/list-following")
   async getListFollowing(
     @CurrentUser() user: UserAggregate,
   ): Promise<GetFollowerResponseDto[] | null> {
     const query = new GetListFollowingsQuery({ userId: user.id })
     return await this.followerService.getListFollowings(query)
+  }
+  @ApiOperationDecorator({
+    summary: "Is Follow",
+    description: "Is current user follow user",
+
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.followers.IS_FOLLOW)
+  @Get("/is-follow")
+  async isFollow(
+    @CurrentUser() user: UserAggregate,
+    @Query("sourceUserId") sourceUserId: string,
+  ): Promise<boolean> {
+    const query = new IsFollowQuery({
+      destinationFollowId: user.id,
+      sourceFollowId: sourceUserId,
+    })
+    return await this.followerService.isFollow(query)
   }
 }

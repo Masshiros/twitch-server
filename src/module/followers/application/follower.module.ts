@@ -10,11 +10,13 @@ import { UnfollowCommandHandler } from "./command/unfollow/unfollow.handler"
 import { FollowerService } from "./follower.service"
 import { GetListFollowersQueryHandler } from "./query/get-list-followers/get-list-followers.handler"
 import { GetListFollowingsQueryHandler } from "./query/get-list-followings/get-list-followings.handler"
+import { IsFollowQueryHandler } from "./query/is-follow/is-follow.handler"
 
 const commandHandlers = [FollowCommandHandler, UnfollowCommandHandler]
 const queryHandlers = [
   GetListFollowersQueryHandler,
   GetListFollowingsQueryHandler,
+  IsFollowQueryHandler,
 ]
 @Module({
   controllers: [FollowerController],

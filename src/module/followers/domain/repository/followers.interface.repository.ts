@@ -5,4 +5,8 @@ export abstract class IFollowersRepository {
   findFollowingByUser: (sourceUserId: string) => Promise<Follower[] | null>
   addFollower: (follower: Follower) => Promise<void>
   removeFollower: (follower: Follower) => Promise<void>
+  isFollow: (
+    destinationUserId: string,
+    sourceUserId: string,
+  ) => Promise<boolean>
 }

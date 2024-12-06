@@ -54,6 +54,7 @@ export const SuccessMessages = {
     UNFOLLOW_USER: "Unfollow user successfully",
     GET_LIST_FOLLOWERS: "Get list followers successfully",
     GET_LIST_FOLLOWINGS: "Get list followings successfully",
+    IS_FOLLOW: "Is follow data return",
   },
   categories: {
     CREATE_CATEGORY: "Create new category successfully",

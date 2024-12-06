@@ -64,6 +64,34 @@ export class FollowersRepository implements IFollowersRepository {
       })
     }
   }
+  async isFollow(
+    destinationUserId: string,
+    sourceUserId: string,
+  ): Promise<boolean> {
+    try {
+      const data = await this.prismaService.follower.findUnique({
+        where: {
+          sourceUserId_destinationUserId: {
+            sourceUserId: sourceUserId,
+            destinationUserId: destinationUserId,
+          },
+        },
+      })
+      return !!data
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      if (error instanceof InfrastructureError) {
+        throw error
+      }
+
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
   async addFollower(follower: Follower): Promise<void> {
     try {
       const data = FollowerMapper.toPersistence(follower)

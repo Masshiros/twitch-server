@@ -4,6 +4,7 @@ import { FollowCommand } from "./command/follow/follow.command"
 import { UnfollowCommand } from "./command/unfollow/unfollow.command"
 import { GetListFollowersQuery } from "./query/get-list-followers/get-list-followers.query"
 import { GetListFollowingsQuery } from "./query/get-list-followings/get-list-followings.query"
+import { IsFollowQuery } from "./query/is-follow/is-follow.query"
 
 @Injectable()
 export class FollowerService {
@@ -21,6 +22,9 @@ export class FollowerService {
     return this.queryBus.execute(query)
   }
   getListFollowings(query: GetListFollowingsQuery) {
+    return this.queryBus.execute(query)
+  }
+  isFollow(query: IsFollowQuery) {
     return this.queryBus.execute(query)
   }
 }
