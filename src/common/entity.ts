@@ -9,6 +9,9 @@ export class BaseEntity {
   get createdAt(): Date {
     return this._createdAt
   }
+  set createdAt(value: Date) {
+    this._createdAt = value
+  }
   get updatedAt(): Date {
     return this._updatedAt
   }
