@@ -11,12 +11,12 @@ import {
 import { ImageService } from "src/module/image/application/image.service"
 import { ImagesUploadedEvent } from "src/module/image/domain/event/images-uploaded.event"
 import { Post } from "../../domain/entity/posts.entity"
+import { CommentCreateEvent } from "../../domain/events/comment-create.event"
+import { CommentUpdateEvent } from "../../domain/events/comment-update.event"
+import { PostCreateEvent } from "../../domain/events/post-create.event"
+import { PostDeleteEvent } from "../../domain/events/post-delete.event"
 import { IPostsRepository } from "../../domain/repository/posts.interface.repository"
 import { PostRedisDatabase } from "../database/redis/post.redis.database"
-import { CommentCreateEvent } from "./events/comment-create.event"
-import { CommentUpdateEvent } from "./events/comment-update.event"
-import { PostCreateEvent } from "./events/post-create.event"
-import { PostDeleteEvent } from "./events/post-delete.event"
 
 @Injectable()
 export class PostListener {

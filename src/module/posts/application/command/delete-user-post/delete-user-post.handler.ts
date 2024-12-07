@@ -9,8 +9,8 @@ import {
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ImageService } from "src/module/image/application/image.service"
+import { PostDeleteEvent } from "src/module/posts/domain/events/post-delete.event"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
-import { PostDeleteEvent } from "src/module/posts/infrastructure/event-listener/events/post-delete.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { DeleteUserPostCommand } from "./delete-user-post.command"
 

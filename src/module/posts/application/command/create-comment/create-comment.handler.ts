@@ -8,9 +8,9 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { CommentCreateEvent } from "src/module/posts/domain/events/comment-create.event"
 import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
-import { CommentCreateEvent } from "src/module/posts/infrastructure/event-listener/events/comment-create.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { CreateCommentCommand } from "./create-comment.command"
 

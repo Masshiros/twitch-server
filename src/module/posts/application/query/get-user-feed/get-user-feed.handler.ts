@@ -72,7 +72,10 @@ export class GetUserFeedHandler {
         }),
       )
       if (postsFromCache && postsFromCache.length > 0) {
-        posts = postsFromCache.slice(offset, offset + limit)
+        posts = postsFromCache
+          .slice(offset, offset + limit)
+          .filter((e) => e.isPublic === true)
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
         result = await Promise.all(
           posts.map(async (p) => {
@@ -86,6 +89,7 @@ export class GetUserFeedHandler {
                 this.cachePostDatabase.getPostViewByPostId(p.id),
                 this.cachePostDatabase.getCommentsByPostId(p.id),
               ])
+            const currentReaction = reactions.find((e) => e.userId === userId)
             const reactionCounts = Object.values(EReactionType)
               .map((reactionType) => {
                 return {
@@ -117,6 +121,7 @@ export class GetUserFeedHandler {
                 commentCount: comments.length,
                 reactionCount: reactions.length,
                 reactions: reactionCounts.filter((e) => e.count !== 0),
+                currentReaction: currentReaction.type,
               },
             }
           }),
@@ -143,6 +148,18 @@ export class GetUserFeedHandler {
               this.postRepository.getCommentByPost(p),
               this.postRepository.getPostReactions(p),
             ])
+            const currentReaction = reactions.find((e) => e.userId === userId)
+            const reactionCounts = Object.values(EReactionType)
+              .map((reactionType) => {
+                return {
+                  type: reactionType,
+                  count:
+                    reactions.filter(
+                      (reaction) => reaction.type === reactionType,
+                    ).length || 0,
+                }
+              })
+              .sort((a, b) => b.count - a.count)
             const ownerAvatar = ownerImages.find(
               (e) => e.imageType === EImageType.AVATAR,
             )
@@ -161,6 +178,8 @@ export class GetUserFeedHandler {
                 viewCount: p.totalViewCount,
                 commentCount: comments.length,
                 reactionCount: reactions.length,
+                reactions: reactionCounts.filter((e) => e.count !== 0),
+                currentReaction: currentReaction.type,
               },
             }
           }),

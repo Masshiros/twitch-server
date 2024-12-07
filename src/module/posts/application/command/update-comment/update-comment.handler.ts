@@ -8,8 +8,8 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { CommentUpdateEvent } from "src/module/posts/domain/events/comment-update.event"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
-import { CommentUpdateEvent } from "src/module/posts/infrastructure/event-listener/events/comment-update.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { UpdateCommentCommand } from "./update-comment.command"
 

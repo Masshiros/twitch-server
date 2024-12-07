@@ -9,8 +9,8 @@ import {
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { ESharedType } from "src/module/posts/domain/enum/shared-type.enum"
+import { PostCreateEvent } from "src/module/posts/domain/events/post-create.event"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
-import { PostCreateEvent } from "src/module/posts/infrastructure/event-listener/events/post-create.event"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { SharePostCommand } from "./share-post.command"
 

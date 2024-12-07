@@ -40,6 +40,7 @@ export class GetPostHandler {
         this.postRepository.getPostReactions(post),
         this.postRepository.getCommentByPost(post),
       ])
+      const currentReaction = reactions.find((e) => e.userId === userId)
       const reactionCounts = Object.values(EReactionType)
         .map((reactionType) => {
           return {
@@ -68,6 +69,7 @@ export class GetPostHandler {
             commentCount: comments.length ?? 0,
             reactionCount: reactions.length ?? 0,
             reactions: reactionCounts.filter((e) => e.count !== 0),
+            currentReaction: currentReaction.type,
           },
         },
       }

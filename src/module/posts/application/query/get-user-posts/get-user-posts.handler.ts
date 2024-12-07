@@ -76,8 +76,7 @@ export class GetUserPostsHandler {
         user.id,
       )
       if (postFromCache && postFromCache.length > 0) {
-        combinedPosts = postFromCache.filter((e) => e.isPublic === true)
-
+        combinedPosts = postFromCache
         console.log(combinedPosts)
       } else {
         ;[userPosts, userSharedPosts, userTaggedPosts] = await Promise.all([
@@ -91,7 +90,10 @@ export class GetUserPostsHandler {
       const totalPosts = combinedPosts.length
       const totalPage = Math.ceil(totalPosts / limit)
 
-      const paginatedPosts = combinedPosts.slice(offset, offset + limit)
+      const paginatedPosts = combinedPosts
+        .slice(offset, offset + limit)
+        .filter((e) => e.isPublic === true)
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
       const pageTotalPosts = paginatedPosts.length
 
@@ -108,6 +110,7 @@ export class GetUserPostsHandler {
               this.cachePostDatabase.getPostViewByPostId(p.id),
               this.cachePostDatabase.getCommentsByPostId(p.id),
             ])
+          const currentReaction = reactions.find((e) => e.userId === user.id)
           const reactionCounts = Object.values(EReactionType)
             .map((reactionType) => {
               return {
@@ -153,6 +156,7 @@ export class GetUserPostsHandler {
                 commentCount: comments.length,
                 reactionCount: reactions.length,
                 reactions: reactionCounts.filter((e) => e.count !== 0),
+                currentReaction: currentReaction.type,
               },
             }
           }
@@ -178,6 +182,7 @@ export class GetUserPostsHandler {
               commentCount: comments.length,
               reactionCount: reactions.length,
               reactions: reactionCounts,
+              currentReaction: currentReaction.type,
             },
           }
         }),
