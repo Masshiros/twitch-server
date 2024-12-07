@@ -73,6 +73,7 @@ model User {
   scheduledPost ScheduledPost[]
    conversations  Conversation[] @relation("CreatorConversations")
   receivedConversations Conversation[] @relation("ReceiverConversations")
+  messages              Message[]
   @@index([isActive])
   @@map("users")
 }
@@ -686,12 +687,20 @@ model Conversation{
   receiver      User      @relation("ReceiverConversations", fields: [receiverId], references: [id])
   createdAt     DateTime  @default(now())
   deletedAt     DateTime  
+  messages      Message[]
   @@map("conversations")
 }
 model Message{
   id      String  @id @default(uuid())
   content String
   authorId  String
+  conversationId String 
+  createdAt     DateTime  @default(now())
+  deletedAt     DateTime  
+  updatedAt     DateTime  @updatedAt
+  author  User @relation(fields: [authorId],references: [id],onDelete: Cascade,onUpdate: Cascade)
+  conversation Conversation @relation(fields: [conversationId],references: [id],onDelete: Cascade,onUpdate: Cascade)
+  @@map("messages")
 }
 enum ENotification {
   USER
