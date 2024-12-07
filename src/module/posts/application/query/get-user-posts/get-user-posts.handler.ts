@@ -77,7 +77,7 @@ export class GetUserPostsHandler {
       )
       if (postFromCache && postFromCache.length > 0) {
         combinedPosts = postFromCache
-        console.log(combinedPosts)
+        combinedPosts.map((e) => (e.createdAt = new Date(e.createdAt)))
       } else {
         ;[userPosts, userSharedPosts, userTaggedPosts] = await Promise.all([
           this.postRepository.getUserPost(user.id, {}),
@@ -156,7 +156,7 @@ export class GetUserPostsHandler {
                 commentCount: comments.length,
                 reactionCount: reactions.length,
                 reactions: reactionCounts.filter((e) => e.count !== 0),
-                currentReaction: currentReaction.type,
+                currentReaction: currentReaction?.type,
               },
             }
           }
@@ -181,8 +181,8 @@ export class GetUserPostsHandler {
               viewCount: viewCount ?? p.totalViewCount,
               commentCount: comments.length,
               reactionCount: reactions.length,
-              reactions: reactionCounts,
-              currentReaction: currentReaction.type,
+              reactions: reactionCounts.filter((e) => e.count !== 0),
+              currentReaction: currentReaction?.type,
             },
           }
         }),

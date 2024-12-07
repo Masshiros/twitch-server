@@ -69,6 +69,7 @@ export class GetUserFeedHandler {
         postOfIdsToGet.map(async (id) => {
           const post: Post[] = await this.cachePostDatabase.getPostByUserId(id)
           postsFromCache = postsFromCache.concat(post)
+          postsFromCache.map((e) => (e.createdAt = new Date(e.createdAt)))
         }),
       )
       if (postsFromCache && postsFromCache.length > 0) {
@@ -121,7 +122,7 @@ export class GetUserFeedHandler {
                 commentCount: comments.length,
                 reactionCount: reactions.length,
                 reactions: reactionCounts.filter((e) => e.count !== 0),
-                currentReaction: currentReaction.type,
+                currentReaction: currentReaction?.type,
               },
             }
           }),
@@ -136,6 +137,7 @@ export class GetUserFeedHandler {
             orderBy,
           },
         )
+
         result = await Promise.all(
           posts.map(async (p) => {
             const [images, owner] = await Promise.all([
@@ -179,7 +181,7 @@ export class GetUserFeedHandler {
                 commentCount: comments.length,
                 reactionCount: reactions.length,
                 reactions: reactionCounts.filter((e) => e.count !== 0),
-                currentReaction: currentReaction.type,
+                currentReaction: currentReaction?.type,
               },
             }
           }),

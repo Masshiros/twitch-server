@@ -69,7 +69,7 @@ export class GetPostHandler {
             commentCount: comments.length ?? 0,
             reactionCount: reactions.length ?? 0,
             reactions: reactionCounts.filter((e) => e.count !== 0),
-            currentReaction: currentReaction.type,
+            currentReaction: currentReaction?.type,
           },
         },
       }
