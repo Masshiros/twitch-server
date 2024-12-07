@@ -1,3 +1,4 @@
+import { EReactionType } from "libs/constants/enum"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
 import { ImageResult } from "./image.result"
 
@@ -12,4 +13,8 @@ export interface PostResult {
   viewCount: number
   reactionCount?: number
   commentCount?: number
+  reactions: {
+    type: EReactionType
+    count: number
+  }[]
 }

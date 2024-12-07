@@ -1,4 +1,5 @@
 import { QueryHandler } from "@nestjs/cqrs"
+import { EReactionType } from "libs/constants/enum"
 import {
   QueryError,
   QueryErrorCode,
@@ -85,6 +86,17 @@ export class GetUserFeedHandler {
                 this.cachePostDatabase.getPostViewByPostId(p.id),
                 this.cachePostDatabase.getCommentsByPostId(p.id),
               ])
+            const reactionCounts = Object.values(EReactionType)
+              .map((reactionType) => {
+                return {
+                  type: reactionType,
+                  count:
+                    reactions.filter(
+                      (reaction) => reaction.type === reactionType,
+                    ).length || 0,
+                }
+              })
+              .sort((a, b) => b.count - a.count)
             const ownerAvatar = ownerImages.find(
               (e) => e.imageType === EImageType.AVATAR,
             )
@@ -104,6 +116,7 @@ export class GetUserFeedHandler {
                 viewCount: viewCount ?? p.totalViewCount,
                 commentCount: comments.length,
                 reactionCount: reactions.length,
+                reactions: reactionCounts.filter((e) => e.count !== 0),
               },
             }
           }),

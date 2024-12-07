@@ -1,4 +1,5 @@
 import { QueryHandler } from "@nestjs/cqrs"
+import { EReactionType } from "libs/constants/enum"
 import { QueryError, QueryErrorCode } from "libs/exception/application/query"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
@@ -39,6 +40,16 @@ export class GetPostHandler {
         this.postRepository.getPostReactions(post),
         this.postRepository.getCommentByPost(post),
       ])
+      const reactionCounts = Object.values(EReactionType)
+        .map((reactionType) => {
+          return {
+            type: reactionType,
+            count:
+              reactions.filter((reaction) => reaction.type === reactionType)
+                .length || 0,
+          }
+        })
+        .sort((a, b) => b.count - a.count)
 
       return {
         post: {
@@ -56,6 +67,7 @@ export class GetPostHandler {
             viewCount: post.totalViewCount,
             commentCount: comments.length ?? 0,
             reactionCount: reactions.length ?? 0,
+            reactions: reactionCounts.filter((e) => e.count !== 0),
           },
         },
       }
