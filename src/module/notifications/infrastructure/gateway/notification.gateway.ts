@@ -35,21 +35,22 @@ export class NotificationsGateway
   private clients: Map<string, string> = new Map()
   async handleConnection(client: Socket, ...args: any[]) {
     try {
-      const token = client.handshake.headers.authorization
-      console.log(client.handshake.headers?.authorization)
-      if (!token) {
-        client.disconnect()
-        return
-      }
-      const payload = await this.userRepository.decodeToken(token, {
-        secret: config.JWT_SECRET_ACCESS_TOKEN,
-      })
-      if (!payload || !payload.sub) {
-        client.disconnect()
-        return
-      }
-      this.clients.set(client.id, payload.sub)
-      console.log(`User ${payload.sub} connected with socket ${client.id}`)
+      // const token = client.handshake.headers.authorization
+      // console.log(client.handshake.headers?.authorization)
+      // if (!token) {
+      //   client.disconnect()
+      //   return
+      // }
+      // const payload = await this.userRepository.decodeToken(token, {
+      //   secret: config.JWT_SECRET_ACCESS_TOKEN,
+      // })
+      // if (!payload || !payload.sub) {
+      //   client.disconnect()
+      //   return
+      // }
+      // this.clients.set(client.id, payload.sub)
+      // console.log(`User ${payload.sub} connected with socket ${client.id}`)
+      console.log(`User connected with socket ${client.id}`)
     } catch (error) {
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
