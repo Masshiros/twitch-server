@@ -104,6 +104,13 @@ export const SuccessMessages = {
     CREATE_COMMENT: "Create comment successfully",
     UPDATE_COMMENT: "Update comment successfully",
   },
+  conversations: {
+    CREATE_CONVERSATION: "Create conversation successfully",
+    GET_CONVERSATION: "Get all conversations",
+  },
+  messages: {
+    CREATE_MESSAGE: "Create message successfully",
+  },
   groups: {
     CREATE_GROUP: "Create new group successfully",
     CREATE_GROUP_POST: "Create new group post successfully",
