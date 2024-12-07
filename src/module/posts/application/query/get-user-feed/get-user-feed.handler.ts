@@ -68,15 +68,22 @@ export class GetUserFeedHandler {
       await Promise.all(
         postOfIdsToGet.map(async (id) => {
           const post: Post[] = await this.cachePostDatabase.getPostByUserId(id)
-          postsFromCache = postsFromCache.concat(post)
-          postsFromCache.map((e) => (e.createdAt = new Date(e.createdAt)))
+          if (post) {
+            postsFromCache = postsFromCache.concat(post)
+            postsFromCache.map((e) => (e.createdAt = new Date(e.createdAt)))
+          }
         }),
       )
-      if (postsFromCache && postsFromCache.length > 0) {
+
+      if (
+        postsFromCache !== null &&
+        postsFromCache.length > 0 &&
+        postsFromCache !== undefined
+      ) {
         posts = postsFromCache
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
           .slice(offset, offset + limit)
           .filter((e) => e.isPublic === true)
-          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
         result = await Promise.all(
           posts.map(async (p) => {
@@ -128,6 +135,7 @@ export class GetUserFeedHandler {
           }),
         )
       } else {
+        console.log("get from database")
         posts = await this.postRepository.getPostOfUsers(
           uniqueUserIds.filter((id) => !hiddenUserIds.includes(id)),
           {
@@ -137,7 +145,10 @@ export class GetUserFeedHandler {
             orderBy,
           },
         )
-
+        console.log("posts", posts)
+        if (!posts || posts.length === 0 || posts === undefined) {
+          return { posts: [] }
+        }
         result = await Promise.all(
           posts.map(async (p) => {
             const [images, owner] = await Promise.all([

@@ -75,7 +75,11 @@ export class GetUserPostsHandler {
       const postFromCache = await this.postRedisDatabase.getPostByUserId(
         user.id,
       )
-      if (postFromCache && postFromCache.length > 0) {
+      if (
+        postFromCache !== null &&
+        postFromCache.length > 0 &&
+        postFromCache !== undefined
+      ) {
         combinedPosts = postFromCache
         combinedPosts.map((e) => (e.createdAt = new Date(e.createdAt)))
       } else {
@@ -85,15 +89,22 @@ export class GetUserPostsHandler {
           this.postRepository.getAllTagPost(user),
         ])
         combinedPosts = [...userPosts, ...userSharedPosts, ...userTaggedPosts]
+        if (
+          !combinedPosts &&
+          combinedPosts.length === 0 &&
+          combinedPosts === undefined
+        ) {
+          return { posts: [], totalPosts: 0, pageTotalPosts: 0, totalPage: 0 }
+        }
       }
 
       const totalPosts = combinedPosts.length
       const totalPage = Math.ceil(totalPosts / limit)
 
       const paginatedPosts = combinedPosts
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice(offset, offset + limit)
         .filter((e) => e.isPublic === true)
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
       const pageTotalPosts = paginatedPosts.length
 
