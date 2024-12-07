@@ -9,12 +9,15 @@ import {
 } from "@nestjs/websockets"
 import config from "libs/config"
 import { Events } from "libs/constants/events"
+import { AuthenticatedSocket } from "libs/constants/interface"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
 import { Server, Socket } from "socket.io"
+import { IGatewaySessionManager } from "src/gateway/gateway.session"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
+import { NotificationEmittedEvent } from "../../domain/events/notification-emitted.events"
 import { INotificationRepository } from "../../domain/repositories/notification.interface.repository"
 
 @WebSocketGateway({
@@ -29,29 +32,14 @@ export class NotificationsGateway
 {
   constructor(
     private readonly notificationRepository: INotificationRepository,
-    private readonly userRepository: IUserRepository,
+    private readonly sessions: IGatewaySessionManager,
   ) {}
   @WebSocketServer() server: Server
-  private clients: Map<string, string> = new Map()
-  async handleConnection(client: Socket, ...args: any[]) {
+
+  async handleConnection(client: AuthenticatedSocket, ...args: any[]) {
     try {
-      console.log("Connected")
-      console.log(client)
-      console.log(client.handshake)
-      const token = client.handshake.headers?.authorization?.split(" ")[1]
-      if (!token) {
-        client.disconnect()
-        return
-      }
-      const payload = await this.userRepository.decodeToken(token, {
-        secret: config.JWT_SECRET_ACCESS_TOKEN,
-      })
-      if (!payload || !payload.sub) {
-        client.disconnect()
-        return
-      }
-      this.clients.set(client.id, payload.sub)
-      console.log(`User ${payload.sub} connected with socket ${client.id}`)
+      console.log(client.user)
+      console.log(`User ${client.user?.id} connected with socket ${client.id}`)
       // console.log(`User connected with socket ${client.id}`)
     } catch (error) {
       throw new InfrastructureError({
@@ -60,10 +48,9 @@ export class NotificationsGateway
       })
     }
   }
-  handleDisconnect(client: Socket) {
+  handleDisconnect(client: AuthenticatedSocket) {
     try {
-      const userId = this.clients.get(client.id)
-      this.clients.delete(userId)
+      const userId = client.user?.id
       console.log(`User ${userId} disconnected.`)
     } catch (error) {
       throw new InfrastructureError({
@@ -73,45 +60,43 @@ export class NotificationsGateway
     }
   }
   @OnEvent(Events.notification)
-  async emitNotification(userId: string, data: any) {
-    const socketId = [...this.clients.entries()].find(
-      ([, id]) => id === userId,
-    )?.[0]
-    if (!socketId) {
-      this.server.to(socketId).emit("notification", data)
+  async emitNotification(event: NotificationEmittedEvent) {
+    const { userId, notificationData } = event
+    if (userId) {
+      this.server.to(userId).emit("notification", notificationData)
     }
   }
-  @SubscribeMessage("getNotifications")
-  async getNotifications(
-    client: Socket,
-    {
-      limit = 1,
-      offset = 0,
-      orderBy = "createdAt",
-      order = "desc",
-    }: {
-      limit: number
-      offset: number
-      orderBy: string
-      order: "asc" | "desc"
-    },
-  ) {
-    const userId = this.clients.get(client.id)
-    const user = await this.userRepository.findById(userId)
-    if (user) {
-      const notifications =
-        await this.notificationRepository.getAllNotificationWithPagination(
-          user,
-          {
-            limit,
-            offset,
-            orderBy,
-            order,
-          },
-        )
-      client.emit("getNotifications", notifications)
-    } else {
-      client.disconnect()
-    }
-  }
+  // @SubscribeMessage("getNotifications")
+  // async getNotifications(
+  //   client: Socket,
+  //   {
+  //     limit = 1,
+  //     offset = 0,
+  //     orderBy = "createdAt",
+  //     order = "desc",
+  //   }: {
+  //     limit: number
+  //     offset: number
+  //     orderBy: string
+  //     order: "asc" | "desc"
+  //   },
+  // ) {
+  //   const userId = this.clients.get(client.id)
+  //   const user = await this.userRepository.findById(userId)
+  //   if (user) {
+  //     const notifications =
+  //       await this.notificationRepository.getAllNotificationWithPagination(
+  //         user,
+  //         {
+  //           limit,
+  //           offset,
+  //           orderBy,
+  //           order,
+  //         },
+  //       )
+  //     client.emit("getNotifications", notifications)
+  //   } else {
+  //     client.disconnect()
+  //   }
+  // }
 }
