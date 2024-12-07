@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -8,6 +10,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { FollowerFactory } from "src/module/followers/domain/factory/followers.factory"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
+import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { FollowCommand } from "./follow.command"
 
@@ -17,6 +20,7 @@ export class FollowCommandHandler {
     private readonly followRepository: IFollowersRepository,
     private readonly followFactory: FollowerFactory,
     private readonly userRepository: IUserRepository,
+    private readonly emitter: EventEmitter2,
   ) {}
   async execute(command: FollowCommand) {
     const { sourceUserId, destinationUserId } = command
@@ -75,6 +79,12 @@ export class FollowCommandHandler {
       })
       await this.followRepository.addFollower(follow)
       // TODO(notify): Notify to user who has been followed
+      this.emitter.emit(
+        Events.notification,
+        new NotificationEmittedEvent(follow.sourceUserId, {
+          message: `${sourceUserId} follow you`,
+        }),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||

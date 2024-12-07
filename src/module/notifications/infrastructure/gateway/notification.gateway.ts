@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common"
+import { OnEvent } from "@nestjs/event-emitter"
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -7,6 +8,7 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets"
 import config from "libs/config"
+import { Events } from "libs/constants/events"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
@@ -19,6 +21,7 @@ import { INotificationRepository } from "../../domain/repositories/notification.
   cors: {
     origin: "*",
   },
+  namespace: "notifications",
 })
 @Injectable()
 export class NotificationsGateway
@@ -66,6 +69,7 @@ export class NotificationsGateway
       })
     }
   }
+  @OnEvent(Events.notification)
   async emitNotification(userId: string, data: any) {
     const socketId = [...this.clients.entries()].find(
       ([, id]) => id === userId,
