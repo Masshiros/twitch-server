@@ -106,11 +106,11 @@ export class FollowerController {
   @Get("/is-follow")
   async isFollow(
     @CurrentUser() user: UserAggregate,
-    @Query("sourceUserId") sourceUserId: string,
+    @Query("destinationUserId") destinationUserId: string,
   ): Promise<boolean> {
     const query = new IsFollowQuery({
-      destinationFollowId: user.id,
-      sourceFollowId: sourceUserId,
+      destinationFollowId: destinationUserId,
+      sourceFollowId: user.id,
     })
     return await this.followerService.isFollow(query)
   }

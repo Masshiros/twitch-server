@@ -55,6 +55,7 @@ export class IsFollowQueryHandler {
         destinationFollowId,
         sourceFollowId,
       )
+      console.log(isFollowed)
 
       return isFollowed
     } catch (err) {
