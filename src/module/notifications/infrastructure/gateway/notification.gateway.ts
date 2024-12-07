@@ -35,8 +35,10 @@ export class NotificationsGateway
   private clients: Map<string, string> = new Map()
   async handleConnection(client: Socket, ...args: any[]) {
     try {
-      const token = client.handshake.headers.authorization
-      console.log(client.handshake.headers?.authorization)
+      console.log("Connected")
+      console.log(client)
+      console.log(client.handshake)
+      const token = client.handshake.headers?.authorization?.split(" ")[1]
       if (!token) {
         client.disconnect()
         return
