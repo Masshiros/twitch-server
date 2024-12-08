@@ -12,12 +12,13 @@ import { LoggerInterceptor } from "libs/interceptor/logger.interceptor"
 import { TransformInterceptor } from "libs/interceptor/response.interceptor"
 import { RedisIoAdapter } from "src/gateway/redis.adapter"
 import { AppModule } from "./app.module"
+import { IUserRepository } from "./module/users/domain/repository/user/user.interface.repository"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   // redis adapter
-
-  const redisIoAdapter = new RedisIoAdapter(app)
+  const userRepository = app.get<IUserRepository>(IUserRepository)
+  const redisIoAdapter = new RedisIoAdapter(app, userRepository)
 
   // console.log(redisIoAdapter)
   await redisIoAdapter.connectToRedis()

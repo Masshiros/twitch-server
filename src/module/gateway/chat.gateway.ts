@@ -9,6 +9,7 @@ import {
 } from "@nestjs/websockets"
 import config from "libs/config"
 import { Events } from "libs/constants/events"
+import { AuthenticatedSocket } from "libs/constants/interface"
 import { SocketEvents } from "libs/constants/socket-events"
 import {
   InfrastructureError,
@@ -22,6 +23,7 @@ import { AllNotificationEvent } from "src/module/notifications/domain/events/all
 import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
 import { INotificationRepository } from "src/module/notifications/domain/repositories/notification.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
+import { ConversationCreateEvent } from "../chat/domain/events/conversation/conversation-create.event"
 
 @WebSocketGateway({
   cors: {
@@ -36,35 +38,38 @@ export class ChatGateway implements OnGatewayConnection {
     private readonly imageService: ImageService,
     private readonly emitter: EventEmitter2,
   ) {}
-  async handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: AuthenticatedSocket, ...args: any[]) {
     try {
-      const token = client.handshake.auth.token.split(" ")[1]
-      // console.log(token)
-      // console.log(token)
-      if (!token) {
-        client.disconnect()
-        return "Authorization token missing"
-      }
+      // const token = client.handshake.auth.token.split(" ")[1]
+      // // console.log(token)
+      // // console.log(token)
+      // if (!token) {
+      //   client.disconnect()
+      //   return "Authorization token missing"
+      // }
 
-      const decoded = await this.userRepository.decodeToken(token, {
-        secret: config.JWT_SECRET_ACCESS_TOKEN,
-      })
+      // const decoded = await this.userRepository.decodeToken(token, {
+      //   secret: config.JWT_SECRET_ACCESS_TOKEN,
+      // })
 
-      if (!decoded) {
-        client.disconnect()
-        return "jwt expired"
-      }
+      // if (!decoded) {
+      //   client.disconnect()
+      //   return "jwt expired"
+      // }
 
-      const user = await this.userRepository.findById(decoded.sub)
+      // const user = await this.userRepository.findById(decoded.sub)
 
-      if (!user) {
-        client.disconnect()
-        return "User not found"
-      }
+      // if (!user) {
+      //   client.disconnect()
+      //   return "User not found"
+      // }
+      const user = client?.user
+      user.isOnline = true
+      await this.userRepository.update(user)
       this.sessions.setUserSocket(user.id, client)
       // console.log(this.sessions)
       if (user) {
-        console.log("first")
+        console.log(`${user.name} connected`)
         this.emitter.emit(
           Events.notification_all,
           new AllNotificationEvent(user.id),
@@ -78,8 +83,12 @@ export class ChatGateway implements OnGatewayConnection {
       })
     }
   }
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: AuthenticatedSocket) {
     try {
+      const user = client?.user
+      user.isOnline = false
+      await this.userRepository.update(user)
+      this.sessions.removeUserSocket(user.id)
       // const userId = client.user?.id
       console.log(`User disconnected.`)
     } catch (error) {
@@ -112,6 +121,7 @@ export class ChatGateway implements OnGatewayConnection {
           notification,
           receiver,
         )
+        console.log("DATa", data)
         socket.emit("notification", {
           senderName: sender.name,
           senderAvatar: senderAvatar,
@@ -170,4 +180,10 @@ export class ChatGateway implements OnGatewayConnection {
       socket.disconnect()
     }
   }
+
+  // chat
+  @OnEvent(Events.conversation.create)
+  async onCreateConversation(event: ConversationCreateEvent) {}
+  @OnEvent(Events.message.create)
+  async onCreateMessage() {}
 }

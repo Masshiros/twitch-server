@@ -65,9 +65,10 @@ export class CachePostProcessor extends WorkerHost {
         createdAt: new Date(),
       })
       await this.notificationRepository.addNotification(notification)
+      console.log("DATa", postId)
       this.emitter.emit(
         Events.notification,
-        new NotificationEmittedEvent(ids, notification),
+        new NotificationEmittedEvent(ids, notification, postId),
       )
     } catch (error) {
       this.logger.error(`Error processing post cache: ${error.message}`)
