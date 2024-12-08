@@ -81,7 +81,7 @@ export class FollowCommandHandler {
       // TODO(notify): Notify to user who has been followed
       this.emitter.emit(
         Events.notification,
-        new NotificationEmittedEvent(follow.sourceUserId, {
+        new NotificationEmittedEvent(follow.destinationUserId, {
           message: `${sourceUserId} follow you`,
         }),
       )
