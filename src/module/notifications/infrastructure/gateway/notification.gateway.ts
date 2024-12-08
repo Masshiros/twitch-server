@@ -58,7 +58,7 @@ export class NotificationsGateway
       if (!user) {
         console.log("User not found")
       }
-      console.log(user)
+      this.sessions.setUserSocket(user.id, client)
       // console.log(`User ${client.user?.id} connected with socket ${client.id}`)
       client.emit("connected", { status: "good" })
       // console.log(`User connected with socket ${client.id}`)
@@ -86,7 +86,8 @@ export class NotificationsGateway
   async emitNotification(event: NotificationEmittedEvent) {
     const { userId, notificationData } = event
     if (userId) {
-      this.server.to(userId).emit("notification", notificationData)
+      const socket = this.sessions.getUserSocket(userId)
+      socket.emit("notification", notificationData)
     }
   }
   // @SubscribeMessage("getNotifications")

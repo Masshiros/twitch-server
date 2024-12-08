@@ -85,6 +85,7 @@ export class FollowCommandHandler {
           message: `${sourceUserId} follow you`,
         }),
       )
+      console.log("emit event")
     } catch (err) {
       if (
         err instanceof DomainError ||
