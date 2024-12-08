@@ -7,11 +7,14 @@ import config, { validate } from "libs/config"
 import { AuthGuard } from "./guard/auth.guard"
 import { PermissionGuard } from "./guard/permission.guard"
 import { CategoriesModule } from "./module/categories/application/categories.module"
+import { ChatModule } from "./module/chat/application/chat.module"
+import { ChatGatewayModule } from "./module/chat/infrastructure/database/gateway/chat.gateway.module"
 import { FollowerModule } from "./module/followers/application/follower.module"
 import { FriendsModule } from "./module/friends/application/friend.module"
 import { GroupsModule } from "./module/groups/application/groups.module"
 import { ImageModule } from "./module/image/application/image.module"
 import { NotificationsModule } from "./module/notifications/application/notifications.module"
+import { NotificationGatewayModule } from "./module/notifications/infrastructure/gateway/notification.gateway.module"
 import { PostsModule } from "./module/posts/application/posts.module"
 import { UserModule } from "./module/users/application/user.module"
 import { UserDatabaseModule } from "./module/users/infrastructure/database/user.database.module"
@@ -27,6 +30,8 @@ import { UserDatabaseModule } from "./module/users/infrastructure/database/user.
         },
       }),
     }),
+    // ChatGatewayModule,
+    NotificationGatewayModule,
     EventEmitterModule.forRoot(),
 
     ImageModule,
@@ -38,6 +43,7 @@ import { UserDatabaseModule } from "./module/users/infrastructure/database/user.
     FriendsModule,
     PostsModule,
     GroupsModule,
+    ChatModule,
   ],
   providers: [
     {
