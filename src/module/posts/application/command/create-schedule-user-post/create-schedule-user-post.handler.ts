@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import { Folder } from "libs/constants/folder"
 import {
   CommandError,
@@ -12,6 +14,7 @@ import { ImageService } from "src/module/image/application/image.service"
 import { EImage } from "src/module/image/domain/enum/image.enum"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
+import { PostCreateEvent } from "src/module/posts/domain/events/post-create.event"
 import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { UserAggregate } from "src/module/users/domain/aggregate"
@@ -25,6 +28,7 @@ export class CreateScheduleUserPostHandler {
     private readonly friendRepository: IFriendRepository,
     private readonly imageService: ImageService,
     private readonly postRepository: IPostsRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async execute(command: CreateScheduleUserPostCommand): Promise<void> {
     const {
@@ -112,6 +116,12 @@ export class CreateScheduleUserPostHandler {
           Folder.image.group_post,
           post.id,
           EImage.POST,
+        )
+      }
+      if (!images || images.length === 0) {
+        this.eventEmitter.emit(
+          Events.post.create,
+          new PostCreateEvent(post, userId),
         )
       }
       await this.postRepository.createPost(post, taggedUserIds)

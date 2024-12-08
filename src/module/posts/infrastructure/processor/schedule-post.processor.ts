@@ -1,17 +1,23 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq"
 import { Logger } from "@nestjs/common"
+import { EventEmitter2 } from "@nestjs/event-emitter"
 import { Job } from "bullmq"
 import { Bull } from "libs/constants/bull"
+import { Events } from "libs/constants/events"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
+import { PostUpdateEvent } from "../../domain/events/post-update.event"
 import { IPostsRepository } from "../../domain/repository/posts.interface.repository"
 
 @Processor(Bull.queue.user_post.schedule)
 export class SchedulePostProcessor extends WorkerHost {
   private readonly logger = new Logger(SchedulePostProcessor.name)
-  constructor(private readonly postRepository: IPostsRepository) {
+  constructor(
+    private readonly postRepository: IPostsRepository,
+    private readonly emitter: EventEmitter2,
+  ) {
     super()
   }
   @OnWorkerEvent("active")
@@ -52,6 +58,7 @@ export class SchedulePostProcessor extends WorkerHost {
         this.postRepository.updatePost(post),
         this.postRepository.deleteScheduledPost(plainData),
       ])
+      this.emitter.emit(Events.post.update, new PostUpdateEvent(post))
       this.logger.log(`Processed scheduled post: ${plainData.id}`)
     } catch (error) {
       if (error instanceof InfrastructureError) {
