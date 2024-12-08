@@ -21,7 +21,7 @@ export abstract class INotificationRepository {
       orderBy: string
       order: "asc" | "desc"
     },
-  ) => Promise<Notification[] | null>
+  ) => Promise<any[] | null>
   markAsRead: (
     notification: Notification,
     receiver: UserAggregate,

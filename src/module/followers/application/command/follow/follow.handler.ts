@@ -91,6 +91,7 @@ export class FollowCommandHandler {
         type: ENotification.USER,
         createdAt: new Date(),
       })
+      console.log(follow.destinationUserId)
       await this.notificationRepository.addNotification(notification)
 
       this.emitter.emit(

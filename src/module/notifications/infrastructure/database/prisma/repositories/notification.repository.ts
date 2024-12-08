@@ -111,8 +111,8 @@ export class NotificationRepository implements INotificationRepository {
     receiver: UserAggregate,
 
     {
-      limit = 1,
-      offset = 0,
+      limit,
+      offset,
       orderBy = "createdAt",
       order = "desc",
     }: {
@@ -121,8 +121,9 @@ export class NotificationRepository implements INotificationRepository {
       orderBy: string
       order: "asc" | "desc"
     },
-  ): Promise<Notification[] | null> {
+  ): Promise<any[] | null> {
     try {
+      console.log(limit !== undefined)
       const notificationUserEntries =
         await this.prismaService.notificationUser.findMany({
           where: {
@@ -130,11 +131,12 @@ export class NotificationRepository implements INotificationRepository {
           },
           select: {
             notificationId: true,
+            hasRead: true,
           },
-          ...(offset !== null ? { skip: offset } : {}),
-          ...(limit !== null ? { take: limit } : {}),
+          ...(offset !== undefined ? { skip: offset } : {}),
+          ...(limit !== undefined ? { take: limit } : {}),
         })
-      if (!notificationUserEntries.length) {
+      if (notificationUserEntries.length === 0) {
         return []
       }
       const notificationIds = notificationUserEntries.map(
@@ -146,9 +148,16 @@ export class NotificationRepository implements INotificationRepository {
         },
         ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
-      const result = notifications.map((prismaNotification) =>
-        NotificationMapper.toDomain(prismaNotification),
-      )
+      const result = notifications.map((prismaNotification) => {
+        const notificationUserEntry = notificationUserEntries.find(
+          (entry) => entry.notificationId === prismaNotification.id,
+        )
+        const notification = NotificationMapper.toDomain(prismaNotification)
+        return {
+          ...notification,
+          hasRead: notificationUserEntry?.hasRead ?? false,
+        }
+      })
 
       return result ?? null
     } catch (error) {

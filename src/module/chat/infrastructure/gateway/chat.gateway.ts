@@ -94,7 +94,8 @@ export class ChatGateway implements OnGatewayConnection {
     const { userIds, notification } = event
     if (userIds && userIds !== undefined && userIds.length > 0) {
       userIds.map(async (e) => {
-        const user = await this.userRepository.findById(e)
+        console.log("USERID", e)
+        const user = await this.userRepository.findById(notification.senderId)
         const userImages = await this.imageService.getImageByApplicableId(
           user.id,
         )
@@ -134,6 +135,7 @@ export class ChatGateway implements OnGatewayConnection {
       if (notifications.length === 0) {
         socket.emit("getNotifications", "No notification to display")
       }
+
       const result = await Promise.all(
         notifications.map(async (e) => {
           const user = await this.userRepository.findById(e.senderId)
@@ -146,12 +148,14 @@ export class ChatGateway implements OnGatewayConnection {
           return {
             senderName: user?.name ?? "",
             senderAvatar: userAvatar?.url ?? "",
-            message: e.message,
-            type: e.type,
-            createdAt: e.createdAt,
+            message: e._message,
+            type: e._type,
+            createdAt: e._createdAt,
+            hasRead: e.hasRead,
           }
         }),
       )
+      console.log(result)
       socket.emit("getNotifications", result)
     } else {
       socket.disconnect()
