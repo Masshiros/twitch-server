@@ -16,22 +16,24 @@ export class RedisIoAdapter extends IoAdapter {
     super(app)
   }
 
-  private adapterConstructor: ReturnType<typeof createAdapter>
+  // private adapterConstructor: ReturnType<typeof createAdapter>
 
-  async connectToRedis(): Promise<void> {
-    const pubClient = createClient({ url: `redis://127.0.0.1:6379` })
-    const subClient = pubClient.duplicate()
+  // async connectToRedis(): Promise<void> {
+  //   const pubClient = createClient({ url: `redis://127.0.0.1:6379` })
+  //   const subClient = pubClient.duplicate()
 
-    await Promise.all([pubClient.connect(), subClient.connect()])
+  //   await Promise.all([pubClient.connect(), subClient.connect()])
 
-    this.adapterConstructor = createAdapter(pubClient, subClient)
-  }
+  //   this.adapterConstructor = createAdapter(pubClient, subClient)
+  //   console.log(this.adapterConstructor)
+  // }
 
   createIOServer(port: number, options?: ServerOptions): any {
     const server = super.createIOServer(port, options)
-    server.adapter(this.adapterConstructor)
+    // server.adapter(this.adapterConstructor)
     server.use(async (socket: AuthenticatedSocket, next) => {
-      console.log("Inside Websocket Adapter Middleware")
+      console.log(socket)
+      console.log("Inside Websocket Adapter Middleware 1")
 
       const token = socket.handshake.headers["authorization"]
 

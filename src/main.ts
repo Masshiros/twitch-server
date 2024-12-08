@@ -64,8 +64,10 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggerInterceptor())
   // redis adapter
   const userRepository = app.get<IUserRepository>(IUserRepository)
+
   const redisIoAdapter = new RedisIoAdapter(app, userRepository)
-  await redisIoAdapter.connectToRedis()
+
+  // await redisIoAdapter.connectToRedis()
   app.useWebSocketAdapter(redisIoAdapter)
   await app.listen(config.APP_PORT || 3000)
 }
