@@ -94,11 +94,10 @@ export class FollowCommandHandler {
       console.log(follow.destinationUserId)
       await this.notificationRepository.addNotification(notification)
 
-      this.emitter.emit(
+      return this.emitter.emit(
         Events.notification,
         new NotificationEmittedEvent([follow.destinationUserId], notification),
       )
-      console.log("emit event")
     } catch (err) {
       if (
         err instanceof DomainError ||
