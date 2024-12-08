@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common"
-import { OnEvent } from "@nestjs/event-emitter"
+import { EventEmitter2, OnEvent } from "@nestjs/event-emitter"
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -16,7 +16,10 @@ import {
 } from "libs/exception/infrastructure"
 import { Server, Socket } from "socket.io"
 import { IGatewaySessionManager } from "src/gateway/gateway.session"
+import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
+import { AllNotificationEvent } from "../../domain/events/all-notification.event"
 import { NotificationEmittedEvent } from "../../domain/events/notification-emitted.events"
 import { INotificationRepository } from "../../domain/repositories/notification.interface.repository"
 
@@ -34,13 +37,15 @@ export class NotificationsGateway
     private readonly notificationRepository: INotificationRepository,
     private readonly userRepository: IUserRepository,
     private readonly sessions: IGatewaySessionManager,
+    private readonly imageService: ImageService,
+    private readonly emitter: EventEmitter2,
   ) {}
   @WebSocketServer() server: Server
 
   async handleConnection(client: Socket, ...args: any[]) {
     try {
       const token = client.handshake.auth.token.split(" ")[1]
-      console.log(token)
+      // console.log(token)
       if (!token) {
         console.log("Authorization token missing")
       }
@@ -59,8 +64,12 @@ export class NotificationsGateway
         console.log("User not found")
       }
       this.sessions.setUserSocket(user.id, client)
-      // console.log(`User ${client.user?.id} connected with socket ${client.id}`)
-      client.emit("connected", { status: "good" })
+      if (user) {
+        this.emitter.emit(
+          Events.notification_all,
+          new AllNotificationEvent(user.id),
+        )
+      }
       // console.log(`User connected with socket ${client.id}`)
     } catch (error) {
       throw new InfrastructureError({
@@ -84,43 +93,73 @@ export class NotificationsGateway
   }
   @OnEvent(Events.notification)
   async emitNotification(event: NotificationEmittedEvent) {
-    const { userId, notificationData } = event
-    if (userId) {
-      const socket = this.sessions.getUserSocket(userId)
-      socket.emit("notification", notificationData)
+    const { userIds, notification } = event
+    if (userIds && userIds !== undefined && userIds.length > 0) {
+      userIds.map(async (e) => {
+        const user = await this.userRepository.findById(e)
+        const userImages = await this.imageService.getImageByApplicableId(
+          user.id,
+        )
+        const userAvatar = userImages.find(
+          (e) => e.imageType === EImageType.AVATAR,
+        )
+        const socket = this.sessions.getUserSocket(e)
+        await this.notificationRepository.addNotificationUser(
+          notification,
+          user,
+        )
+        socket.emit("notification", {
+          senderName: user.name,
+          senderAvatar: userAvatar,
+          type: notification.type,
+          createdAt: notification.createdAt,
+          message: notification.message,
+        })
+      })
     }
   }
-  // @SubscribeMessage("getNotifications")
-  // async getNotifications(
-  //   client: Socket,
-  //   {
-  //     limit = 1,
-  //     offset = 0,
-  //     orderBy = "createdAt",
-  //     order = "desc",
-  //   }: {
-  //     limit: number
-  //     offset: number
-  //     orderBy: string
-  //     order: "asc" | "desc"
-  //   },
-  // ) {
-  //   const userId = this.clients.get(client.id)
-  //   const user = await this.userRepository.findById(userId)
-  //   if (user) {
-  //     const notifications =
-  //       await this.notificationRepository.getAllNotificationWithPagination(
-  //         user,
-  //         {
-  //           limit,
-  //           offset,
-  //           orderBy,
-  //           order,
-  //         },
-  //       )
-  //     client.emit("getNotifications", notifications)
-  //   } else {
-  //     client.disconnect()
-  //   }
-  // }
+  @OnEvent(Events.notification_all)
+  async getNotifications(event: AllNotificationEvent) {
+    const { userId } = event
+    const user = await this.userRepository.findById(userId)
+    const socket = this.sessions.getUserSocket(userId)
+    if (user && socket) {
+      const notifications =
+        await this.notificationRepository.getAllNotificationWithPagination(
+          user,
+          {
+            orderBy: "createdAt",
+            order: "desc",
+          },
+        )
+      if (
+        !notifications &&
+        notifications.length === 0 &&
+        notifications === undefined
+      ) {
+        socket.emit("getNotifications", "No notification to display")
+      }
+      const result = await Promise.all(
+        notifications.map(async (e) => {
+          const user = await this.userRepository.findById(e.senderId)
+          const userImages = await this.imageService.getImageByApplicableId(
+            user.id,
+          )
+          const userAvatar = userImages?.find(
+            (e) => e.imageType === EImageType.AVATAR,
+          )
+          return {
+            senderName: user?.name ?? "",
+            senderAvatar: userAvatar?.url ?? "",
+            message: e.message,
+            type: e.type,
+            createdAt: e.createdAt,
+          }
+        }),
+      )
+      socket.emit("getNotifications", result)
+    } else {
+      socket.disconnect()
+    }
+  }
 }

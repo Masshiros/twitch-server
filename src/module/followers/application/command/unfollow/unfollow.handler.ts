@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -8,6 +10,9 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { FollowerFactory } from "src/module/followers/domain/factory/followers.factory"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
+import { ENotification } from "src/module/notifications/domain/enum/notification.enum"
+import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
+import { NotificationFactory } from "src/module/notifications/domain/factory/notification.factory"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { UnfollowCommand } from "./unfollow.command"
 
@@ -17,6 +22,7 @@ export class UnfollowCommandHandler {
     private readonly followRepository: IFollowersRepository,
     private readonly followFactory: FollowerFactory,
     private readonly userRepository: IUserRepository,
+    private readonly emitter: EventEmitter2,
   ) {}
   async execute(command: UnfollowCommand) {
     const { sourceUserId, destinationUserId } = command
@@ -74,6 +80,17 @@ export class UnfollowCommandHandler {
         destinationUserId,
       })
       await this.followRepository.removeFollower(follow)
+      const notification = NotificationFactory.create({
+        senderId: sourceUserId,
+        title: "Unfollow",
+        message: "Unfollow you",
+        type: ENotification.USER,
+        createdAt: new Date(),
+      })
+      this.emitter.emit(
+        Events.notification,
+        new NotificationEmittedEvent([follow.destinationUserId], notification),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||

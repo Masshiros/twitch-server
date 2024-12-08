@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common"
 import { CqrsModule } from "@nestjs/cqrs"
 import { ImageModule } from "src/module/image/application/image.module"
+import { NotificationDatabaseModule } from "src/module/notifications/infrastructure/database/notification.database.module"
 import { UserDatabaseModule } from "src/module/users/infrastructure/database/user.database.module"
 import { FollowerFactory } from "../domain/factory/followers.factory"
 import { FollowersDatabaseModule } from "../infrastructure/database/followers.database.module"
@@ -30,6 +31,7 @@ const queryHandlers = [
     CqrsModule,
     FollowersDatabaseModule,
     UserDatabaseModule,
+    NotificationDatabaseModule,
     ImageModule,
   ],
 })

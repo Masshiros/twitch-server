@@ -3,6 +3,7 @@ export const Events = {
     multiple_upload: "images.upload",
   },
   notification: "emit.notification",
+  notification_all: "all.notification",
   post: {
     create: "post.create",
     update: "post.update",

@@ -10,7 +10,11 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { FollowerFactory } from "src/module/followers/domain/factory/followers.factory"
 import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
+import { ENotification } from "src/module/notifications/domain/enum/notification.enum"
 import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
+import { NotificationUserFactory } from "src/module/notifications/domain/factory/notifcation-user.factory"
+import { NotificationFactory } from "src/module/notifications/domain/factory/notification.factory"
+import { INotificationRepository } from "src/module/notifications/domain/repositories/notification.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { FollowCommand } from "./follow.command"
 
@@ -21,6 +25,7 @@ export class FollowCommandHandler {
     private readonly followFactory: FollowerFactory,
     private readonly userRepository: IUserRepository,
     private readonly emitter: EventEmitter2,
+    private readonly notificationRepository: INotificationRepository,
   ) {}
   async execute(command: FollowCommand) {
     const { sourceUserId, destinationUserId } = command
@@ -79,11 +84,18 @@ export class FollowCommandHandler {
       })
       await this.followRepository.addFollower(follow)
       // TODO(notify): Notify to user who has been followed
+      const notification = NotificationFactory.create({
+        senderId: sourceUserId,
+        title: "Follow",
+        message: "Follow you",
+        type: ENotification.USER,
+        createdAt: new Date(),
+      })
+      await this.notificationRepository.addNotification(notification)
+
       this.emitter.emit(
         Events.notification,
-        new NotificationEmittedEvent(follow.destinationUserId, {
-          message: `${sourceUserId} follow you`,
-        }),
+        new NotificationEmittedEvent([follow.destinationUserId], notification),
       )
       console.log("emit event")
     } catch (err) {

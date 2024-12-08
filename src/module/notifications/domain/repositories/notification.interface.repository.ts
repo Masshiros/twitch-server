@@ -16,8 +16,8 @@ export abstract class INotificationRepository {
       orderBy,
       order,
     }: {
-      limit: number
-      offset: number
+      limit?: number
+      offset?: number
       orderBy: string
       order: "asc" | "desc"
     },

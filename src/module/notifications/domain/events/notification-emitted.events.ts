@@ -1,8 +1,9 @@
 import { IEvent } from "@nestjs/cqrs"
+import { Notification } from "../entity/notification.entity"
 
 export class NotificationEmittedEvent implements IEvent {
   constructor(
-    public readonly userId: string,
-    public readonly notificationData: any,
+    public readonly userIds: string[],
+    public readonly notification: Notification,
   ) {}
 }
