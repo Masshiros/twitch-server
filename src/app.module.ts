@@ -8,9 +8,9 @@ import { AuthGuard } from "./guard/auth.guard"
 import { PermissionGuard } from "./guard/permission.guard"
 import { CategoriesModule } from "./module/categories/application/categories.module"
 import { ChatModule } from "./module/chat/application/chat.module"
+import { ChatGatewayModule } from "./module/chat/infrastructure/database/gateway/chat.gateway.module"
 import { FollowerModule } from "./module/followers/application/follower.module"
 import { FriendsModule } from "./module/friends/application/friend.module"
-import { GatewayModule } from "./module/gateway/gateway.module"
 import { GroupsModule } from "./module/groups/application/groups.module"
 import { ImageModule } from "./module/image/application/image.module"
 import { PostsModule } from "./module/posts/application/posts.module"
@@ -29,14 +29,14 @@ import { UserDatabaseModule } from "./module/users/infrastructure/database/user.
       }),
     }),
 
+    ChatGatewayModule,
     EventEmitterModule.forRoot(),
-    GatewayModule,
     ImageModule,
     UserModule,
     UserDatabaseModule,
     FollowerModule,
     CategoriesModule,
-    GatewayModule,
+
     FriendsModule,
     PostsModule,
     GroupsModule,

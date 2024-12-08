@@ -10,18 +10,20 @@ import config from "libs/config"
 import { ErrorInterceptor } from "libs/interceptor/error.interceptor"
 import { LoggerInterceptor } from "libs/interceptor/logger.interceptor"
 import { TransformInterceptor } from "libs/interceptor/response.interceptor"
-import { RedisIoAdapter } from "src/module/gateway/redis.adapter"
+import { RedisIoAdapter } from "src/gateway/redis.adapter"
 import { AppModule } from "./app.module"
-import { IUserRepository } from "./module/users/domain/repository/user/user.interface.repository"
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule)
+  const app = await NestFactory.create(AppModule)
   // redis adapter
 
   const redisIoAdapter = new RedisIoAdapter(app)
+
+  // console.log(redisIoAdapter)
   await redisIoAdapter.connectToRedis()
   // await redisIoAdapter.connectToRedis()
   app.useWebSocketAdapter(redisIoAdapter)
+
   const swaggerConfig = new DocumentBuilder()
     .addBearerAuth()
     .setTitle("Twitch API")

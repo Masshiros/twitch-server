@@ -1,18 +1,10 @@
 import { INestApplication, InternalServerErrorException } from "@nestjs/common"
 import { IoAdapter } from "@nestjs/platform-socket.io"
 import { createAdapter } from "@socket.io/redis-adapter"
-import { AuthenticatedSocket } from "libs/constants/interface"
-import { InfrastructureErrorCode } from "libs/exception/infrastructure"
 import { createClient } from "redis"
 import { ServerOptions } from "socket.io"
-import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import config from "../../../libs/config"
 
 export class RedisIoAdapter extends IoAdapter {
-  constructor(app: INestApplication) {
-    super(app)
-  }
-
   private adapterConstructor: ReturnType<typeof createAdapter>
 
   async connectToRedis(): Promise<void> {
@@ -25,8 +17,8 @@ export class RedisIoAdapter extends IoAdapter {
   }
 
   createIOServer(port: number, options?: ServerOptions): any {
+    console.log("Inside this")
     const server = super.createIOServer(port, options)
-
     server.adapter(this.adapterConstructor)
 
     return server
