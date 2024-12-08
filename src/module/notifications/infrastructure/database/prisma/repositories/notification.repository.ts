@@ -123,7 +123,8 @@ export class NotificationRepository implements INotificationRepository {
     },
   ): Promise<any[] | null> {
     try {
-      console.log(limit !== undefined)
+      // console.log("RECEIVER", receiver.name)
+      // console.log("RECEIVER", receiver.id)
       const notificationUserEntries =
         await this.prismaService.notificationUser.findMany({
           where: {
@@ -136,6 +137,7 @@ export class NotificationRepository implements INotificationRepository {
           ...(offset !== undefined ? { skip: offset } : {}),
           ...(limit !== undefined ? { take: limit } : {}),
         })
+
       if (notificationUserEntries.length === 0) {
         return []
       }
@@ -148,6 +150,7 @@ export class NotificationRepository implements INotificationRepository {
         },
         ...(orderBy !== null ? { orderBy: { [orderBy]: order } } : {}),
       })
+
       const result = notifications.map((prismaNotification) => {
         const notificationUserEntry = notificationUserEntries.find(
           (entry) => entry.notificationId === prismaNotification.id,
@@ -158,6 +161,7 @@ export class NotificationRepository implements INotificationRepository {
           hasRead: notificationUserEntry?.hasRead ?? false,
         }
       })
+      // console.log(result)
 
       return result ?? null
     } catch (error) {

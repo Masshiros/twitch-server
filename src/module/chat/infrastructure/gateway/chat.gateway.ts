@@ -39,7 +39,7 @@ export class ChatGateway implements OnGatewayConnection {
   async handleConnection(client: Socket, ...args: any[]) {
     try {
       const token = client.handshake.auth.token.split(" ")[1]
-      console.log(token)
+      // console.log(token)
       // console.log(token)
       if (!token) {
         client.disconnect()
@@ -62,7 +62,9 @@ export class ChatGateway implements OnGatewayConnection {
         return "User not found"
       }
       this.sessions.setUserSocket(user.id, client)
+      // console.log(this.sessions)
       if (user) {
+        console.log("first")
         this.emitter.emit(
           Events.notification_all,
           new AllNotificationEvent(user.id),
@@ -94,22 +96,25 @@ export class ChatGateway implements OnGatewayConnection {
     const { userIds, notification } = event
     if (userIds && userIds !== undefined && userIds.length > 0) {
       userIds.map(async (e) => {
-        console.log("USERID", e)
-        const user = await this.userRepository.findById(notification.senderId)
-        const userImages = await this.imageService.getImageByApplicableId(
-          user.id,
+        // console.log("USERID", e)
+        const [sender, receiver] = await Promise.all([
+          this.userRepository.findById(notification.senderId),
+          this.userRepository.findById(e),
+        ])
+        const senderImages = await this.imageService.getImageByApplicableId(
+          sender.id,
         )
-        const userAvatar = userImages.find(
+        const senderAvatar = senderImages.find(
           (e) => e.imageType === EImageType.AVATAR,
         )
         const socket = this.sessions.getUserSocket(e)
         await this.notificationRepository.addNotificationUser(
           notification,
-          user,
+          receiver,
         )
         socket.emit("notification", {
-          senderName: user.name,
-          senderAvatar: userAvatar,
+          senderName: sender.name,
+          senderAvatar: senderAvatar,
           type: notification.type,
           createdAt: notification.createdAt,
           message: notification.message,
@@ -120,7 +125,9 @@ export class ChatGateway implements OnGatewayConnection {
   @OnEvent(Events.notification_all)
   async getNotifications(event: AllNotificationEvent) {
     const { userId } = event
+
     const user = await this.userRepository.findById(userId)
+
     const socket = this.sessions.getUserSocket(userId)
     if (user && socket) {
       const notifications =
@@ -138,7 +145,8 @@ export class ChatGateway implements OnGatewayConnection {
 
       const result = await Promise.all(
         notifications.map(async (e) => {
-          const user = await this.userRepository.findById(e.senderId)
+          const user = await this.userRepository.findById(e._senderId)
+
           const userImages = await this.imageService.getImageByApplicableId(
             user.id,
           )
@@ -155,7 +163,7 @@ export class ChatGateway implements OnGatewayConnection {
           }
         }),
       )
-      console.log(result)
+
       socket.emit("getNotifications", result)
     } else {
       socket.disconnect()
