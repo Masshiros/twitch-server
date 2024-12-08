@@ -5,5 +5,6 @@ export class NotificationEmittedEvent implements IEvent {
   constructor(
     public readonly userIds: string[],
     public readonly notification: Notification,
+    public readonly data?: any,
   ) {}
 }

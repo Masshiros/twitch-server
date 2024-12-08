@@ -95,7 +95,7 @@ export class ReactToPostHandler {
       const notification = NotificationFactory.create({
         senderId: userId,
         title: `React to your post `,
-        message: `${user.name} has react to your post.Reaction type: ${reactionType}`,
+        message: `${user.name} has react to your post`,
         type: ENotification.USER,
         createdAt: new Date(),
       })

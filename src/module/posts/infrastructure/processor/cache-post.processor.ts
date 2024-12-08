@@ -46,7 +46,7 @@ export class CachePostProcessor extends WorkerHost {
     throw new Error(`Image upload failed: ${error.message}`)
   }
   async process(job: Job, token?: string): Promise<any> {
-    const { userId, posts } = job.data
+    const { userId, posts, postId } = job.data
     try {
       await this.postRedisDatabase.savePosts(userId, posts)
       const user = await this.userRepository.findById(userId)
@@ -60,7 +60,7 @@ export class CachePostProcessor extends WorkerHost {
       const notification = NotificationFactory.create({
         senderId: userId,
         title: "New post",
-        message: "New post from ${user.name}",
+        message: `New post from ${user.name}`,
         type: ENotification.USER,
         createdAt: new Date(),
       })

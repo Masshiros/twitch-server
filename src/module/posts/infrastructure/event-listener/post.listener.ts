@@ -62,6 +62,7 @@ export class PostListener {
       this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
         userId: post.userId,
         posts: existingPosts,
+        postId: post.id,
       }),
       this.cachePostProcessorQueue.getFailed(),
     ])
@@ -89,6 +90,7 @@ export class PostListener {
       this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
         userId: post.userId,
         posts: existingPosts,
+        postId: post.id,
       }),
       this.cachePostProcessorQueue.getFailed(),
     ])

@@ -93,7 +93,7 @@ export class ChatGateway implements OnGatewayConnection {
   server: Server
   @OnEvent(Events.notification)
   async emitNotification(event: NotificationEmittedEvent) {
-    const { userIds, notification } = event
+    const { userIds, notification, data } = event
     if (userIds && userIds !== undefined && userIds.length > 0) {
       userIds.map(async (e) => {
         // console.log("USERID", e)
@@ -118,6 +118,7 @@ export class ChatGateway implements OnGatewayConnection {
           type: notification.type,
           createdAt: notification.createdAt,
           message: notification.message,
+          data,
         })
       })
     }
