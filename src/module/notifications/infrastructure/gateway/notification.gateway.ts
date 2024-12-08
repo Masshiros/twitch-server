@@ -32,14 +32,35 @@ export class NotificationsGateway
 {
   constructor(
     private readonly notificationRepository: INotificationRepository,
+    private readonly userRepository: IUserRepository,
     private readonly sessions: IGatewaySessionManager,
   ) {}
   @WebSocketServer() server: Server
 
-  async handleConnection(client: AuthenticatedSocket, ...args: any[]) {
+  async handleConnection(client: Socket, ...args: any[]) {
     try {
-      console.log(client.user)
-      console.log(`User ${client.user?.id} connected with socket ${client.id}`)
+      const token = client.handshake.auth.token.split(" ")[1]
+      console.log(token)
+      if (!token) {
+        console.log("Authorization token missing")
+      }
+
+      const decoded = await this.userRepository.decodeToken(token, {
+        secret: config.JWT_SECRET_ACCESS_TOKEN,
+      })
+
+      if (!decoded) {
+        console.log("jwt expired")
+      }
+
+      const user = await this.userRepository.findById(decoded.sub)
+
+      if (!user) {
+        console.log("User not found")
+      }
+      console.log(user)
+      // console.log(`User ${client.user?.id} connected with socket ${client.id}`)
+      client.emit("connected", { status: "good" })
       // console.log(`User connected with socket ${client.id}`)
     } catch (error) {
       throw new InfrastructureError({
@@ -48,10 +69,12 @@ export class NotificationsGateway
       })
     }
   }
-  handleDisconnect(client: AuthenticatedSocket) {
+
+  handleDisconnect(client: Socket) {
     try {
-      const userId = client.user?.id
-      console.log(`User ${userId} disconnected.`)
+      // const userId = client.user?.id
+      console.log(`User  disconnected.`)
+      return "disconnected"
     } catch (error) {
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,

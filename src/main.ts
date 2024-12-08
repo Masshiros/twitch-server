@@ -4,6 +4,7 @@ import {
   ValidationPipe,
 } from "@nestjs/common"
 import { NestFactory, Reflector } from "@nestjs/core"
+import { NestExpressApplication } from "@nestjs/platform-express"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import config from "libs/config"
 import { ErrorInterceptor } from "libs/interceptor/error.interceptor"
@@ -14,7 +15,13 @@ import { AppModule } from "./app.module"
 import { IUserRepository } from "./module/users/domain/repository/user/user.interface.repository"
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
+  // redis adapter
+
+  const redisIoAdapter = new RedisIoAdapter(app)
+  await redisIoAdapter.connectToRedis()
+  // await redisIoAdapter.connectToRedis()
+  app.useWebSocketAdapter(redisIoAdapter)
   const swaggerConfig = new DocumentBuilder()
     .addBearerAuth()
     .setTitle("Twitch API")
@@ -62,13 +69,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor(new Reflector()))
   app.useGlobalInterceptors(new ErrorInterceptor())
   app.useGlobalInterceptors(new LoggerInterceptor())
-  // redis adapter
-  const userRepository = app.get<IUserRepository>(IUserRepository)
 
-  const redisIoAdapter = new RedisIoAdapter(app, userRepository)
-
-  // await redisIoAdapter.connectToRedis()
-  app.useWebSocketAdapter(redisIoAdapter)
   await app.listen(config.APP_PORT || 3000)
 }
 
