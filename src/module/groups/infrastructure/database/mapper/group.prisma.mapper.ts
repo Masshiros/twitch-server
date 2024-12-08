@@ -66,7 +66,6 @@ export class GroupMapper {
     }
   }
 
-  // Map Prisma privacy enum to Domain privacy enum
   private static mapPrismaPrivacyToDomain(
     prismaEnum: PrismaGroupPrivacy,
   ): EGroupPrivacy {

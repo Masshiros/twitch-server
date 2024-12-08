@@ -100,6 +100,10 @@ async function main() {
       Permissions.ExternalLinks.Read,
       Permissions.ExternalLinks.Delete,
       Permissions.ExternalLinks.Create,
+      Permissions.Conversations.Create,
+      Permissions.Conversations.Read,
+      Permissions.Conversations.Update,
+      Permissions.Conversations.Delete,
     ],
     [Roles.Streamer]: [
       Permissions.Users.Read,

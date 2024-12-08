@@ -37,6 +37,7 @@ interface UserAggregateProps {
   bio?: string
   status?: EUserStatus
   lastUsernameChangeAt?: Date
+  isOnline?: boolean
   thumbnail?: string
   streamKey?: string
   serverUrl?: string
@@ -116,6 +117,8 @@ export class UserAggregate extends BaseAggregate {
   @Expose()
   private _lastUsernameChangeAt: Date
 
+  private _isOnline?: boolean
+
   @IsString()
   @IsOptional()
   @Expose()
@@ -154,6 +157,7 @@ export class UserAggregate extends BaseAggregate {
     this._view = props.view ?? 0
     this._bio = props.bio ?? ""
     this._lastUsernameChangeAt = props.lastUsernameChangeAt
+    this._isOnline = props.isOnline ?? false
     this._thumbnail = props.thumbnail
     this._serverUrl = props.serverUrl
     this._streamKey = props.streamKey
@@ -184,6 +188,12 @@ export class UserAggregate extends BaseAggregate {
 
   set displayName(value: string) {
     this._displayName = value
+  }
+  get isOnline(): boolean {
+    return this._isOnline
+  }
+  set isOnline(value: boolean) {
+    this._isOnline = value
   }
 
   get slug(): string {
