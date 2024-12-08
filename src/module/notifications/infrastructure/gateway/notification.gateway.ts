@@ -132,11 +132,8 @@ export class NotificationsGateway
             order: "desc",
           },
         )
-      if (
-        !notifications &&
-        notifications.length === 0 &&
-        notifications === undefined
-      ) {
+
+      if (notifications.length === 0) {
         socket.emit("getNotifications", "No notification to display")
       }
       const result = await Promise.all(

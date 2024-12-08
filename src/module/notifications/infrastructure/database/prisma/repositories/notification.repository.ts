@@ -53,11 +53,13 @@ export class NotificationRepository implements INotificationRepository {
           message: "Already exist this data",
         })
       }
-      await this.prismaService.notification.create({ data: data })
+      console.log(data)
+      await this.prismaService.notification.create({ data })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         handlePrismaError(error)
       }
+      console.log(error)
       if (error instanceof InfrastructureError) {
         throw error
       }
@@ -77,10 +79,10 @@ export class NotificationRepository implements INotificationRepository {
       const existNoti = await this.prismaService.notification.findUnique({
         where: { id: noti.id },
       })
-      if (existNoti) {
+      if (!existNoti && existNoti === undefined) {
         throw new InfrastructureError({
           code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
-          message: "Already exist this data",
+          message: "No exist notification.Try again",
         })
       }
       const data = NotificationUserMapper.toPersistence(

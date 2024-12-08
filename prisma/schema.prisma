@@ -50,8 +50,7 @@ model User {
   hiddenByUsers         HiddenUser[]             @relation("HiddenUser")
   hiddenUsers           HiddenUser[]             @relation("UserWhoHides")
   loginHistories        LoginHistory[]
-  sentNotifications     Notification[]           @relation("UserAsSender")
-  receivedNotifications NotificationUser[]
+ receivedNotifications NotificationUser[]
   postReactions         PostReaction[]
   userPosts             Post[]
   posts       GroupPost[]
@@ -281,10 +280,9 @@ model Notification {
   slug               String
   type               ENotification
   createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
+  updatedAt          DateTime?           @default(now()) @updatedAt()
   senderId           String
   deletedAt          DateTime?
-  sender             User               @relation("UserAsSender", fields: [senderId], references: [id])
   notificationsUsers NotificationUser[]
 
   @@map("notifications")

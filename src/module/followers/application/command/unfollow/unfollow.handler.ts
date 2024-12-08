@@ -13,6 +13,7 @@ import { IFollowersRepository } from "src/module/followers/domain/repository/fol
 import { ENotification } from "src/module/notifications/domain/enum/notification.enum"
 import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
 import { NotificationFactory } from "src/module/notifications/domain/factory/notification.factory"
+import { INotificationRepository } from "src/module/notifications/domain/repositories/notification.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { UnfollowCommand } from "./unfollow.command"
 
@@ -22,6 +23,7 @@ export class UnfollowCommandHandler {
     private readonly followRepository: IFollowersRepository,
     private readonly followFactory: FollowerFactory,
     private readonly userRepository: IUserRepository,
+    private readonly notificationRepository: INotificationRepository,
     private readonly emitter: EventEmitter2,
   ) {}
   async execute(command: UnfollowCommand) {
@@ -87,6 +89,7 @@ export class UnfollowCommandHandler {
         type: ENotification.USER,
         createdAt: new Date(),
       })
+      await this.notificationRepository.addNotification(notification)
       this.emitter.emit(
         Events.notification,
         new NotificationEmittedEvent([follow.destinationUserId], notification),

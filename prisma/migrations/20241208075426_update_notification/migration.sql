@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "notifications" ALTER COLUMN "updatedAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP;
