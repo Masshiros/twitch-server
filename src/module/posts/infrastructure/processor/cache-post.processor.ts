@@ -65,7 +65,7 @@ export class CachePostProcessor extends WorkerHost {
         createdAt: new Date(),
       })
       await this.notificationRepository.addNotification(notification)
-      return this.emitter.emit(
+      this.emitter.emit(
         Events.notification,
         new NotificationEmittedEvent(ids, notification),
       )

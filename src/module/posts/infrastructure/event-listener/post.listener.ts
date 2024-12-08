@@ -178,6 +178,7 @@ export class PostListener {
       this.cacheCommentProcessorQueue.add(Bull.job.user_post.cache_comment, {
         postId: comment.postId,
         comments: existingComments,
+        userId: comment.userId,
       }),
       this.cacheCommentProcessorQueue.getFailed(),
     ])

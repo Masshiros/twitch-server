@@ -94,7 +94,7 @@ export class FollowCommandHandler {
       console.log(follow.destinationUserId)
       await this.notificationRepository.addNotification(notification)
 
-      return this.emitter.emit(
+      this.emitter.emit(
         Events.notification,
         new NotificationEmittedEvent([follow.destinationUserId], notification),
       )

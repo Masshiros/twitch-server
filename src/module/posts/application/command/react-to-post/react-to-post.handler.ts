@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -6,6 +8,10 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { ENotification } from "src/module/notifications/domain/enum/notification.enum"
+import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
+import { NotificationFactory } from "src/module/notifications/domain/factory/notification.factory"
+import { INotificationRepository } from "src/module/notifications/domain/repositories/notification.interface.repository"
 import { PostFactory } from "src/module/posts/domain/factory/posts.factory"
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
@@ -15,7 +21,9 @@ import { ReactToPostCommand } from "./react-to-post.command"
 export class ReactToPostHandler {
   constructor(
     private readonly postRepository: IPostsRepository,
+    private readonly emitter: EventEmitter2,
     private readonly userRepository: IUserRepository,
+    private readonly notificationRepository: INotificationRepository,
   ) {}
   async execute(command: ReactToPostCommand) {
     const { userId, postId, reactionType } = command
@@ -84,6 +92,18 @@ export class ReactToPostHandler {
       }
       await this.postRepository.addOrUpdateReactionToPost(reaction)
       // TODO(notify): Add notify here
+      const notification = NotificationFactory.create({
+        senderId: userId,
+        title: `React to your post `,
+        message: `${user.name} has react to your post.Reaction type: ${reactionType}`,
+        type: ENotification.USER,
+        createdAt: new Date(),
+      })
+      await this.notificationRepository.addNotification(notification)
+      this.emitter.emit(
+        Events.notification,
+        new NotificationEmittedEvent([post.userId], notification),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||
