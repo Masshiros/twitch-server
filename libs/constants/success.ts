@@ -48,6 +48,7 @@ export const SuccessMessages = {
     REMOVE_FRIEND: "Remove friend successfully",
     GET_LIST_FRIENDS: "Get list friends successfully",
     GET_MUTUAL_FRIENDS: "Get mutual friends successfully",
+    IS_FRIEND: "Data return successfully",
   },
   followers: {
     FOLLOW_USER: "Follow user successfully",

@@ -164,8 +164,22 @@ export class FriendRepository implements IFriendRepository {
   }
   async sendFriendRequest(request: FriendRequest): Promise<void> {
     try {
-      console.log(request)
       const data = FriendRequestMapper.toPersistence(request)
+      const existingFriendRequest =
+        await this.prismaService.friendRequest.findUnique({
+          where: {
+            senderId_receiverId: {
+              senderId: data.senderId,
+              receiverId: data.receiverId,
+            },
+          },
+        })
+      if (existingFriendRequest) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+          message: "Already send friend request",
+        })
+      }
       await this.prismaService.friendRequest.create({ data })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -180,12 +194,15 @@ export class FriendRepository implements IFriendRepository {
   async acceptFriendRequest(request: FriendRequest): Promise<void> {
     try {
       await this.prismaService.$transaction(async (prisma) => {
-        await prisma.friendRequest.delete({
+        await prisma.friendRequest.update({
           where: {
             senderId_receiverId: {
               senderId: request.senderId,
               receiverId: request.receiverId,
             },
+          },
+          data: {
+            status: EFriendRequestStatus.ACCEPTED,
           },
         }),
           await Promise.all([
@@ -209,12 +226,15 @@ export class FriendRepository implements IFriendRepository {
   }
   async rejectFriendRequest(request: FriendRequest): Promise<void> {
     try {
-      await this.prismaService.friendRequest.delete({
+      await this.prismaService.friendRequest.update({
         where: {
           senderId_receiverId: {
             senderId: request.senderId,
             receiverId: request.receiverId,
           },
+        },
+        data: {
+          status: EFriendRequestStatus.REJECTED,
         },
       })
     } catch (error) {

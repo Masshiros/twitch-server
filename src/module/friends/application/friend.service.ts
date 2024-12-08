@@ -7,6 +7,7 @@ import { SendFriendRequestCommand } from "./command/send-friend-request/send-fri
 import { GetListFriendRequestQuery } from "./query/get-list-friend-requests/get-list-friend-requests.query"
 import { GetListFriendQuery } from "./query/get-list-friend/get-list-friend.query"
 import { GetMutualFriendsQuery } from "./query/get-mutual-friend/get-mutual-friends.query"
+import { IsFriendQuery } from "./query/is-friend/is-friend.query"
 
 @Injectable()
 export class FriendService {
@@ -33,6 +34,9 @@ export class FriendService {
     return this.queryBus.execute(query)
   }
   async getMutualFriends(query: GetMutualFriendsQuery) {
+    return this.queryBus.execute(query)
+  }
+  async isFriend(query: IsFriendQuery) {
     return this.queryBus.execute(query)
   }
 }

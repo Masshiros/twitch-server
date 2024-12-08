@@ -24,6 +24,7 @@ import { FriendService } from "../application/friend.service"
 import { GetListFriendRequestQuery } from "../application/query/get-list-friend-requests/get-list-friend-requests.query"
 import { GetListFriendQuery } from "../application/query/get-list-friend/get-list-friend.query"
 import { GetMutualFriendsQuery } from "../application/query/get-mutual-friend/get-mutual-friends.query"
+import { IsFriendQuery } from "../application/query/is-friend/is-friend.query"
 import { AcceptFriendRequestRequestDto } from "./dto/request/accept-friend-request.request.dto"
 import { GetListFriendsRequestDto } from "./dto/request/get-list-friends.request.dto"
 import { GetMutualFriendsRequestDto } from "./dto/request/get-mutual-friends.request.dto"
@@ -112,6 +113,20 @@ export class FriendController {
       receiverId: user.id,
     })
     await this.service.rejectFriendRequest(command)
+  }
+  @ApiOperationDecorator({
+    summary: "Return friend status",
+    description: "Return friend status between 2 user",
+    auth: true,
+  })
+  @ResponseMessage(SuccessMessages.friend.IS_FRIEND)
+  @Get("/is-friend/:username")
+  async isFriend(
+    @CurrentUser() user: UserAggregate,
+    @Param("username") username: string,
+  ): Promise<string> {
+    const query = new IsFriendQuery({ userId: user.id, friendName: username })
+    return await this.service.isFriend(query)
   }
   //GET: Get List Friend Requests
   @ApiOperationDecorator({

@@ -5,6 +5,7 @@ import { UserDatabaseModule } from "src/module/users/infrastructure/database/use
 import { FriendsDatabaseModule } from "../infrastructure/database/friend.database.module"
 import { FriendController } from "../presentation/friend.controller"
 import { AcceptFriendRequestHandler } from "./command/accept-friend-request/accept-friend-request.handler"
+import { IsFriendHandler } from "./query/is-friend/is-friend.handler"
 import { RejectFriendRequestHandler } from "./command/reject-friend-request/reject-friend-request.handler"
 import { RemoveFriendHandler } from "./command/remove-friend/remove-friend.handler"
 import { SendFriendRequestHandler } from "./command/send-friend-request/send-friend-request.handler"
@@ -18,6 +19,7 @@ const commandHandlers = [
   AcceptFriendRequestHandler,
   RejectFriendRequestHandler,
   RemoveFriendHandler,
+  IsFriendHandler,
 ]
 const queryHandlers = [
   GetListFriendRequestHandler,

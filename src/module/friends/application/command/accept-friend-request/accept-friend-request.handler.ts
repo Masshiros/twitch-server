@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -7,6 +9,7 @@ import {
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { EFriendRequestStatus } from "src/module/friends/domain/enum/friend-request-status.enum"
+import { AcceptFriendRequestEvent } from "src/module/friends/domain/event/accept-friend-request.event"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { AcceptFriendRequestCommand } from "./accept-friend-request.command"
@@ -16,6 +19,7 @@ export class AcceptFriendRequestHandler {
   constructor(
     private readonly friendRepository: IFriendRepository,
     private readonly userRepository: IUserRepository,
+    private readonly emitter: EventEmitter2,
   ) {}
   async execute(command: AcceptFriendRequestCommand) {
     const { senderId, receiverId } = command
@@ -88,6 +92,10 @@ export class AcceptFriendRequestHandler {
       }
       await this.friendRepository.acceptFriendRequest(friendRequest)
       //TODO(notify): Send notification
+      this.emitter.emit(
+        Events.friend_request.reject,
+        new AcceptFriendRequestEvent(friendRequest),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||

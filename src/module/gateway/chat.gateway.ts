@@ -26,6 +26,12 @@ import { INotificationRepository } from "src/module/notifications/domain/reposit
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { ConversationCreateEvent } from "../chat/domain/events/conversation/conversation-create.event"
 import { MessageCreateEvent } from "../chat/domain/events/message/message-create.event"
+import { IChatRepository } from "../chat/domain/repository/chat.interface.repository"
+import { AcceptFriendRequestEvent } from "../friends/domain/event/accept-friend-request.event"
+import { ListFriendRequestEvent } from "../friends/domain/event/list-friend-request.event"
+import { RejectFriendRequestEvent } from "../friends/domain/event/reject-friend-request.event"
+import { SendFriendRequestEvent } from "../friends/domain/event/send-friend-request.event"
+import { IFriendRepository } from "../friends/domain/repository/friend.interface.repository"
 
 @WebSocketGateway({
   cors: {
@@ -36,8 +42,10 @@ export class ChatGateway implements OnGatewayConnection {
   constructor(
     private readonly notificationRepository: INotificationRepository,
     private readonly userRepository: IUserRepository,
+    private readonly chatRepository: IChatRepository,
     private readonly sessions: IGatewaySessionManager,
     private readonly imageService: ImageService,
+    private readonly friendRepository: IFriendRepository,
     private readonly emitter: EventEmitter2,
   ) {}
   async handleConnection(client: AuthenticatedSocket, ...args: any[]) {
@@ -75,6 +83,10 @@ export class ChatGateway implements OnGatewayConnection {
         this.emitter.emit(
           Events.notification_all,
           new AllNotificationEvent(user.id),
+        )
+        this.emitter.emit(
+          Events.friend_request.list,
+          new ListFriendRequestEvent(user.id),
         )
       }
     } catch (error) {
@@ -182,7 +194,107 @@ export class ChatGateway implements OnGatewayConnection {
       socket.disconnect()
     }
   }
-
+  // friend request
+  @OnEvent(Events.friend_request.send)
+  async onFriendRequestSend(event: SendFriendRequestEvent) {
+    const { request } = event
+    const { senderId, receiverId, createdAt } = request
+    const sender = await this.userRepository.findById(senderId)
+    if (!sender || sender === undefined) {
+      return
+    }
+    const senderImages = await this.imageService.getImageByApplicableId(
+      sender?.id,
+    )
+    const senderAvatar = senderImages.find(
+      (e) => e.imageType === EImageType.AVATAR,
+    )
+    const receiverSocket = this.sessions.getUserSocket(receiverId)
+    if (receiverSocket)
+      receiverSocket.emit("friendRequestReceived", {
+        senderName: sender.name,
+        createdAt,
+        senderAvatar: senderAvatar?.url ?? "",
+      })
+  }
+  @OnEvent(Events.friend_request.accept)
+  async onFriendRequestAccept(event: AcceptFriendRequestEvent) {
+    const { request } = event
+    const { senderId, receiverId, createdAt } = request
+    const sender = await this.userRepository.findById(senderId)
+    if (!sender || sender === undefined) {
+      return
+    }
+    const senderImages = await this.imageService.getImageByApplicableId(
+      sender?.id,
+    )
+    const senderAvatar = senderImages.find(
+      (e) => e.imageType === EImageType.AVATAR,
+    )
+    const receiverSocket = this.sessions.getUserSocket(receiverId)
+    if (receiverSocket)
+      receiverSocket.emit("friendRequestAccepted", {
+        message: "Your friend request has been accepted",
+        senderName: sender.name,
+        createdAt,
+        senderAvatar: senderAvatar?.url ?? "",
+      })
+  }
+  @OnEvent(Events.friend_request.reject)
+  async onFriendRequestReject(event: RejectFriendRequestEvent) {
+    const { request } = event
+    const { senderId, receiverId, createdAt } = request
+    const sender = await this.userRepository.findById(senderId)
+    if (!sender || sender === undefined) {
+      return
+    }
+    const senderImages = await this.imageService.getImageByApplicableId(
+      sender?.id,
+    )
+    const senderAvatar = senderImages.find(
+      (e) => e.imageType === EImageType.AVATAR,
+    )
+    const receiverSocket = this.sessions.getUserSocket(receiverId)
+    if (receiverSocket)
+      receiverSocket.emit("friendRequestRejected", {
+        message: "Your friend request has been rejected",
+        senderName: sender.name,
+        createdAt,
+        senderAvatar: senderAvatar?.url ?? "",
+      })
+  }
+  @OnEvent(Events.friend_request.list)
+  async onFriendRequestList(event: ListFriendRequestEvent) {
+    const { receiverId } = event
+    if (!receiverId || receiverId === undefined) {
+      return
+    }
+    const receiver = await this.userRepository.findById(receiverId)
+    if (!receiver) {
+      return
+    }
+    const friendRequests =
+      await this.friendRepository.getListFriendRequest(receiver)
+    const result = await Promise.all(
+      friendRequests.map(async (e) => {
+        const sender = await this.userRepository.findById(e.senderId)
+        const senderImages = await this.imageService.getImageByApplicableId(
+          sender.id,
+        )
+        const senderAvatar = senderImages.find(
+          (e) => e.imageType === EImageType.AVATAR,
+        )
+        return {
+          senderName: sender.name,
+          senderAvatar: senderAvatar,
+          status: e.status,
+          createdAt: e.createdAt,
+        }
+      }),
+    )
+    const receiverSocket = this.sessions.getUserSocket(receiverId)
+    if (receiverSocket) receiverSocket.emit("friendRequestsList", result)
+  }
   // chat
   @OnEvent(Events.conversation.create)
   async onCreateConversation(event: ConversationCreateEvent) {
@@ -194,6 +306,21 @@ export class ChatGateway implements OnGatewayConnection {
   @OnEvent(Events.message.create)
   async onCreateMessage(event: MessageCreateEvent) {
     const { message } = event
+    const { conversationId, authorId } = message
+    const conversation =
+      await this.chatRepository.findConversationById(conversationId)
+    if (!conversation) {
+      return
+    }
+    const authorSocket = this.sessions.getUserSocket(authorId)
+    const recipientId = conversation.receiverId
+    const creatorId = conversation.creatorId
+    const recipientSocket =
+      authorId === creatorId
+        ? this.sessions.getUserSocket(recipientId)
+        : this.sessions.getUserSocket(authorId)
+    if (authorSocket) authorSocket.emit("onMessage", message)
+    if (recipientSocket) recipientSocket.emit("onMessage", message)
   }
   @SubscribeMessage("conversationJoin")
   onConversationJoin(

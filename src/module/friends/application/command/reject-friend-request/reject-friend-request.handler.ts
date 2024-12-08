@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -6,6 +8,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { RejectFriendRequestEvent } from "src/module/friends/domain/event/reject-friend-request.event"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { RejectFriendRequestCommand } from "./reject-friend-request.command"
@@ -15,6 +18,7 @@ export class RejectFriendRequestHandler {
   constructor(
     private readonly friendRepository: IFriendRepository,
     private readonly userRepository: IUserRepository,
+    private readonly emitter: EventEmitter2,
   ) {}
   async execute(command: RejectFriendRequestCommand) {
     const { senderId, receiverId } = command
@@ -87,6 +91,10 @@ export class RejectFriendRequestHandler {
       }
       await this.friendRepository.rejectFriendRequest(friendRequest)
       //TODO(notify): Send notification
+      this.emitter.emit(
+        Events.friend_request.reject,
+        new RejectFriendRequestEvent(friendRequest),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||

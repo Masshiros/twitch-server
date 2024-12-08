@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -6,6 +8,8 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { ListFriendRequestEvent } from "src/module/friends/domain/event/list-friend-request.event"
+import { SendFriendRequestEvent } from "src/module/friends/domain/event/send-friend-request.event"
 import { FriendFactory } from "src/module/friends/domain/factory/friend.factory"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
@@ -16,6 +20,7 @@ export class SendFriendRequestHandler {
   constructor(
     private readonly friendRepository: IFriendRepository,
     private readonly userRepository: IUserRepository,
+    private readonly emitter: EventEmitter2,
   ) {}
   async execute(command: SendFriendRequestCommand) {
     const { senderId, receiverId } = command
@@ -96,6 +101,14 @@ export class SendFriendRequestHandler {
       await this.friendRepository.sendFriendRequest(friendRequest)
 
       //TODO(notify): Send notification
+      this.emitter.emit(
+        Events.friend_request.send,
+        new SendFriendRequestEvent(friendRequest),
+      )
+      this.emitter.emit(
+        Events.friend_request.list,
+        new ListFriendRequestEvent(friendRequest.receiverId),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||
