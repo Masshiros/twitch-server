@@ -346,7 +346,7 @@ export class ChatGateway implements OnGatewayConnection {
       return
     }
     socket.leave(conversationId)
-    socket.to(conversationId).emit("userJoin")
+    socket.to(conversationId).emit("userLeft")
   }
   @SubscribeMessage("typingStart")
   handleTypingStart(
