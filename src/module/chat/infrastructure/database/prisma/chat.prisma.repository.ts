@@ -44,20 +44,12 @@ export class ChatPrismaRepository implements IChatRepository {
         })
       }
 
-      await Promise.all([
-        this.prismaService.conversation.create({
-          data: {
-            creatorId: persistenceData.creatorId,
-            receiverId: persistenceData.receiverId,
-          },
-        }),
-        this.prismaService.conversation.create({
-          data: {
-            creatorId: persistenceData.receiverId,
-            receiverId: persistenceData.creatorId,
-          },
-        }),
-      ])
+      await this.prismaService.conversation.create({
+        data: {
+          creatorId: persistenceData.creatorId,
+          receiverId: persistenceData.receiverId,
+        },
+      })
     } catch (error) {
       this.handleDatabaseError(error)
     }

@@ -59,18 +59,7 @@ export class CreateConversationHandler {
           },
         })
       }
-      const existConversation =
-        await this.chatRepository.getConversationsByUser(creator.id)
 
-      if (existConversation && existConversation.length > 0) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Conversation already exists",
-          info: {
-            errorCode: CommandErrorDetailCode.ALREADY_EXIST,
-          },
-        })
-      }
       const conversation = ChatFactory.createConversation({
         creatorId,
         receiverId: recipientId,

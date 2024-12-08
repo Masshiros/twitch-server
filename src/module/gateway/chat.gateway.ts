@@ -1,6 +1,7 @@
 import { Server } from "http"
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter"
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   SubscribeMessage,
@@ -24,6 +25,7 @@ import { NotificationEmittedEvent } from "src/module/notifications/domain/events
 import { INotificationRepository } from "src/module/notifications/domain/repositories/notification.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { ConversationCreateEvent } from "../chat/domain/events/conversation/conversation-create.event"
+import { MessageCreateEvent } from "../chat/domain/events/message/message-create.event"
 
 @WebSocketGateway({
   cors: {
@@ -183,7 +185,64 @@ export class ChatGateway implements OnGatewayConnection {
 
   // chat
   @OnEvent(Events.conversation.create)
-  async onCreateConversation(event: ConversationCreateEvent) {}
+  async onCreateConversation(event: ConversationCreateEvent) {
+    const { conversation } = event
+    const { receiverId } = conversation
+    const receiverSocket = this.sessions.getUserSocket(receiverId)
+    if (receiverSocket) receiverSocket.emit("newConversation", conversation)
+  }
   @OnEvent(Events.message.create)
-  async onCreateMessage() {}
+  async onCreateMessage(event: MessageCreateEvent) {
+    const { message } = event
+  }
+  @SubscribeMessage("conversationJoin")
+  onConversationJoin(
+    @MessageBody() data: { conversationId: string },
+    @ConnectedSocket() socket: AuthenticatedSocket,
+  ) {
+    const { conversationId } = data
+    if (!conversationId || conversationId.length === 0) {
+      socket.emit("error", { message: "Conversation not found" })
+      return
+    }
+    socket.join(conversationId)
+    socket.to(conversationId).emit("userJoin")
+  }
+  @SubscribeMessage("conversationLeave")
+  onConversationLeave(
+    @MessageBody() data: { conversationId: string },
+    @ConnectedSocket() socket: AuthenticatedSocket,
+  ) {
+    const { conversationId } = data
+    if (!conversationId || conversationId.length === 0) {
+      socket.emit("error", { message: "Conversation not found" })
+      return
+    }
+    socket.leave(conversationId)
+    socket.to(conversationId).emit("userJoin")
+  }
+  @SubscribeMessage("typingStart")
+  handleTypingStart(
+    @MessageBody() data: { conversationId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { conversationId } = data
+    if (!conversationId || conversationId.length === 0) {
+      socket.emit("error", { message: "Conversation not found" })
+      return
+    }
+    socket.to(conversationId).emit("typingStart")
+  }
+  @SubscribeMessage("typingEnd")
+  handleTypingEnd(
+    @MessageBody() data: { conversationId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { conversationId } = data
+    if (!conversationId || conversationId.length === 0) {
+      socket.emit("error", { message: "Conversation not found" })
+      return
+    }
+    socket.to(conversationId).emit("typingEnd")
+  }
 }
