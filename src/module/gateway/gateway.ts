@@ -3,36 +3,31 @@ import { EventEmitter2, OnEvent } from "@nestjs/event-emitter"
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets"
 import config from "libs/config"
 import { Events } from "libs/constants/events"
-import { AuthenticatedSocket } from "libs/constants/interface"
 import {
   InfrastructureError,
   InfrastructureErrorCode,
 } from "libs/exception/infrastructure"
 import { Server, Socket } from "socket.io"
-import { IGatewaySessionManager } from "src/gateway/gateway.session"
 import { ImageService } from "src/module/image/application/image.service"
 import { EImageType } from "src/module/image/domain/enum/image-type.enum"
+import { AllNotificationEvent } from "src/module/notifications/domain/events/all-notification.event"
+import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
+import { INotificationRepository } from "src/module/notifications/domain/repositories/notification.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { AllNotificationEvent } from "../../domain/events/all-notification.event"
-import { NotificationEmittedEvent } from "../../domain/events/notification-emitted.events"
-import { INotificationRepository } from "../../domain/repositories/notification.interface.repository"
+import { IGatewaySessionManager } from "./gateway.session"
 
-@WebSocketGateway({
+WebSocketGateway({
   cors: {
     origin: "*",
   },
-  namespace: "notifications",
 })
 @Injectable()
-export class NotificationsGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly notificationRepository: INotificationRepository,
     private readonly userRepository: IUserRepository,
@@ -47,7 +42,8 @@ export class NotificationsGateway
       const token = client.handshake.auth.token.split(" ")[1]
       // console.log(token)
       if (!token) {
-        console.log("Authorization token missing")
+        client.disconnect()
+        return "Authorization token missing"
       }
 
       const decoded = await this.userRepository.decodeToken(token, {
@@ -55,13 +51,15 @@ export class NotificationsGateway
       })
 
       if (!decoded) {
-        console.log("jwt expired")
+        client.disconnect()
+        return "jwt expired"
       }
 
       const user = await this.userRepository.findById(decoded.sub)
 
       if (!user) {
-        console.log("User not found")
+        client.disconnect()
+        return "User not found"
       }
       this.sessions.setUserSocket(user.id, client)
       if (user) {
@@ -72,6 +70,7 @@ export class NotificationsGateway
       }
       // console.log(`User connected with socket ${client.id}`)
     } catch (error) {
+      client.disconnect()
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
         message: error.message,
@@ -82,8 +81,7 @@ export class NotificationsGateway
   handleDisconnect(client: Socket) {
     try {
       // const userId = client.user?.id
-      console.log(`User  disconnected.`)
-      return "disconnected"
+      console.log(`User disconnected.`)
     } catch (error) {
       throw new InfrastructureError({
         code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,

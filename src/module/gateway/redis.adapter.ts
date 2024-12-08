@@ -6,7 +6,7 @@ import { InfrastructureErrorCode } from "libs/exception/infrastructure"
 import { createClient } from "redis"
 import { ServerOptions } from "socket.io"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import config from "../../libs/config"
+import config from "../../../libs/config"
 
 export class RedisIoAdapter extends IoAdapter {
   constructor(app: INestApplication) {

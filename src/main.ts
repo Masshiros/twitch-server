@@ -10,7 +10,7 @@ import config from "libs/config"
 import { ErrorInterceptor } from "libs/interceptor/error.interceptor"
 import { LoggerInterceptor } from "libs/interceptor/logger.interceptor"
 import { TransformInterceptor } from "libs/interceptor/response.interceptor"
-import { RedisIoAdapter } from "src/gateway/redis.adapter"
+import { RedisIoAdapter } from "src/module/gateway/redis.adapter"
 import { AppModule } from "./app.module"
 import { IUserRepository } from "./module/users/domain/repository/user/user.interface.repository"
 
