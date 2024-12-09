@@ -78,18 +78,18 @@ export class ChatGateway implements OnGatewayConnection {
       //   return "User not found"
       // }
       const user = client?.user
-      user.isOnline = true
-      user.offlineAt = null
-      this.sessions.setUserSocket(user.id, client)
-      await this.userRepository.update(user)
-      const friends = await this.friendRepository.getFriends(user)
-      if (friends && friends.length !== 0) {
-        const friendIds = friends.map((e) => e.friendId)
-        this.emitter.emit(Events.friend.list, new ListFriendEvent(friendIds))
-      }
 
       // console.log(this.sessions)
       if (user) {
+        user.isOnline = true
+        user.offlineAt = null
+        this.sessions.setUserSocket(user.id, client)
+        await this.userRepository.update(user)
+        const friends = await this.friendRepository.getFriends(user)
+        if (friends && friends.length !== 0) {
+          const friendIds = friends.map((e) => e.friendId)
+          this.emitter.emit(Events.friend.list, new ListFriendEvent(friendIds))
+        }
         console.log(`${user.name} connected`)
         this.emitter.emit(
           Events.notification_all,
@@ -111,14 +111,16 @@ export class ChatGateway implements OnGatewayConnection {
   async handleDisconnect(client: AuthenticatedSocket) {
     try {
       const user = client?.user
-      user.isOnline = false
-      user.offlineAt = new Date()
-      this.sessions.removeUserSocket(user.id)
-      await this.userRepository.update(user)
-      const friends = await this.friendRepository.getFriends(user)
-      if (friends && friends.length !== 0) {
-        const friendIds = friends.map((e) => e.friendId)
-        this.emitter.emit(Events.friend.list, new ListFriendEvent(friendIds))
+      if (user) {
+        user.isOnline = false
+        user.offlineAt = new Date()
+        this.sessions.removeUserSocket(user.id)
+        await this.userRepository.update(user)
+        const friends = await this.friendRepository.getFriends(user)
+        if (friends && friends.length !== 0) {
+          const friendIds = friends.map((e) => e.friendId)
+          this.emitter.emit(Events.friend.list, new ListFriendEvent(friendIds))
+        }
       }
 
       // const userId = client.user?.id
