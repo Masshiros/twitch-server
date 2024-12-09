@@ -10,6 +10,9 @@ export const Events = {
     reject: "friend-request.reject",
     list: "friend-request.list",
   },
+  friend: {
+    list: "friend-list",
+  },
   post: {
     create: "post.create",
     update: "post.update",

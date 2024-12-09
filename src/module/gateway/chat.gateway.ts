@@ -29,6 +29,7 @@ import { MessageCreateEvent } from "../chat/domain/events/message/message-create
 import { IChatRepository } from "../chat/domain/repository/chat.interface.repository"
 import { AcceptFriendRequestEvent } from "../friends/domain/event/accept-friend-request.event"
 import { ListFriendRequestEvent } from "../friends/domain/event/list-friend-request.event"
+import { ListFriendEvent } from "../friends/domain/event/list-friend.event"
 import { RejectFriendRequestEvent } from "../friends/domain/event/reject-friend-request.event"
 import { SendFriendRequestEvent } from "../friends/domain/event/send-friend-request.event"
 import { IFriendRepository } from "../friends/domain/repository/friend.interface.repository"
@@ -76,8 +77,15 @@ export class ChatGateway implements OnGatewayConnection {
       const user = client?.user
       user.isOnline = true
       user.offlineAt = null
-      await this.userRepository.update(user)
       this.sessions.setUserSocket(user.id, client)
+      await this.userRepository.update(user)
+      const friends = await this.friendRepository.getFriends(user)
+      if (friends && friends.length !== 0) {
+        friends.map((e) => {
+          this.emitter.emit(Events.friend.list, new ListFriendEvent(e.friendId))
+        })
+      }
+
       // console.log(this.sessions)
       if (user) {
         console.log(`${user.name} connected`)
@@ -103,8 +111,15 @@ export class ChatGateway implements OnGatewayConnection {
       const user = client?.user
       user.isOnline = false
       user.offlineAt = new Date()
-      await this.userRepository.update(user)
       this.sessions.removeUserSocket(user.id)
+      await this.userRepository.update(user)
+      const friends = await this.friendRepository.getFriends(user)
+      if (friends && friends.length !== 0) {
+        friends.map((e) => {
+          this.emitter.emit(Events.friend.list, new ListFriendEvent(e.friendId))
+        })
+      }
+
       // const userId = client.user?.id
       console.log(`User disconnected.`)
     } catch (error) {
@@ -140,7 +155,7 @@ export class ChatGateway implements OnGatewayConnection {
         console.log("DATa", data)
         socket.emit("notification", {
           senderName: sender.name,
-          senderAvatar: senderAvatar,
+          senderAvatar: senderAvatar?.url ?? "",
           type: notification.type,
           createdAt: notification.createdAt,
           message: notification.message,
@@ -268,13 +283,14 @@ export class ChatGateway implements OnGatewayConnection {
         type: "FRIEND",
       })
   }
-  @SubscribeMessage("getOnlineFriends")
-  async onGetOnlineFriends(@ConnectedSocket() socket: AuthenticatedSocket) {
-    const user = socket?.user
-    const userSocket = this.sessions.getUserSocket(user?.id)
+  @OnEvent(Events.friend.list)
+  async onGetOnlineFriends(event: ListFriendEvent) {
+    const { userId } = event
+    const userSocket = this.sessions.getUserSocket(userId)
+    const user = await this.userRepository.findById(userId)
     const friends = await this.friendRepository.getFriends(user)
     console.log(friends)
-    if (!friends || friends.length === 0) {
+    if (friends.length === 0) {
       userSocket.emit("onlineFriendsReceived", [])
     }
     const result = await Promise.all(
@@ -295,7 +311,8 @@ export class ChatGateway implements OnGatewayConnection {
         }
       }),
     )
-    userSocket.emit("onlineFriendsReceived", result)
+    // console.log("usersocket", userSocket?.client)
+    if (userSocket) userSocket?.emit("onlineFriendsReceived", result)
   }
   @OnEvent(Events.friend_request.list)
   async onFriendRequestList(event: ListFriendRequestEvent) {
