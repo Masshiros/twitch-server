@@ -29,4 +29,5 @@ export abstract class IFriendRepository {
   acceptFriendRequest: (request: FriendRequest) => Promise<void>
   rejectFriendRequest: (request: FriendRequest) => Promise<void>
   getListFriendRequest: (user: UserAggregate) => Promise<FriendRequest[]>
+  getAcceptedFriendRequest: (sender: UserAggregate) => Promise<FriendRequest[]>
 }

@@ -290,7 +290,7 @@ export class ChatGateway implements OnGatewayConnection {
     const userSocket = this.sessions.getUserSocket(userId)
     const user = await this.userRepository.findById(userId)
     const friends = await this.friendRepository.getFriends(user)
-    console.log(friends)
+
     if (friends.length === 0) {
       userSocket.emit("onlineFriendsReceived", [])
     }
@@ -313,7 +313,8 @@ export class ChatGateway implements OnGatewayConnection {
       }),
     )
     // console.log("usersocket", userSocket?.client)
-    if (userSocket) userSocket?.emit("onlineFriendsReceived", result)
+    if (userSocket)
+      userSocket?.emit("onlineFriendsReceived", { friendLists: result })
   }
   @OnEvent(Events.friend_request.list)
   async onFriendRequestList(event: ListFriendRequestEvent) {
@@ -325,8 +326,11 @@ export class ChatGateway implements OnGatewayConnection {
     if (!receiver) {
       return
     }
-    const friendRequests =
+    const pendingFriendRequests =
       await this.friendRepository.getListFriendRequest(receiver)
+    const acceptedFriendRequests =
+      await this.friendRepository.getAcceptedFriendRequest(receiver)
+    const friendRequests = [...pendingFriendRequests, ...acceptedFriendRequests]
     const result = await Promise.all(
       friendRequests.map(async (e) => {
         const sender = await this.userRepository.findById(e.senderId)
@@ -337,19 +341,18 @@ export class ChatGateway implements OnGatewayConnection {
           (e) => e.imageType === EImageType.AVATAR,
         )
         return {
-          senderName: sender.name,
-          senderAvatar: senderAvatar,
+          name: sender.name,
+          avatar: senderAvatar,
           status: e.status,
           createdAt: e.createdAt,
         }
       }),
     )
     const receiverSocket = this.sessions.getUserSocket(receiverId)
+
     if (receiverSocket)
       receiverSocket.emit("friendRequestsList", {
-        friends: result.filter(
-          (e) => e.status !== EFriendRequestStatus.REJECTED,
-        ),
+        friends: result,
       })
   }
   // chat

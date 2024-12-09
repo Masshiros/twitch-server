@@ -300,4 +300,27 @@ export class FriendRepository implements IFriendRepository {
       })
     }
   }
+  async getAcceptedFriendRequest(sender: UserAggregate) {
+    try {
+      const friendRequests = await this.prismaService.friendRequest.findMany({
+        where: {
+          senderId: sender.id,
+          status: EFriendRequestStatus.ACCEPTED,
+        },
+      })
+      if (!friendRequests) {
+        return []
+      }
+      const result = friendRequests.map((e) => FriendRequestMapper.toDomain(e))
+      return result ?? []
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        handlePrismaError(error)
+      }
+      throw new InfrastructureError({
+        code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      })
+    }
+  }
 }
