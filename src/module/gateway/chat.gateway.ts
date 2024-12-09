@@ -382,6 +382,8 @@ export class ChatGateway implements OnGatewayConnection {
     if (authorSocket) authorSocket.emit("onMessage", message)
     if (recipientSocket) recipientSocket.emit("onMessage", message)
   }
+  @OnEvent(Events.message.update)
+  async onMessageUpdate() {}
   @SubscribeMessage("conversationJoin")
   onConversationJoin(
     @MessageBody() data: { conversationId: string },

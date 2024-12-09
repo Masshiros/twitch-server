@@ -63,16 +63,27 @@ export class IsFriendHandler {
           },
         })
       }
-      const friendRequest = await this.friendRepository.getFriendRequest(
-        user,
-        friend,
+      const [friendRequest, reverseFriendRequest, isFriend] = await Promise.all(
+        [
+          this.friendRepository.getFriendRequest(user, friend),
+          this.friendRepository.getFriendRequest(friend, user),
+          this.friendRepository.isFriend(user, friend),
+        ],
       )
-      if (!friendRequest || friendRequest === undefined) {
-        return "No friend request"
-      }
-      if (friendRequest.status === EFriendRequestStatus.ACCEPTED) {
+      if (isFriend) {
         return "Accepted"
       }
+      if (!friendRequest || friendRequest === undefined) {
+        if (!reverseFriendRequest || reverseFriendRequest === undefined) {
+          return "No friend request"
+        } else {
+          if (reverseFriendRequest.status === EFriendRequestStatus.PENDING) {
+            return "Pending"
+          }
+          return "No friend request"
+        }
+      }
+
       if (friendRequest.status === EFriendRequestStatus.PENDING) {
         return "Pending"
       }

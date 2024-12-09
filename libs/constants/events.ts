@@ -29,5 +29,7 @@ export const Events = {
   },
   message: {
     create: "message.create",
+    update: "message.update",
+    delete: "message.delete",
   },
 }
