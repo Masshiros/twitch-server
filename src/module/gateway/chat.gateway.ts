@@ -344,7 +344,8 @@ export class ChatGateway implements OnGatewayConnection {
       }),
     )
     const receiverSocket = this.sessions.getUserSocket(receiverId)
-    if (receiverSocket) receiverSocket.emit("friendRequestsList", result)
+    if (receiverSocket)
+      receiverSocket.emit("friendRequestsList", { friends: result })
   }
   // chat
   @OnEvent(Events.conversation.create)
