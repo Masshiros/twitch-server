@@ -1,4 +1,6 @@
 import { CommandHandler } from "@nestjs/cqrs"
+import { EventEmitter2 } from "@nestjs/event-emitter"
+import { Events } from "libs/constants/events"
 import {
   CommandError,
   CommandErrorCode,
@@ -6,6 +8,7 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { ListFriendEvent } from "src/module/friends/domain/event/list-friend.event"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { RemoveFriendCommand } from "./remove-friend.command"
@@ -15,6 +18,7 @@ export class RemoveFriendHandler {
   constructor(
     private readonly friendRepository: IFriendRepository,
     private readonly userRepository: IUserRepository,
+    private readonly emitter: EventEmitter2,
   ) {}
   async execute(command: RemoveFriendCommand) {
     const { userId, friendId } = command
@@ -75,6 +79,10 @@ export class RemoveFriendHandler {
         })
       }
       await this.friendRepository.removeFriend(existFriend)
+      this.emitter.emit(
+        Events.friend.list,
+        new ListFriendEvent([user.id, friend.id]),
+      )
     } catch (err) {
       if (
         err instanceof DomainError ||

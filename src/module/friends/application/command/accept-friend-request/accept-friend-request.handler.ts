@@ -11,6 +11,7 @@ import { InfrastructureError } from "libs/exception/infrastructure"
 import { EFriendRequestStatus } from "src/module/friends/domain/enum/friend-request-status.enum"
 import { AcceptFriendRequestEvent } from "src/module/friends/domain/event/accept-friend-request.event"
 import { ListFriendRequestEvent } from "src/module/friends/domain/event/list-friend-request.event"
+import { ListFriendEvent } from "src/module/friends/domain/event/list-friend.event"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { AcceptFriendRequestCommand } from "./accept-friend-request.command"
@@ -100,6 +101,10 @@ export class AcceptFriendRequestHandler {
       this.emitter.emit(
         Events.friend_request.list,
         new ListFriendRequestEvent(friendRequest.receiverId),
+      )
+      this.emitter.emit(
+        Events.friend.list,
+        new ListFriendEvent([friendRequest.senderId, friendRequest.receiverId]),
       )
     } catch (err) {
       if (

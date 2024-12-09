@@ -84,9 +84,8 @@ export class ChatGateway implements OnGatewayConnection {
       await this.userRepository.update(user)
       const friends = await this.friendRepository.getFriends(user)
       if (friends && friends.length !== 0) {
-        friends.map((e) => {
-          this.emitter.emit(Events.friend.list, new ListFriendEvent(e.friendId))
-        })
+        const friendIds = friends.map((e) => e.friendId)
+        this.emitter.emit(Events.friend.list, new ListFriendEvent(friendIds))
       }
 
       // console.log(this.sessions)
@@ -118,9 +117,8 @@ export class ChatGateway implements OnGatewayConnection {
       await this.userRepository.update(user)
       const friends = await this.friendRepository.getFriends(user)
       if (friends && friends.length !== 0) {
-        friends.map((e) => {
-          this.emitter.emit(Events.friend.list, new ListFriendEvent(e.friendId))
-        })
+        const friendIds = friends.map((e) => e.friendId)
+        this.emitter.emit(Events.friend.list, new ListFriendEvent(friendIds))
       }
 
       // const userId = client.user?.id
@@ -290,35 +288,40 @@ export class ChatGateway implements OnGatewayConnection {
   }
   @OnEvent(Events.friend.list)
   async onGetOnlineFriends(event: ListFriendEvent) {
-    const { userId } = event
-    const userSocket = this.sessions.getUserSocket(userId)
-    const user = await this.userRepository.findById(userId)
-    const friends = await this.friendRepository.getFriends(user)
+    const { userIds } = event
+    await Promise.all(
+      userIds.map(async (userId) => {
+        const userSocket = this.sessions.getUserSocket(userId)
+        const user = await this.userRepository.findById(userId)
+        const friends = await this.friendRepository.getFriends(user)
 
-    if (friends.length === 0) {
-      userSocket.emit("onlineFriendsReceived", [])
-    }
-    const result = await Promise.all(
-      friends.map(async (e) => {
-        const friend = await this.userRepository.findById(e.friendId)
-        const friendImages = await this.imageService.getImageByApplicableId(
-          friend.id,
-        )
-        const friendAvatar = friendImages.find(
-          (e) => e.imageType === EImageType.AVATAR,
-        )
-        return {
-          friendName: friend?.name ?? "",
-          friendDisplayname: friend?.displayName ?? "",
-          friendAvatar: friendAvatar?.url ?? "",
-          isOnline: friend?.isOnline,
-          offlineAt: friend?.offlineAt,
+        if (friends.length === 0) {
+          userSocket.emit("onlineFriendsReceived", [])
         }
+        const result = await Promise.all(
+          friends.map(async (e) => {
+            const friend = await this.userRepository.findById(e.friendId)
+            const friendImages = await this.imageService.getImageByApplicableId(
+              friend.id,
+            )
+            const friendAvatar = friendImages.find(
+              (e) => e.imageType === EImageType.AVATAR,
+            )
+            return {
+              friendId: friend?.id ?? "",
+              friendName: friend?.name ?? "",
+              friendDisplayname: friend?.displayName ?? "",
+              friendAvatar: friendAvatar?.url ?? "",
+              isOnline: friend?.isOnline,
+              offlineAt: friend?.offlineAt,
+            }
+          }),
+        )
+        // console.log("usersocket", userSocket?.client)
+        if (userSocket)
+          userSocket?.emit("onlineFriendsReceived", { friendLists: result })
       }),
     )
-    // console.log("usersocket", userSocket?.client)
-    if (userSocket)
-      userSocket?.emit("onlineFriendsReceived", { friendLists: result })
   }
   @OnEvent(Events.friend_request.list)
   async onFriendRequestList(event: ListFriendRequestEvent) {
