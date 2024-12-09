@@ -230,12 +230,13 @@ export class FriendController {
   @Delete()
   async removeFriends(
     @CurrentUser() user: UserAggregate,
-    @Param("friendId") data: string,
+    @Query("friendId") data: string,
   ) {
     const command = new RemoveFriendCommand({
       userId: user.id,
       friendId: data,
     })
+
     await this.service.removeFriend(command)
   }
 }
