@@ -230,9 +230,9 @@ export class ChatGateway implements OnGatewayConnection {
     const receiverSocket = this.sessions.getUserSocket(receiverId)
     if (receiverSocket)
       receiverSocket.emit("friendRequestReceived", {
-        senderName: sender.name,
+        name: sender.name,
         createdAt,
-        senderAvatar: senderAvatar?.url ?? "",
+        avatar: senderAvatar?.url ?? "",
         type: "FRIEND",
       })
   }
@@ -254,9 +254,9 @@ export class ChatGateway implements OnGatewayConnection {
     if (senderSocket)
       senderSocket.emit("friendRequestAccepted", {
         message: "Your friend request has been accepted",
-        senderName: sender.name,
+        name: sender.name,
         createdAt,
-        senderAvatar: senderAvatar?.url ?? "",
+        avatar: senderAvatar?.url ?? "",
         type: "FRIEND",
       })
   }
@@ -278,9 +278,9 @@ export class ChatGateway implements OnGatewayConnection {
     if (senderSocket)
       senderSocket.emit("friendRequestRejected", {
         message: "Your friend request has been rejected",
-        senderName: sender.name,
+        name: sender.name,
         createdAt,
-        senderAvatar: senderAvatar?.url ?? "",
+        avatar: senderAvatar?.url ?? "",
         type: "FRIEND",
       })
   }
@@ -306,7 +306,7 @@ export class ChatGateway implements OnGatewayConnection {
         return {
           friendName: friend?.name ?? "",
           friendDisplayname: friend?.displayName ?? "",
-          friendAvatar,
+          friendAvatar: friendAvatar?.url ?? "",
           isOnline: friend?.isOnline,
           offlineAt: friend?.offlineAt,
         }
@@ -342,7 +342,7 @@ export class ChatGateway implements OnGatewayConnection {
         )
         return {
           name: sender.name,
-          avatar: senderAvatar,
+          avatar: senderAvatar?.url ?? "",
           status: e.status,
           createdAt: e.createdAt,
         }
