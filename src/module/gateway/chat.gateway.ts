@@ -346,6 +346,7 @@ export class ChatGateway implements OnGatewayConnection {
           (e) => e.imageType === EImageType.AVATAR,
         )
         return {
+          id: sender.id,
           name: sender.name,
           avatar: senderAvatar?.url ?? "",
           status: e.status,
