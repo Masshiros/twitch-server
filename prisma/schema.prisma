@@ -258,6 +258,7 @@ enum EImage{
 enum EImageType{
   THUMBNAIL
   AVATAR
+  POST
 }
 model Image{
   id             String @id @default(uuid())

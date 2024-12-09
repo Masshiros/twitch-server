@@ -12,7 +12,7 @@ export class GetAllStreamQuery {
   constructor(params: GetAllStreamQueryParams) {
     this.limit = params.limit ?? 1
     this.offset = params.offset ?? 0
-    this.orderBy = params.orderBy ?? "createdAt"
+    this.orderBy = params.orderBy
     this.order = params.order ?? "desc"
   }
 }

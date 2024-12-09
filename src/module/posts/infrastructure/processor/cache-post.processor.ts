@@ -21,8 +21,8 @@ import { PostRedisDatabase } from "../database/redis/post.redis.database"
 export class CachePostProcessor extends WorkerHost {
   private logger = new Logger(CachePostProcessor.name)
   constructor(
-    private readonly emitter: EventEmitter2,
     private readonly postRedisDatabase: PostRedisDatabase,
+    private readonly emitter: EventEmitter2,
     private readonly followingRepository: IFollowersRepository,
     private readonly friendRepository: IFriendRepository,
     private readonly userRepository: IUserRepository,
@@ -46,7 +46,7 @@ export class CachePostProcessor extends WorkerHost {
     throw new Error(`Image upload failed: ${error.message}`)
   }
   async process(job: Job, token?: string): Promise<any> {
-    const { userId, posts, postId } = job.data
+    const { userId, posts, postId, type } = job.data
     try {
       await this.postRedisDatabase.savePosts(userId, posts)
       const user = await this.userRepository.findById(userId)
@@ -57,19 +57,22 @@ export class CachePostProcessor extends WorkerHost {
       const followerIds = followers.map((e) => e.sourceUserId)
       const friendIds = friends.map((e) => e.friendId)
       const ids = [...followerIds, ...friendIds]
-      const notification = NotificationFactory.create({
-        senderId: userId,
-        title: "New post",
-        message: `New post from ${user.name}`,
-        type: ENotification.USER,
-        createdAt: new Date(),
-      })
-      await this.notificationRepository.addNotification(notification)
-      console.log("DATa", postId)
-      this.emitter.emit(
-        Events.notification,
-        new NotificationEmittedEvent(ids, notification, postId),
-      )
+      let notification
+      if (type === "ADD") {
+        notification = NotificationFactory.create({
+          senderId: userId,
+          title: "New post",
+          message: `New post from ${user.name}`,
+          type: ENotification.USER,
+          createdAt: new Date(),
+        })
+        await this.notificationRepository.addNotification(notification)
+        console.log("DATa", postId)
+        this.emitter.emit(
+          Events.notification,
+          new NotificationEmittedEvent(ids, notification, postId),
+        )
+      }
     } catch (error) {
       this.logger.error(`Error processing post cache: ${error.message}`)
       throw new InfrastructureError({

@@ -90,6 +90,8 @@ export class ImageMapper {
         return DomainImageType.THUMBNAIL
       case "AVATAR":
         return DomainImageType.AVATAR
+      case "POST":
+        return DomainImageType.POST
       default:
         throw new Error(`Unknown Prisma Enum value: ${prismaEnum}`)
     }
@@ -104,6 +106,8 @@ export class ImageMapper {
         return "THUMBNAIL"
       case DomainImageType.AVATAR:
         return "AVATAR"
+      case DomainImageType.POST:
+        return "POST"
       default:
         throw new Error(`Unknown Domain Enum value: ${domainEnum}`)
     }

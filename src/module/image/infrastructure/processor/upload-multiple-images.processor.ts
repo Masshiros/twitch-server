@@ -38,11 +38,11 @@ export class UploadMultipleImagesProcessor extends WorkerHost {
   onQueueComplete(job: Job, result: string[]) {
     this.logger.log(`Job has been finished: ${job.id}`)
 
-    const { applicableId } = job.data
+    const { applicableId, actionType } = job.data
 
     this.eventEmitter.emit(
       Events.image.multiple_upload,
-      new ImagesUploadedEvent(result, applicableId),
+      new ImagesUploadedEvent(result, applicableId, actionType),
     )
     this.logger.log(
       `Image URLs emitted successfully for postId: ${applicableId} with ${result}`,
@@ -56,7 +56,14 @@ export class UploadMultipleImagesProcessor extends WorkerHost {
   }
 
   async process(job: Job): Promise<string[]> {
-    const { files, folder, applicableId, applicableType, imageType } = job.data
+    const {
+      files,
+      folder,
+      applicableId,
+      applicableType,
+      imageType,
+      actionType,
+    } = job.data
     let uploadedImages = []
     try {
       await Promise.all(

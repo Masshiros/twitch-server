@@ -1,6 +1,6 @@
 import { InjectQueue } from "@nestjs/bullmq"
 import { Injectable } from "@nestjs/common"
-import { OnEvent } from "@nestjs/event-emitter"
+import { EventEmitter2, OnEvent } from "@nestjs/event-emitter"
 import { Queue } from "bullmq"
 import { Bull } from "libs/constants/bull"
 import { Events } from "libs/constants/events"
@@ -8,8 +8,15 @@ import {
   CommandError,
   CommandErrorCode,
 } from "libs/exception/application/command"
+import { IFollowersRepository } from "src/module/followers/domain/repository/followers.interface.repository"
+import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
 import { ImagesUploadedEvent } from "src/module/image/domain/event/images-uploaded.event"
+import { ENotification } from "src/module/notifications/domain/enum/notification.enum"
+import { NotificationEmittedEvent } from "src/module/notifications/domain/events/notification-emitted.events"
+import { NotificationFactory } from "src/module/notifications/domain/factory/notification.factory"
+import { INotificationRepository } from "src/module/notifications/domain/repositories/notification.interface.repository"
+import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { Post } from "../../domain/entity/posts.entity"
 import { CommentCreateEvent } from "../../domain/events/comment-create.event"
 import { CommentUpdateEvent } from "../../domain/events/comment-update.event"
@@ -31,8 +38,8 @@ export class PostListener {
 
   @OnEvent(Events.image.multiple_upload)
   async handleImageUploaded(event: ImagesUploadedEvent) {
-    const { imageUrl, applicableId } = event
-
+    const { imageUrl, applicableId, actionType } = event
+    let type
     const post = await this.postRepository.findPostById(applicableId)
 
     if (!post) {
@@ -44,7 +51,7 @@ export class PostListener {
       post.userId,
     )
     existingPosts = existingPosts !== null ? existingPosts : []
-    console.log(existingPosts)
+    // console.log(existingPosts)
     if (existingPosts !== null || existingPosts.length > 0) {
       const postIndex = existingPosts.findIndex((e) => e.id === post.id)
       if (postIndex !== -1) {
@@ -58,14 +65,18 @@ export class PostListener {
     } else {
       existingPosts.push(post)
     }
+    console.log("ACTION", actionType)
+
     const [job, failedUploadJobs] = await Promise.all([
       this.cachePostProcessorQueue.add(Bull.job.user_post.cache_post, {
         userId: post.userId,
         posts: existingPosts,
         postId: post.id,
+        type: actionType,
       }),
       this.cachePostProcessorQueue.getFailed(),
     ])
+
     if ((await job.getState()) === "failed") {
       if (failedUploadJobs || failedUploadJobs.length !== 0) {
         failedUploadJobs.map((failedJob) => {
@@ -91,6 +102,7 @@ export class PostListener {
         userId: post.userId,
         posts: existingPosts,
         postId: post.id,
+        type: "ADD",
       }),
       this.cachePostProcessorQueue.getFailed(),
     ])

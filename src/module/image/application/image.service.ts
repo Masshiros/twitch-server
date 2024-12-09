@@ -40,6 +40,7 @@ export class ImageService {
     applicableId: string,
     applicableType: EImage,
     imageType?: EImageType,
+    actionType?: "ADD" | "UPDATE",
   ) {
     try {
       const [job, failedUploadJobs] = await Promise.all([
@@ -49,6 +50,7 @@ export class ImageService {
           applicableId,
           applicableType,
           imageType,
+          actionType,
         }),
         this.multipleImagesUploadQueue.getFailed(),
       ])

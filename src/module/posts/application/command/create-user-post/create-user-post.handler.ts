@@ -14,6 +14,7 @@ import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { ImageService } from "src/module/image/application/image.service"
+import { EImageType } from "src/module/image/domain/enum/image-type.enum"
 import { EImage } from "src/module/image/domain/enum/image.enum"
 import { Post } from "src/module/posts/domain/entity/posts.entity"
 import { EUserPostVisibility } from "src/module/posts/domain/enum/posts.enum"
@@ -124,6 +125,8 @@ export class CreateUserPostHandler {
           Folder.image.user_post,
           post.id,
           EImage.POST,
+          EImageType.AVATAR,
+          "ADD",
         )
       }
       if (!images || images.length === 0) {

@@ -18,6 +18,7 @@ import { PostUpdateEvent } from "src/module/posts/domain/events/post-update.even
 import { IPostsRepository } from "src/module/posts/domain/repository/posts.interface.repository"
 import { UserAggregate } from "src/module/users/domain/aggregate"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
+import { EImageType } from "../../../../image/domain/enum/image-type.enum"
 import { EditUserPostCommand } from "./edit-user-post.command"
 
 @CommandHandler(EditUserPostCommand)
@@ -132,6 +133,8 @@ export class EditUserPostHandler {
           Folder.image.user_post,
           post.id,
           EImage.POST,
+          EImageType.POST,
+          "UPDATE",
         )
       }
       if (!images || images.length === 0) {
