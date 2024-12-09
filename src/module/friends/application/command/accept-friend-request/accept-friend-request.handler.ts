@@ -13,6 +13,7 @@ import { AcceptFriendRequestEvent } from "src/module/friends/domain/event/accept
 import { IFriendRepository } from "src/module/friends/domain/repository/friend.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { AcceptFriendRequestCommand } from "./accept-friend-request.command"
+import { ListFriendRequestEvent } from "src/module/friends/domain/event/list-friend-request.event"
 
 @CommandHandler(AcceptFriendRequestCommand)
 export class AcceptFriendRequestHandler {
@@ -93,8 +94,12 @@ export class AcceptFriendRequestHandler {
       await this.friendRepository.acceptFriendRequest(friendRequest)
       //TODO(notify): Send notification
       this.emitter.emit(
-        Events.friend_request.reject,
+        Events.friend_request.accept,
         new AcceptFriendRequestEvent(friendRequest),
+      )
+      this.emitter.emit(
+        Events.friend_request.list,
+        new ListFriendRequestEvent(friendRequest.receiverId),
       )
     } catch (err) {
       if (

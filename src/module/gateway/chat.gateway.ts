@@ -75,6 +75,7 @@ export class ChatGateway implements OnGatewayConnection {
       // }
       const user = client?.user
       user.isOnline = true
+      user.offlineAt = null
       await this.userRepository.update(user)
       this.sessions.setUserSocket(user.id, client)
       // console.log(this.sessions)
@@ -101,6 +102,7 @@ export class ChatGateway implements OnGatewayConnection {
     try {
       const user = client?.user
       user.isOnline = false
+      user.offlineAt = new Date()
       await this.userRepository.update(user)
       this.sessions.removeUserSocket(user.id)
       // const userId = client.user?.id
@@ -232,13 +234,14 @@ export class ChatGateway implements OnGatewayConnection {
     const senderAvatar = senderImages.find(
       (e) => e.imageType === EImageType.AVATAR,
     )
-    const receiverSocket = this.sessions.getUserSocket(receiverId)
-    if (receiverSocket)
-      receiverSocket.emit("friendRequestAccepted", {
+    const senderSocket = this.sessions.getUserSocket(senderId)
+    if (senderSocket)
+      senderSocket.emit("friendRequestAccepted", {
         message: "Your friend request has been accepted",
         senderName: sender.name,
         createdAt,
         senderAvatar: senderAvatar?.url ?? "",
+        type: "FRIEND",
       })
   }
   @OnEvent(Events.friend_request.reject)
@@ -255,14 +258,44 @@ export class ChatGateway implements OnGatewayConnection {
     const senderAvatar = senderImages.find(
       (e) => e.imageType === EImageType.AVATAR,
     )
-    const receiverSocket = this.sessions.getUserSocket(receiverId)
-    if (receiverSocket)
-      receiverSocket.emit("friendRequestRejected", {
+    const senderSocket = this.sessions.getUserSocket(senderId)
+    if (senderSocket)
+      senderSocket.emit("friendRequestRejected", {
         message: "Your friend request has been rejected",
         senderName: sender.name,
         createdAt,
         senderAvatar: senderAvatar?.url ?? "",
+        type: "FRIEND",
       })
+  }
+  @SubscribeMessage("getOnlineFriends")
+  async onGetOnlineFriends(@ConnectedSocket() socket: AuthenticatedSocket) {
+    const user = socket?.user
+    const userSocket = this.sessions.getUserSocket(user?.id)
+    const friends = await this.friendRepository.getFriends(user)
+    console.log(friends)
+    if (!friends || friends.length === 0) {
+      userSocket.emit("onlineFriendsReceived", [])
+    }
+    const result = await Promise.all(
+      friends.map(async (e) => {
+        const friend = await this.userRepository.findById(e.friendId)
+        const friendImages = await this.imageService.getImageByApplicableId(
+          friend.id,
+        )
+        const friendAvatar = friendImages.find(
+          (e) => e.imageType === EImageType.AVATAR,
+        )
+        return {
+          friendName: friend?.name ?? "",
+          friendDisplayname: friend?.displayName ?? "",
+          friendAvatar,
+          isOnline: friend?.isOnline,
+          offlineAt: friend?.offlineAt,
+        }
+      }),
+    )
+    userSocket.emit("onlineFriendsReceived", result)
   }
   @OnEvent(Events.friend_request.list)
   async onFriendRequestList(event: ListFriendRequestEvent) {

@@ -27,6 +27,8 @@ export type CreateUserAggregateParams = {
   otpToken?: string
   isLive?: boolean
   isActive?: boolean
+  isOnline?: boolean
+  offlineAt?: Date
   is2FA?: boolean
   view?: number
   bio?: string
@@ -94,6 +96,8 @@ export class UserFactory {
         otpToken: params.otpToken ?? "",
         isActive: params.isActive ?? true,
         is2FA: params.is2FA ?? false,
+        isOnline: params.isOnline,
+        offlineAt: params.offlineAt,
         view: params.view ?? 0,
         bio: params.bio ?? "",
         lastUsernameChangeAt: params.lastUsernameChangeAt,

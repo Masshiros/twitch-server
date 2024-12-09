@@ -47,6 +47,7 @@ interface UserAggregateProps {
   externalLinks?: ExternalLink[]
   roles?: Role[]
   permissions?: Permission[]
+  offlineAt?: Date
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -125,6 +126,7 @@ export class UserAggregate extends BaseAggregate {
   private _thumbnail?: string
   private _streamKey?: string
   private _serverUrl?: string
+  private _offlineAt?: Date
   @Expose()
   private _tokens: Token[]
   @Expose()
@@ -161,6 +163,7 @@ export class UserAggregate extends BaseAggregate {
     this._thumbnail = props.thumbnail
     this._serverUrl = props.serverUrl
     this._streamKey = props.streamKey
+    this._offlineAt = props.offlineAt
     this._devices = props.devices || []
     this._tokens = props.tokens || []
     this._loginHistories = props.loginHistories || []
@@ -323,7 +326,12 @@ export class UserAggregate extends BaseAggregate {
   set thumbnail(value: string | undefined) {
     this._thumbnail = value
   }
-
+  get offlineAt(): Date {
+    return this._offlineAt
+  }
+  set offlineAt(value: Date) {
+    this._offlineAt = value
+  }
   get devices(): Device[] {
     return this._devices
   }
