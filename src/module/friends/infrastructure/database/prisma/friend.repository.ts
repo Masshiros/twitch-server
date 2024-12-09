@@ -252,12 +252,9 @@ export class FriendRepository implements IFriendRepository {
     receiver: UserAggregate,
   ): Promise<FriendRequest> {
     try {
-      const friendRequest = await this.prismaService.friendRequest.findFirst({
+      const friendRequest = await this.prismaService.friendRequest.findUnique({
         where: {
-          OR: [
-            { senderId: sender.id, receiverId: receiver.id },
-            { senderId: receiver.id, receiverId: sender.id },
-          ],
+          senderId_receiverId: { senderId: sender.id, receiverId: receiver.id },
         },
       })
       if (!friendRequest) {
