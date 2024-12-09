@@ -215,6 +215,7 @@ export class ChatGateway implements OnGatewayConnection {
         senderName: sender.name,
         createdAt,
         senderAvatar: senderAvatar?.url ?? "",
+        type: "FRIEND",
       })
   }
   @OnEvent(Events.friend_request.accept)
