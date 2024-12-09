@@ -19,19 +19,15 @@ export class DeleteUserCommandHandler {
   ) {}
   async execute(
     command: DeleteUserCommand,
-    currentUser: { id: string; username: string },
+    // currentUser: { id: string; username: string },
   ): Promise<any> {
     const { id: targetUserId } = command
     try {
       // validate current user's id equal the one need to delete's id
-
-      if (targetUserId !== currentUser.id) {
+      if (!targetUserId || targetUserId.length === 0) {
         throw new CommandError({
           code: CommandErrorCode.BAD_REQUEST,
-          message: "Unauthorized to delete user",
-          info: {
-            errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-          },
+          message: "User id can not be empty",
         })
       }
       // validate delete user is exist
@@ -46,18 +42,7 @@ export class DeleteUserCommandHandler {
           },
         })
       }
-      // validate current user is exist
-      const currentUserAggregate: UserAggregate | null =
-        await this.userRepository.findByUsername(currentUser.username)
-      if (!currentUserAggregate || currentUserAggregate.id !== currentUser.id) {
-        throw new CommandError({
-          code: CommandErrorCode.BAD_REQUEST,
-          message: "Unauthorized",
-          info: {
-            errorCode: CommandErrorDetailCode.UNAUTHORIZED,
-          },
-        })
-      }
+
       // TODO(role): Need to check who delete user later(ADMIN or USER)
       await this.userRepository.delete(targetUser.id)
     } catch (err) {

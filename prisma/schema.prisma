@@ -88,7 +88,7 @@ model LiveStreamInfo{
   isLive               Boolean?
   thumbnailPreviewImage String?
   themeColor           String?
-  user                 User @relation(fields:[userId],references: [id])
+  user                 User @relation(fields:[userId],references: [id],onDelete: Cascade)
   livestreamCateInfo   LiveStreamCategoriesInfo[]
   livestreamTagInfo    LiveStreamTagsInfo[]
   @@map("liveStreamInfos")
@@ -227,8 +227,8 @@ model UserRole {
   createdAt DateTime  @default(now())
   deletedAt DateTime?
   updatedAt DateTime  @default(now()) @updatedAt
-  role      Role      @relation(fields: [roleId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+  role      Role      @relation(fields: [roleId], references: [id],onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id],onDelete: Cascade)
 
   @@id([userId, roleId])
   @@map("userRoles")
@@ -240,8 +240,8 @@ model RolePermission {
   createdAt    DateTime   @default(now())
   deletedAt    DateTime?
   updatedAt    DateTime   @default(now()) @updatedAt
-  permission   Permission @relation(fields: [permissionId], references: [id])
-  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id],onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id],onDelete: Cascade)
 
   @@id([roleId, permissionId])
   @@map("rolePermissions")
