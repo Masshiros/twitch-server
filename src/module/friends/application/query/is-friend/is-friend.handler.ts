@@ -73,16 +73,6 @@ export class IsFriendHandler {
       if (isFriend) {
         return "Accepted"
       }
-      if (friendRequest) {
-        if (friendRequest?.status === EFriendRequestStatus.ACCEPTED) {
-          return "Accepted"
-        }
-      }
-      if (reverseFriendRequest) {
-        if (reverseFriendRequest?.status === EFriendRequestStatus.ACCEPTED) {
-          return "Accepted"
-        }
-      }
 
       if (!friendRequest || friendRequest === undefined) {
         if (!reverseFriendRequest || reverseFriendRequest === undefined) {
@@ -94,7 +84,7 @@ export class IsFriendHandler {
           return "No friend request"
         }
       }
-      console.log(friendRequest)
+
       if (friendRequest.status === EFriendRequestStatus.PENDING) {
         return "Pending"
       }

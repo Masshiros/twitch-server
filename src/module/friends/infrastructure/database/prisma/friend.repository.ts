@@ -194,15 +194,12 @@ export class FriendRepository implements IFriendRepository {
   async acceptFriendRequest(request: FriendRequest): Promise<void> {
     try {
       await this.prismaService.$transaction(async (prisma) => {
-        await prisma.friendRequest.update({
+        await prisma.friendRequest.delete({
           where: {
             senderId_receiverId: {
               senderId: request.senderId,
               receiverId: request.receiverId,
             },
-          },
-          data: {
-            status: EFriendRequestStatus.ACCEPTED,
           },
         }),
           await Promise.all([

@@ -244,23 +244,23 @@ export class ChatGateway implements OnGatewayConnection {
   async onFriendRequestAccept(event: AcceptFriendRequestEvent) {
     const { request } = event
     const { senderId, receiverId, createdAt } = request
-    const sender = await this.userRepository.findById(senderId)
-    if (!sender || sender === undefined) {
+    const receiver = await this.userRepository.findById(receiverId)
+    if (!receiver || receiver === undefined) {
       return
     }
-    const senderImages = await this.imageService.getImageByApplicableId(
-      sender?.id,
+    const receiverImages = await this.imageService.getImageByApplicableId(
+      receiver?.id,
     )
-    const senderAvatar = senderImages.find(
+    const receiverAvatar = receiverImages.find(
       (e) => e.imageType === EImageType.AVATAR,
     )
     const senderSocket = this.sessions.getUserSocket(senderId)
     if (senderSocket)
       senderSocket.emit("friendRequestAccepted", {
         message: "Your friend request has been accepted",
-        name: sender.name,
+        name: receiver.name,
         createdAt,
-        avatar: senderAvatar?.url ?? "",
+        avatar: receiverAvatar?.url ?? "",
         type: "FRIEND",
       })
   }
@@ -332,11 +332,9 @@ export class ChatGateway implements OnGatewayConnection {
     }
     const pendingFriendRequests =
       await this.friendRepository.getListFriendRequest(receiver)
-    const acceptedFriendRequests =
-      await this.friendRepository.getAcceptedFriendRequest(receiver)
-    const friendRequests = [...pendingFriendRequests, ...acceptedFriendRequests]
+
     const result = await Promise.all(
-      friendRequests.map(async (e) => {
+      pendingFriendRequests.map(async (e) => {
         const sender = await this.userRepository.findById(e.senderId)
         const senderImages = await this.imageService.getImageByApplicableId(
           sender.id,
