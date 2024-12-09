@@ -1,3 +1,5 @@
+import { EFriendRequestStatus } from "src/module/friends/domain/enum/friend-request-status.enum"
+
 export class GetListFriendRequestsResult {
   friendRequests: {
     sender: {
@@ -5,6 +7,7 @@ export class GetListFriendRequestsResult {
       username: string
       avatar: string
     }
-    sentAt: string
+    status: EFriendRequestStatus
+    sentAt: Date
   }[] = []
 }

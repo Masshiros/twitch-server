@@ -206,7 +206,7 @@ export class ChatGateway implements OnGatewayConnection {
         }),
       )
 
-      socket.emit("getNotifications", result)
+      socket.emit("getNotifications", { notifications: result })
     } else {
       socket.disconnect()
     }

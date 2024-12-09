@@ -129,7 +129,7 @@ export class SignupWithEmailCommandHandler
         emailVerifyToken: otp,
         roles: [userRole],
       })
-      console.log(user)
+
       if (streamKey) {
         user.streamKey = streamKey
       }

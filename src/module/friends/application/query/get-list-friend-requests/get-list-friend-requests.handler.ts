@@ -63,7 +63,8 @@ export class GetListFriendRequestHandler {
               username: sender.name,
               avatar: avatar[0]?.url ?? "",
             },
-            sentAt: e.createdAt.toISOString().split("T")[0],
+            status: e.status,
+            sentAt: e.createdAt,
           }
         }),
       )
