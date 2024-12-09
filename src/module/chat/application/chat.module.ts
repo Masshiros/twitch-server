@@ -8,9 +8,16 @@ import { ChatController } from "../presentation/chat.controller"
 import { ChatService } from "./chat.service"
 import { CreateConversationHandler } from "./command/create-conversation/create-conversation.handler"
 import { CreateMessageHandler } from "./command/create-message/create-message.handler"
+import { DeleteMessageHandler } from "./command/delete-message/delete-message.handler"
+import { UpdateMessageHandler } from "./command/update-message/update-message.handler"
 import { GetConversationsHandler } from "./query/get-conversations/get-conversations.handler"
 
-const commandHandlers = [CreateConversationHandler, CreateMessageHandler]
+const commandHandlers = [
+  CreateConversationHandler,
+  UpdateMessageHandler,
+  DeleteMessageHandler,
+  CreateMessageHandler,
+]
 const queryHandlers = [GetConversationsHandler]
 @Module({
   controllers: [ChatController],

@@ -8,20 +8,21 @@ import {
 } from "libs/exception/application/command"
 import { DomainError } from "libs/exception/domain"
 import { InfrastructureError } from "libs/exception/infrastructure"
+import { MessageDeleteEvent } from "src/module/chat/domain/events/message/message-delete.event"
 import { MessageUpdateEvent } from "src/module/chat/domain/events/message/message-update.event"
 import { IChatRepository } from "src/module/chat/domain/repository/chat.interface.repository"
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
-import { UpdateMessageCommand } from "./update-message.command"
+import { DeleteMessageCommand } from "./delete-message.command"
 
-@CommandHandler(UpdateMessageCommand)
-export class UpdateMessageHandler {
+@CommandHandler(DeleteMessageCommand)
+export class DeleteMessageHandler {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly chatRepository: IChatRepository,
     private readonly events: EventEmitter2,
   ) {}
-  async execute(command: UpdateMessageCommand) {
-    const { messageId, userId, content } = command
+  async execute(command: DeleteMessageCommand) {
+    const { messageId, userId } = command
     try {
       if (!userId || userId.length === 0) {
         throw new CommandError({
@@ -59,9 +60,9 @@ export class UpdateMessageHandler {
           message: "This message is not belong to you",
         })
       }
-      message.content = content
-      await this.chatRepository.updateMessage(message)
-      this.events.emit(Events.message.update, new MessageUpdateEvent(message))
+
+      await this.chatRepository.deleteMessage(message)
+      this.events.emit(Events.message.delete, new MessageDeleteEvent(message))
     } catch (err) {
       if (
         err instanceof DomainError ||

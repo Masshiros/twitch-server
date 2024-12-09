@@ -111,6 +111,8 @@ export const SuccessMessages = {
   },
   messages: {
     CREATE_MESSAGE: "Create message successfully",
+    DELETE_MESSAGE: "Delete message successfully",
+    UPDATE_MESSAGE: "Update message successfully",
   },
   groups: {
     CREATE_GROUP: "Create new group successfully",
