@@ -34,7 +34,9 @@ export class RedisIoAdapter extends IoAdapter {
     const server = super.createIOServer(port, options)
     server.adapter(this.adapterConstructor)
     server.use(async (socket: AuthenticatedSocket, next) => {
-      const token = socket.handshake.headers.cookie.split(";")[0].split("=")[1]
+      const token = socket.handshake?.headers?.cookie
+        ?.split(";")[0]
+        .split("=")[1]
 
       if (!token) {
         socket.disconnect()
