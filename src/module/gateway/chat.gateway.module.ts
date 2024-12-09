@@ -6,6 +6,7 @@ import { UserDatabaseModule } from "src/module/users/infrastructure/database/use
 import { ChatDatabaseModule } from "../chat/infrastructure/database/chat.database.module"
 import { FriendsDatabaseModule } from "../friends/infrastructure/database/friend.database.module"
 import { ChatGateway } from "./chat.gateway"
+import { TestGateway } from "./test.gateway"
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { ChatGateway } from "./chat.gateway"
     ImageModule,
     GatewayModule,
   ],
-  providers: [ChatGateway],
+  providers: [ChatGateway, TestGateway],
 })
 export class ChatGatewayModule {}
