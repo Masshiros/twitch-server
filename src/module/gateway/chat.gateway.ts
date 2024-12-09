@@ -26,6 +26,8 @@ import { INotificationRepository } from "src/module/notifications/domain/reposit
 import { IUserRepository } from "src/module/users/domain/repository/user/user.interface.repository"
 import { ConversationCreateEvent } from "../chat/domain/events/conversation/conversation-create.event"
 import { MessageCreateEvent } from "../chat/domain/events/message/message-create.event"
+import { MessageDeleteEvent } from "../chat/domain/events/message/message-delete.event"
+import { MessageUpdateEvent } from "../chat/domain/events/message/message-update.event"
 import { IChatRepository } from "../chat/domain/repository/chat.interface.repository"
 import { EFriendRequestStatus } from "../friends/domain/enum/friend-request-status.enum"
 import { AcceptFriendRequestEvent } from "../friends/domain/event/accept-friend-request.event"
@@ -154,14 +156,16 @@ export class ChatGateway implements OnGatewayConnection {
           receiver,
         )
         console.log("DATa", data)
-        socket.emit("notification", {
-          senderName: sender.name,
-          senderAvatar: senderAvatar?.url ?? "",
-          type: notification.type,
-          createdAt: notification.createdAt,
-          message: notification.message,
-          data,
-        })
+        if (socket) {
+          socket.emit("notification", {
+            senderName: sender.name,
+            senderAvatar: senderAvatar?.url ?? "",
+            type: notification.type,
+            createdAt: notification.createdAt,
+            message: notification.message,
+            data,
+          })
+        }
       })
     }
   }
@@ -207,7 +211,7 @@ export class ChatGateway implements OnGatewayConnection {
         }),
       )
 
-      socket.emit("getNotifications", { notifications: result })
+      if (socket) socket.emit("getNotifications", { notifications: result })
     } else {
       socket.disconnect()
     }
@@ -383,7 +387,43 @@ export class ChatGateway implements OnGatewayConnection {
     if (recipientSocket) recipientSocket.emit("onMessage", message)
   }
   @OnEvent(Events.message.update)
-  async onMessageUpdate() {}
+  async onMessageUpdate(event: MessageUpdateEvent) {
+    const { message } = event
+    const { conversationId, authorId } = message
+    const conversation =
+      await this.chatRepository.findConversationById(conversationId)
+    if (!conversation) {
+      return
+    }
+    const authorSocket = this.sessions.getUserSocket(authorId)
+    const recipientId = conversation.receiverId
+    const creatorId = conversation.creatorId
+    const recipientSocket =
+      authorId === creatorId
+        ? this.sessions.getUserSocket(recipientId)
+        : this.sessions.getUserSocket(authorId)
+    if (authorSocket) authorSocket?.emit("onMessageUpdate", message)
+    if (recipientSocket) recipientSocket?.emit("onMessageUpdate", message)
+  }
+  @OnEvent(Events.message.delete)
+  async onMessageDelete(event: MessageDeleteEvent) {
+    const { message } = event
+    const { conversationId, authorId } = message
+    const conversation =
+      await this.chatRepository.findConversationById(conversationId)
+    if (!conversation) {
+      return
+    }
+    const authorSocket = this.sessions.getUserSocket(authorId)
+    const recipientId = conversation.receiverId
+    const creatorId = conversation.creatorId
+    const recipientSocket =
+      authorId === creatorId
+        ? this.sessions.getUserSocket(recipientId)
+        : this.sessions.getUserSocket(authorId)
+    if (authorSocket) authorSocket?.emit("onMessageDelete", message)
+    if (recipientSocket) recipientSocket?.emit("onMessageDelete", message)
+  }
   @SubscribeMessage("conversationJoin")
   onConversationJoin(
     @MessageBody() data: { conversationId: string },

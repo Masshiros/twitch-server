@@ -19,4 +19,5 @@ export abstract class IChatRepository {
   ) => Promise<Conversation | undefined>
   getMessageById: (messageId: string) => Promise<Message>
   createMessage: (message: Message) => Promise<void>
+  updateMessage: (message: Message) => Promise<void>
 }

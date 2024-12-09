@@ -117,6 +117,28 @@ export class ChatPrismaRepository implements IChatRepository {
       this.handleDatabaseError(error)
     }
   }
+  async updateMessage(message: Message): Promise<void> {
+    try {
+      const persistenceData = MessageMapper.toPersistence(message)
+      const existingMessage = await this.prismaService.message.findUnique({
+        where: { id: message.id },
+      })
+      if (!existingMessage) {
+        throw new InfrastructureError({
+          code: InfrastructureErrorCode.INTERNAL_SERVER_ERROR,
+          message: "Message is not exists",
+        })
+      }
+      await this.prismaService.message.update({
+        where: {
+          id: persistenceData.id,
+        },
+        data: persistenceData,
+      })
+    } catch (error) {
+      this.handleDatabaseError(error)
+    }
+  }
   async findConversationById(
     conversationId: string,
   ): Promise<Conversation | undefined> {
