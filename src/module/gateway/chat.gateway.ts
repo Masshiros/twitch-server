@@ -27,6 +27,7 @@ import { IUserRepository } from "src/module/users/domain/repository/user/user.in
 import { ConversationCreateEvent } from "../chat/domain/events/conversation/conversation-create.event"
 import { MessageCreateEvent } from "../chat/domain/events/message/message-create.event"
 import { IChatRepository } from "../chat/domain/repository/chat.interface.repository"
+import { EFriendRequestStatus } from "../friends/domain/enum/friend-request-status.enum"
 import { AcceptFriendRequestEvent } from "../friends/domain/event/accept-friend-request.event"
 import { ListFriendRequestEvent } from "../friends/domain/event/list-friend-request.event"
 import { ListFriendEvent } from "../friends/domain/event/list-friend.event"
@@ -345,7 +346,11 @@ export class ChatGateway implements OnGatewayConnection {
     )
     const receiverSocket = this.sessions.getUserSocket(receiverId)
     if (receiverSocket)
-      receiverSocket.emit("friendRequestsList", { friends: result })
+      receiverSocket.emit("friendRequestsList", {
+        friends: result.filter(
+          (e) => e.status !== EFriendRequestStatus.REJECTED,
+        ),
+      })
   }
   // chat
   @OnEvent(Events.conversation.create)
