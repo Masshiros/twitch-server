@@ -285,6 +285,7 @@ model Notification {
   updatedAt          DateTime?           @default(now()) @updatedAt()
   senderId           String
   deletedAt          DateTime?
+  data                String?
   notificationsUsers NotificationUser[]
 
   @@map("notifications")

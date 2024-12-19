@@ -155,7 +155,7 @@ export class ChatGateway implements OnGatewayConnection {
           notification,
           receiver,
         )
-        console.log("DATa", data)
+        console.log("DATa", notification)
         if (socket) {
           socket.emit("notification", {
             senderName: sender.name,
@@ -163,7 +163,7 @@ export class ChatGateway implements OnGatewayConnection {
             type: notification.type,
             createdAt: notification.createdAt,
             message: notification.message,
-            data,
+            data: notification.data,
           })
         }
       })
@@ -200,6 +200,7 @@ export class ChatGateway implements OnGatewayConnection {
           const userAvatar = userImages?.find(
             (e) => e.imageType === EImageType.AVATAR,
           )
+          console.log()
           return {
             senderName: user?.name ?? "",
             senderAvatar: userAvatar?.url ?? "",
@@ -207,6 +208,7 @@ export class ChatGateway implements OnGatewayConnection {
             type: e._type,
             createdAt: e._createdAt,
             hasRead: e.hasRead,
+            data: e._data,
           }
         }),
       )

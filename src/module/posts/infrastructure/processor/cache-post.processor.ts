@@ -65,6 +65,7 @@ export class CachePostProcessor extends WorkerHost {
           message: `New post from ${user.name}`,
           type: ENotification.USER,
           createdAt: new Date(),
+          data: postId,
         })
         await this.notificationRepository.addNotification(notification)
         console.log("DATa", postId)

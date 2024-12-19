@@ -16,6 +16,7 @@ export class NotificationMapper {
         type: this.mapPrismaToDomainEnum(prismaNotification.type),
         createdAt: prismaNotification.createdAt,
         updatedAt: prismaNotification.updatedAt,
+        data: prismaNotification.data,
       },
       prismaNotification.id,
     )
@@ -32,6 +33,7 @@ export class NotificationMapper {
       createdAt: notification.createdAt,
       updatedAt: notification.updatedAt,
       deletedAt: notification.deletedAt,
+      data: notification.data,
     }
   }
 

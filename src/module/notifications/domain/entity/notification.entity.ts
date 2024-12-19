@@ -11,6 +11,7 @@ interface NotificationProps {
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
+  data?: string
 }
 export class Notification extends BaseEntity {
   private _senderId: string
@@ -18,6 +19,7 @@ export class Notification extends BaseEntity {
   private _message: string
   private _slug: string
   private _type: ENotification
+  private _data: string
 
   constructor(props: NotificationProps, id?: string) {
     super()
@@ -27,6 +29,7 @@ export class Notification extends BaseEntity {
     this._message = props.message ?? ""
     this._slug = props.slug ?? ""
     this._type = props.type ?? ENotification.USER
+    this._data = props.data
     this._createdAt = props.createdAt ?? new Date()
     this._updatedAt = props.updatedAt ?? null
     this._deletedAt = props.deletedAt ?? null
@@ -36,6 +39,12 @@ export class Notification extends BaseEntity {
   }
   set senderId(value: string) {
     this._senderId = value
+  }
+  get data(): string {
+    return this._data
+  }
+  set data(value: string) {
+    this._data = value
   }
   get title(): string {
     return this._title

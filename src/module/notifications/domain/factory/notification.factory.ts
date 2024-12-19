@@ -9,6 +9,7 @@ interface NotificationProps {
   type?: ENotification
   createdAt?: Date
   updatedAt?: Date | null
+  data?: string
   deletedAt?: Date | null
 }
 
@@ -20,6 +21,7 @@ export class NotificationFactory {
       message: props.message ?? "Default Message",
       slug: props.slug ?? "default-slug",
       type: props.type ?? ENotification.USER,
+      data: props.data,
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? null,
       deletedAt: props.deletedAt ?? null,
